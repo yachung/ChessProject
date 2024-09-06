@@ -1,24 +1,24 @@
 using Fusion;
 using VContainer;
+using VContainer.Unity;
 
 public class LobbyInitializer : NetworkBehaviour
 {
     private LobbyPresenter _lobbyPresenter;
 
-    // DI ÄÁÅ×ÀÌ³Ê¸¦ ÅëÇØ LobbyPresenter ÁÖÀÔ
+    /// <summary>
+    /// VContainerì—ì„œ MonoBehaviourëŠ” ìƒì„±ìë¥¼ ì§€ì›í•˜ì§€ ì•Šìœ¼ë¯€ë¡œ Inject í•´ì¤˜ì•¼ í•¨
+    /// </summary>
+    /// <param name="lobbyPresenter"></param>
     [Inject]
-    public void Construct(LobbyPresenter lobbyPresenter)
+    public void Constructor(LobbyPresenter lobbyPresenter)
     {
         _lobbyPresenter = lobbyPresenter;
     }
 
-    private void Start()
-    {
-    }
-
     public override void Spawned()
     {
-        _lobbyPresenter.Initialize(Runner.IsServer);
+        //_lobbyPresenter.Initialize(Runner);
         Runner.AddCallbacks(_lobbyPresenter);
     }
 }

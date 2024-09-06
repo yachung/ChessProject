@@ -1,22 +1,26 @@
 using Fusion;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LobbyModel
+public class LobbyModel : NetworkBehaviour
 {
-    public int PlayerCount => _playerDictionary.Count;
-    private Dictionary<PlayerRef, PlayerInfo> _playerDictionary; // PlayerRef¸¦ Å°·Î »ç¿ëÇÏ´Â µñ¼Å³Ê¸®·Î ÇÃ·¹ÀÌ¾î Á¤º¸ °ü¸®
+    public int PlayerCount => PlayerDictionary.Count;
+    [Networked, Capacity(8), OnChangedRender(nameof(PlayerInfosChanged))]
+    private NetworkDictionary<PlayerRef, PlayerInfo> PlayerDictionary => default; // PlayerRefë¥¼ í‚¤ë¡œ ì‚¬ìš©í•˜ëŠ” ë”•ì…”ë„ˆë¦¬ë¡œ í”Œë ˆì´ì–´ ì •ë³´ ê´€ë¦¬
 
-    public LobbyModel()
+    private Action OnPlayerInfosChanged;
+
+    public void Initialize(Action action)
     {
-        _playerDictionary = new Dictionary<PlayerRef, PlayerInfo>();
+        OnPlayerInfosChanged = action;
     }
 
     public void AddPlayer(PlayerRef playerRef, PlayerInfo playerInfo)
     {
-        if (!_playerDictionary.ContainsKey(playerRef))
+        if (!PlayerDictionary.ContainsKey(playerRef))
         {
-            _playerDictionary.Add(playerRef, playerInfo);
+            PlayerDictionary.Add(playerRef, playerInfo);
         }
         else
         {
@@ -26,23 +30,28 @@ public class LobbyModel
 
     public void RemovePlayer(PlayerRef playerRef)
     {
-        if (_playerDictionary.ContainsKey(playerRef))
+        if (PlayerDictionary.ContainsKey(playerRef))
         {
-            _playerDictionary.Remove(playerRef);
+            PlayerDictionary.Remove(playerRef);
         }
     }
 
     public PlayerInfo GetPlayerInfo(PlayerRef playerRef)
     {
-        return _playerDictionary.ContainsKey(playerRef) ? _playerDictionary[playerRef] : default;
+        return PlayerDictionary.ContainsKey(playerRef) ? PlayerDictionary[playerRef] : default;
     }
 
     /// <summary>
-    /// ÷Àºº¹»ç·Î Àü´Ş?
+    /// ì–•ì€ë³µì‚¬ë¡œ ì „ë‹¬?
     /// </summary>
     /// <returns></returns>
     public Dictionary<PlayerRef, PlayerInfo> GetAllPlayers()
     {
-        return new Dictionary<PlayerRef, PlayerInfo>(_playerDictionary);
+        return new Dictionary<PlayerRef, PlayerInfo>(PlayerDictionary);
+    }
+
+    public void PlayerInfosChanged()
+    {
+        OnPlayerInfosChanged?.Invoke();
     }
 }

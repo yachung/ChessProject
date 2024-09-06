@@ -4,16 +4,23 @@ using Fusion;
 using System;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 public class LobbyView : MonoBehaviour
 {
     [SerializeField] private TMP_Text txt_PlayerCount;
     [SerializeField] private Button btn_Start;
+    [SerializeField] private PlayerInfoCell[] playerInfoCells;
 
-    public void InitializeView(bool isHost, Action gameStart)
+    private void Awake()
+    {
+        foreach (var cell in playerInfoCells)
+            cell.gameObject.SetActive(false);
+    }
+
+    public void Initialize(bool isHost, Action gameStart)
     {
         gameObject.SetActive(true);
-
         btn_Start.gameObject.SetActive(isHost);
 
         if (isHost)
@@ -22,14 +29,27 @@ public class LobbyView : MonoBehaviour
 
     public void DisplayPlayerCount(int count)
     {
-        Debug.Log($"Players: {count}");
+        txt_PlayerCount.text = count.ToString();
     }
 
     public void ShowPlayerList(Dictionary<PlayerRef, PlayerInfo> playerList)
     {
-        foreach (var kvp in playerList)
+        int index = 0;
+
+        foreach (var cell in playerInfoCells)
         {
-            Debug.Log($"Player: {kvp.Value.Name}, Ref: {kvp.Key}");
+            if (index < playerList.Count)
+            {
+                // playerList.Values에서 플레이어 정보를 가져와 초기화
+                cell.gameObject.SetActive(true);  // 셀 활성화
+                cell.Initialize(playerList.Values.ElementAt(index));  // 해당 인덱스의 플레이어 정보로 초기화
+                index++;
+            }
+            else
+            {
+                // 남은 셀들은 비활성화
+                cell.gameObject.SetActive(false);
+            }
         }
     }
 }

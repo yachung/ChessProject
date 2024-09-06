@@ -2,23 +2,34 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
+using VContainer;
 
-public class LobbyPresenter : INetworkRunnerCallbacks
+public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 {
-    private readonly LobbyModel _model;
-    private readonly LobbyView _view;
+    private LobbyModel _model;
+    private LobbyView _view;
 
-    public LobbyPresenter(LobbyModel model, LobbyView view)
+    [Inject]
+    public void Construct(LobbyModel model, LobbyView view)
     {
         _model = model;
         _view = view;
     }
 
-    public void Initialize(bool isHost)
+    public void Initialize()
     {
-        // View 초기화 - Presenter에서 View의 초기 설정을 담당
-        _view.InitializeView(isHost, OnGameStarted);
+        Debug.Log("Lobby Presenter Initialize");
+        _model.Initialize(PlayerInfoChangeCallback);
+        _view.Initialize(Runner.IsServer, OnGameStarted);
+
+        UpdateUI();
+    }
+
+    public override void Spawned()
+    {
+        Runner.AddCallbacks(this);
     }
 
     public void UpdateUI()
@@ -29,13 +40,30 @@ public class LobbyPresenter : INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        _model.AddPlayer(player, new PlayerInfo(player.ToString()));
-        UpdateUI();
+        Debug.Log("OnPlayerJoined");
+
+        if (runner.IsServer)
+        {
+            PlayerInfo playerInfo = new PlayerInfo
+            {
+                Index = runner.SessionInfo.PlayerCount,
+                Name = player.ToString()
+            };
+
+            _model.AddPlayer(player, playerInfo);
+        }
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        _model.RemovePlayer(player);
+        if (runner.IsServer)
+        {
+            _model.RemovePlayer(player);
+        }
+    }
+
+    public void PlayerInfoChangeCallback()
+    {
         UpdateUI();
     }
 
@@ -43,6 +71,21 @@ public class LobbyPresenter : INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
     }
+
+    //public async void Server_OnGameStarted()
+    //{
+    //    if (!Runner.IsSceneAuthority)
+    //        return;
+
+    //    await Server_LoadSceneAsync(SceneType.InGame);
+
+    //    selectField = FindAnyObjectByType<SelectField>();
+    //    allFields = FindObjectsByType<PlayerField>(FindObjectsSortMode.None);
+
+    //    Server_PlayerInitialize();
+
+    //    gameState.Server_SetState<SelectObjectState>();
+    //}
 
     #region NotUseCallBack
     public void OnConnectedToServer(NetworkRunner runner)

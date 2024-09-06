@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class Bootstrap : MonoBehaviour
 {
     /// <summary>
-    /// Runtime Àü¿¡ ÃÊ±âÈ­ ÇØ¾ßµÉ ¼¼ÆÃÀÌ ÀÖÀ» °æ¿ì »ç¿ë
+    /// Runtime ì „ì— ì´ˆê¸°í™” í•´ì•¼ë  ì„¸íŒ…ì´ ìˆì„ ê²½ìš° ì‚¬ìš©
     /// </summary>
     [RuntimeInitializeOnLoadMethod]
     static void InitializeApplication()
@@ -24,7 +24,7 @@ public class Bootstrap : MonoBehaviour
     private List<NetworkRunner> clients = new List<NetworkRunner>();
 
     /// <summary>
-    /// Network ÀÌ¿ëÀÚ ¸ğµå ¼³Á¤
+    /// Network ì´ìš©ì ëª¨ë“œ ì„¤ì •
     /// </summary>
     /// <param name="gameMode"></param>
     public async void StartGame(GameMode gameMode)
@@ -49,7 +49,7 @@ public class Bootstrap : MonoBehaviour
     async Task<StartGameResult> StartRunnerAsync(NetworkRunner runner, GameMode gameMode)
     {
         int buildIndex = SceneUtility.GetBuildIndexByScenePath("Assets/01.Scenes/Lobby.unity");
-        // ÀÌ ¾ÀÀ» ÂüÁ¶ÇÒ Á¤º¸¸¦ ´ãÀº ±¸Á¶Ã¼
+        // ì´ ì”¬ì„ ì°¸ì¡°í•  ì •ë³´ë¥¼ ë‹´ì€ êµ¬ì¡°ì²´
         SceneRef sceneRef = SceneRef.FromIndex(buildIndex);
         NetworkSceneInfo networkSceneInfo = new NetworkSceneInfo();
         networkSceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive);
@@ -60,7 +60,7 @@ public class Bootstrap : MonoBehaviour
             PlayerCount = 8,
             Scene = networkSceneInfo,
             SceneManager = gameObject.GetComponent<NetworkSceneManagerDefault>(),
-            //Address = NetAddress.Any() // IP ÁÖ¼Ò¸¦ ÀÚµ¿À¸·Î ÇÒ´ç
+            //Address = NetAddress.Any() // IP ì£¼ì†Œë¥¼ ìë™ìœ¼ë¡œ í• ë‹¹
         });
     }
 
@@ -70,7 +70,7 @@ public class Bootstrap : MonoBehaviour
         //    return;
 
         if (GUI.Button(new Rect(0, 0, 200, 40), "GameStart"))
-            StartGame(GameMode.Host);
+            StartGame(GameMode.AutoHostOrClient);
 
         //if (GUI.Button(new Rect(0, 0, 200, 40), "Server"))
         //    StartGame(GameMode.Server);
