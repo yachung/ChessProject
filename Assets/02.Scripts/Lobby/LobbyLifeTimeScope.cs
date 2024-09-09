@@ -13,6 +13,13 @@ public class LobbyLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<LobbyPresenter>();
 
         // State 등록, Entry Point
-        builder.RegisterComponentInHierarchy<PregameState>();
+        //builder.RegisterComponentInHierarchy<PregameState>();
+    }
+
+    private void Start()
+    {
+        var model = Container.Resolve<LobbyModel>();
+        Container.Resolve<LobbyView>();
+        Container.Resolve<LobbyPresenter>();
     }
 }

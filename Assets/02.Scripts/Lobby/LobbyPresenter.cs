@@ -2,34 +2,37 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
-using UnityEditor.UIElements;
 using UnityEngine;
 using VContainer;
 
 public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 {
-    private LobbyModel _model;
-    private LobbyView _view;
+    [Inject] private SceneLoader _sceneLoader;
+    [Inject] private LobbyModel _model;
+    [Inject] private LobbyView _view;
 
-    [Inject]
-    public void Construct(LobbyModel model, LobbyView view)
-    {
-        _model = model;
-        _view = view;
-    }
+    //public void Construct(LobbyModel model, LobbyView view, SceneLoader sceneLoader)
+    //{
+    //    _model = model;
+    //    _view = view;
+    //    _sceneLoader = sceneLoader;
+    //}
 
-    public void Initialize()
+    public void Start()
     {
         Debug.Log("Lobby Presenter Initialize");
-        _model.Initialize(PlayerInfoChangeCallback);
-        _view.Initialize(Runner.IsServer, OnGameStarted);
 
-        UpdateUI();
+        _model.Initialize(PlayerInfoChangeCallback);
+        _view.btn_Start.onClick.AddListener(() => OnGameStarted());
     }
 
     public override void Spawned()
     {
         Runner.AddCallbacks(this);
+
+        _view.Initialize(Runner.IsServer);
+
+        UpdateUI();
     }
 
     public void UpdateUI()
@@ -70,22 +73,9 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnGameStarted()
     {
         Debug.Log("GameStart");
+
+        _sceneLoader.Server_OnGameStarted(Runner);
     }
-
-    //public async void Server_OnGameStarted()
-    //{
-    //    if (!Runner.IsSceneAuthority)
-    //        return;
-
-    //    await Server_LoadSceneAsync(SceneType.InGame);
-
-    //    selectField = FindAnyObjectByType<SelectField>();
-    //    allFields = FindObjectsByType<PlayerField>(FindObjectsSortMode.None);
-
-    //    Server_PlayerInitialize();
-
-    //    gameState.Server_SetState<SelectObjectState>();
-    //}
 
     #region NotUseCallBack
     public void OnConnectedToServer(NetworkRunner runner)

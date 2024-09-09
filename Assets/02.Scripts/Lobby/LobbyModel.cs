@@ -9,11 +9,11 @@ public class LobbyModel : NetworkBehaviour
     [Networked, Capacity(8), OnChangedRender(nameof(PlayerInfosChanged))]
     private NetworkDictionary<PlayerRef, PlayerInfo> PlayerDictionary => default; // PlayerRef를 키로 사용하는 딕셔너리로 플레이어 정보 관리
 
-    private Action OnPlayerInfosChanged;
+    private Action OnPlayerInfoChangedRender;
 
     public void Initialize(Action action)
     {
-        OnPlayerInfosChanged = action;
+        OnPlayerInfoChangedRender = action;
     }
 
     public void AddPlayer(PlayerRef playerRef, PlayerInfo playerInfo)
@@ -52,6 +52,6 @@ public class LobbyModel : NetworkBehaviour
 
     public void PlayerInfosChanged()
     {
-        OnPlayerInfosChanged?.Invoke();
+        OnPlayerInfoChangedRender?.Invoke();
     }
 }

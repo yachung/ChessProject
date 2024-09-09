@@ -28,7 +28,7 @@ public class PregameState : StateBehaviour
 
     protected override void OnEnterStateRender()
     {
-        _lobbyPresenter.Initialize();
+        //_lobbyPresenter.Initialize();
         //uiRoom.Initialize(Runner);
         //GameManager.Instance.OnPlayerInfosChanged();
     }
