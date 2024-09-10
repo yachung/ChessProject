@@ -12,14 +12,11 @@ public class LobbyView : MonoBehaviour
     [SerializeField] public Button btn_Start;
     [SerializeField] private PlayerInfoCell[] playerInfoCells;
 
-    private void Awake()
+    public void Initialize(bool isHost)
     {
         foreach (var cell in playerInfoCells)
             cell.gameObject.SetActive(false);
-    }
 
-    public void Initialize(bool isHost)
-    {
         gameObject.SetActive(true);
         btn_Start.gameObject.SetActive(isHost);
     }

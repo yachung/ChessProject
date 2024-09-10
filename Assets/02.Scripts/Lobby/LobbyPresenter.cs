@@ -7,16 +7,10 @@ using VContainer;
 
 public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 {
-    [Inject] private SceneLoader _sceneLoader;
-    [Inject] private LobbyModel _model;
-    [Inject] private LobbyView _view;
+    [Inject] private readonly GameManager _gameManager;
+    [Inject] private readonly LobbyModel _model;
+    [Inject] private readonly LobbyView _view;
 
-    //public void Construct(LobbyModel model, LobbyView view, SceneLoader sceneLoader)
-    //{
-    //    _model = model;
-    //    _view = view;
-    //    _sceneLoader = sceneLoader;
-    //}
 
     public void Start()
     {
@@ -26,13 +20,16 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         _view.btn_Start.onClick.AddListener(() => OnGameStarted());
     }
 
-    public override void Spawned()
+    public void Initialize()
     {
-        Runner.AddCallbacks(this);
-
         _view.Initialize(Runner.IsServer);
 
         UpdateUI();
+    }
+
+    public override void Spawned()
+    {
+        Runner.AddCallbacks(this);
     }
 
     public void UpdateUI()
@@ -74,7 +71,9 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
 
-        _sceneLoader.Server_OnGameStarted(Runner);
+        _view.gameObject.SetActive(false);
+
+        _gameManager.GamePlayStart(Runner);
     }
 
     #region NotUseCallBack

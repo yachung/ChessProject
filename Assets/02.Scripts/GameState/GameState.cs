@@ -16,14 +16,19 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
     [Networked] int DelayedStateId { get; set; }
 
     [Header("Game States Reference")]
-    public StateBehaviour[] States;
-    //public PregameState pregameState;               // 게임 로비
-    //public BattleReadyState battleReadyState;       // 전투전 기물 구매 및 진형 구성
-    //public BattleState battleState;                 // 전투
-    //public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
-    //public WinState winState;                       // 게임 승리
+    //public StateBehaviour[] States;
+    public PregameState pregameState;               // 게임 로비
+    public BattleReadyState battleReadyState;       // 전투전 기물 구매 및 진형 구성
+    public BattleState battleState;                 // 전투
+    public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
+    public WinState winState;                       // 게임 승리
 
     private StateMachine<StateBehaviour> stateMachine;
+
+    public override void Spawned()
+    {
+        Debug.Log($"{name} is Spawned");
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -53,7 +58,7 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {
-        stateMachine = new StateMachine<StateBehaviour>("Game State", States);
+        stateMachine = new StateMachine<StateBehaviour>("Game State", pregameState, battleReadyState, battleState, selectObjectState, winState);
         stateMachines.Add(stateMachine);
     }
 }

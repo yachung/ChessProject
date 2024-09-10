@@ -5,15 +5,35 @@ using Fusion.Addons.FSM;
 
 public class BattleReadyState : StateBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override bool CanEnterState()
     {
-        
+        return base.CanEnterState();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void OnEnterState()
     {
-        
+        base.OnEnterState();
+
+
+    }
+
+    protected override void OnEnterStateRender()
+    {
+        base.OnEnterStateRender();
+    }
+
+    protected override bool CanExitState(StateBehaviour nextState)
+    {
+        return base.CanExitState(nextState);
+    }
+
+    protected override void OnExitState()
+    {
+        base.OnExitState();
+    }
+
+    protected override void OnExitStateRender()
+    {
+        base.OnExitStateRender();
     }
 }

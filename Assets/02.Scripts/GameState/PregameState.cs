@@ -4,13 +4,9 @@ using VContainer;
 
 public class PregameState : StateBehaviour
 {
-    private LobbyPresenter _lobbyPresenter;
+    [Inject] private readonly LobbyPresenter _lobbyPresenter;
+    [Inject] private readonly GameManager _gameManager;
 
-    [Inject]
-    public void Constructor(LobbyPresenter lobbyPresenter)
-    {
-        _lobbyPresenter = lobbyPresenter;
-    }
 
     protected override bool CanEnterState()
     {
@@ -23,23 +19,10 @@ public class PregameState : StateBehaviour
     protected override void OnEnterState()
     {
         Debug.LogWarning($"EnterState PregameState");
-
     }
 
     protected override void OnEnterStateRender()
     {
-        //_lobbyPresenter.Initialize();
-        //uiRoom.Initialize(Runner);
-        //GameManager.Instance.OnPlayerInfosChanged();
-    }
-
-    protected override bool CanExitState(StateBehaviour nextState)
-    {
-        return base.CanExitState(nextState);
-    }
-
-    protected override void OnExitState()
-    {
-        base.OnExitState();
+        _lobbyPresenter.Initialize();
     }
 }

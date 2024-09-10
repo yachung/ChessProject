@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using Fusion;
 using System;
+using VContainer;
+using VContainer.Unity;
 
 public class SceneLoader
 {
@@ -10,20 +12,24 @@ public class SceneLoader
         InGame = 1,
     }
 
-    public async void Server_OnGameStarted(NetworkRunner runner, Action callBack = null)
+    [Inject] private readonly LifetimeScope parent;
+
+    public async void Server_OnGameStarted(NetworkRunner runner, Action sceneLoadComplete = null)
     {
         if (!runner.IsSceneAuthority)
             return;
 
         await Server_LoadSceneAsync(runner, SceneType.InGame);
 
-        callBack?.Invoke();
-        //gameState.Server_SetState<SelectObjectState>();
+        sceneLoadComplete?.Invoke();
     }
 
     public async UniTask Server_LoadSceneAsync(NetworkRunner runner, SceneType sceneType)
     {
-        if (runner.IsSceneAuthority)
+        if (!runner.IsSceneAuthority)
+            return;
+
+        using (LifetimeScope.EnqueueParent(parent))
         {
             SceneRef sceneRef = SceneRef.FromIndex((int)sceneType);
             await runner.LoadScene(sceneRef);

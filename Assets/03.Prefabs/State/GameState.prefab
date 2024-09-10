@@ -110,7 +110,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57424f9fe26d228478bc837d961a8bc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  States: []
+  pregameState: {fileID: 0}
+  battleReadyState: {fileID: 0}
+  battleState: {fileID: 0}
+  selectObjectState: {fileID: 0}
+  winState: {fileID: 0}
 --- !u!114 &1517103511679265875
 MonoBehaviour:
   m_ObjectHideFlags: 0
