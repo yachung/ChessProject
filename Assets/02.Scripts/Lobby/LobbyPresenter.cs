@@ -67,11 +67,14 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         UpdateUI();
     }
 
+    public void DeInitialize()
+    {
+        _view.gameObject.SetActive(false);
+    }
+
     public void OnGameStarted()
     {
         Debug.Log("GameStart");
-
-        _view.gameObject.SetActive(false);
 
         _gameManager.GamePlayStart(Runner);
     }

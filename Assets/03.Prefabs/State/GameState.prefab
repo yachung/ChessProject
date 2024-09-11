@@ -73,7 +73,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6724422466428728508}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -110,11 +110,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57424f9fe26d228478bc837d961a8bc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pregameState: {fileID: 0}
-  battleReadyState: {fileID: 0}
-  battleState: {fileID: 0}
-  selectObjectState: {fileID: 0}
-  winState: {fileID: 0}
+  pregameState: {fileID: 5053769458404963006}
+  battleReadyState: {fileID: 7809167953930163758}
+  battleState: {fileID: 4115973630270223041}
+  selectObjectState: {fileID: 3817810496957333227}
+  winState: {fileID: 1020987987254388529}
 --- !u!114 &1517103511679265875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 4812473408430959215}
   - component: {fileID: 5053769458404963006}
   m_Layer: 0
-  m_Name: PregameState
+  m_Name: LobbyState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

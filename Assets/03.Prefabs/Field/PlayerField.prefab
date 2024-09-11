@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2406024630105093894}
   - component: {fileID: 4342542904211711005}
+  - component: {fileID: 543351538438403920}
   m_Layer: 0
   m_Name: PlayerField
   m_TagString: Untagged
@@ -46,6 +47,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe5a0376390609e47b1bb260e4ca38fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridStartingPoint: {fileID: 2631708722318533972}
+  cameraPosition: {x: 0, y: 0, z: 0}
+  refTransform: {fileID: 0}
+  spawnPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &543351538438403920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2842192138319603395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3628821167
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 4342542904211711005}
 --- !u!1 &3231432796764327027
 GameObject:
   m_ObjectHideFlags: 0
