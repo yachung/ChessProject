@@ -146,26 +146,27 @@ public class PlayerField : NetworkBehaviour
     #region Coordinate Calculate
     public Vector2Int CalculateCoordinate(Vector3 inputPosition)
     {
-        return GetHexCoordinate(InputPositionToWorldPosition(inputPosition));
+        //return GetHexCoordinate(InputPositionToWorldPosition(inputPosition));
+        return GetHexCoordinate(inputPosition);
     }
 
-    public Vector3 InputPositionToWorldPosition(Vector3 inputPosition)
-    {
-        // 그리드가 위치한 평면을 정의 (y=height 평면)
-        Plane gridPlane = new Plane(Vector3.up, this.transform.position);
+    //public Vector3 InputPositionToWorldPosition(Vector3 inputPosition)
+    //{
+    //    // 그리드가 위치한 평면을 정의 (y=height 평면)
+    //    Plane gridPlane = new Plane(Vector3.up, this.transform.position);
 
-        // 마우스 위치로부터 Ray 생성
-        Ray ray = mainCamera.ScreenPointToRay(inputPosition);
+    //    // 마우스 위치로부터 Ray 생성
+    //    Ray ray = mainCamera.ScreenPointToRay(inputPosition);
 
-        // Ray와 평면의 교차점 계산
-        if (gridPlane.Raycast(ray, out float distance))
-        {
-            // Ray와 평면이 교차하는 지점의 월드 좌표 반환
-            return ray.GetPoint(distance);
-        }
+    //    // Ray와 평면의 교차점 계산
+    //    if (gridPlane.Raycast(ray, out float distance))
+    //    {
+    //        // Ray와 평면이 교차하는 지점의 월드 좌표 반환
+    //        return ray.GetPoint(distance);
+    //    }
 
-        return Vector3.zero;  // 실패한 경우 기본값 반환
-    }
+    //    return Vector3.zero;  // 실패한 경우 기본값 반환
+    //}
 
     private Vector2Int GetHexCoordinate(Vector3 worldPosition)
     {

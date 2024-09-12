@@ -16,7 +16,6 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
     [Networked] int DelayedStateId { get; set; }
 
     [Header("Game States Reference")]
-    //public StateBehaviour[] States;
     public PregameState pregameState;               // 게임 로비
     public BattleReadyState battleReadyState;       // 전투전 기물 구매 및 진형 구성
     public BattleState battleState;                 // 전투
@@ -55,6 +54,11 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
         Delay = TickTimer.CreateFromSeconds(Runner, delay);
         DelayedStateId = stateMachine.GetState<T>().StateId;
     }
+
+    //public void NextStateTransition()
+    //{
+    //    stateMachine.
+    //}
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {

@@ -33,10 +33,21 @@ public class GameManager : MonoBehaviour
         foreach (var player in runner.ActivePlayers)
         {
             NetworkObject networkObject = runner.Spawn(NetworkPlayerPref, Vector3.zero, Quaternion.identity, player);
-            networkObject.GetComponent<Player>().Initialize(playerFields[index]);
+            networkObject.GetComponent<Player>().RPC_PlayerFieldInitialize(playerFields[index]);
             runner.SetPlayerObject(player, networkObject);
 
             allPlayers.Add(player, networkObject.GetComponent<Player>());
         }
+    }
+
+
+    /// <summary>
+    /// Only Test Method
+    /// Next State
+    /// </summary>
+    private void OnGUI()
+    {
+        //if (GUI.Button(new Rect(Screen.width, Screen.height, 200, 40), "Next State"))
+        //    StartGame(GameMode.AutoHostOrClient);
     }
 }

@@ -4,19 +4,17 @@ using VContainer;
 
 public class Player : NetworkBehaviour
 {
-    //[Inject] private readonly GameManager _gameManager;
-
     private PlayerInfo playerInfo;
     private NetworkTransform controller;
     public PlayerField playerField { get; private set; }
-    private InputManager inputManager;
+    //private InputManager inputManager;
 
     [Networked] public NetworkButtons ButtonsPrevious { get; set; }
 
 
     private void Awake()
     {
-        inputManager = GetComponentInChildren<InputManager>();
+        //inputManager = GetComponentInChildren<InputManager>();
         controller = GetComponent<NetworkTransform>();
     }
 
@@ -24,20 +22,14 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
         {
-            Runner.AddCallbacks(inputManager);
-            RPC_PlayerFieldInitialize(Runner.LocalPlayer, playerField);
+            //Runner.AddCallbacks(inputManager);
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_PlayerFieldInitialize(PlayerRef player, PlayerField localField)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_PlayerFieldInitialize(PlayerField localField)
     {
-        //localField = _gameManager.allPlayers[player].playerField;
-    }
-
-    public void Initialize(PlayerField playerField)
-    {
-        this.playerField = playerField;
+        playerField = localField;
     }
 
     public override void FixedUpdateNetwork()
@@ -75,12 +67,8 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void OnMove(Vector2 inputPosition)
+    private void OnMove(Vector3 destination)
     {
-        if (!HasInputAuthority)
-            return;
-
-        var destination = playerField.InputPositionToWorldPosition(inputPosition);
         controller.Teleport(destination);
 
         Debug.Log("OnMove");

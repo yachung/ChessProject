@@ -15,5 +15,7 @@ public class MainLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<BattleReadyState>();
         builder.RegisterComponentInHierarchy<BattleState>();
         builder.RegisterComponentInHierarchy<WinState>();
+
+        builder.RegisterComponentInHierarchy<StateView>();
     }
 }
