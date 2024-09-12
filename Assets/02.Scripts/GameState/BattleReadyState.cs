@@ -13,13 +13,16 @@ public class BattleReadyState : StateBehaviour
     protected override void OnEnterState()
     {
         base.OnEnterState();
-
-
     }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
+    }
+
+    protected override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
     }
 
     protected override bool CanExitState(StateBehaviour nextState)

@@ -2,7 +2,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 
-public class StateView : MonoBehaviour
+public class GameView : MonoBehaviour
 {
     [SerializeField] TMP_Text txt_RemainTime;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -9,7 +9,9 @@ namespace Fusion.Addons.FSM
 {
 	public interface IStateMachineOwner
 	{
-		void CollectStateMachines(List<IStateMachine> stateMachines);
+        void Server_SetState<T>() where T : StateBehaviour;
+        void Server_DelaySetState<T>(float delay) where T : StateBehaviour;
+        void CollectStateMachines(List<IStateMachine> stateMachines);
 	}
 
 	[DisallowMultipleComponent]

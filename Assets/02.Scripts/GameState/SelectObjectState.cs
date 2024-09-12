@@ -18,29 +18,25 @@ public class SelectObjectState : StateBehaviour
 
     protected override void OnEnterState()
     {
-        Debug.Log($"{gameObject.name} is Enter STate");
-
-        UniTask.WaitForSeconds(100);
-
         base.OnEnterState();
-    }
 
-    //private async UniTask ChangeState()
-    //{
-    //    await UniTask.WaitForSeconds(100);
-    //    Machine.
-    //}
+        Debug.Log($"{gameObject.name} is Enter State");
+
+        //StateManager.Server_DelaySetState<BattleReadyState>(stateDuration);
+    }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
+        StateManager.Server_DelaySetState<BattleReadyState>(5f);
 
         _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
     }
 
     protected override bool CanExitState(StateBehaviour nextState)
     {
-        return Machine.StateTime > stateDuration;
+        //return Machine.StateTime > stateDuration;
+        return true;
     }
 
     protected override void OnExitState()

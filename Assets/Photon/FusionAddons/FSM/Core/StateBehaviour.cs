@@ -10,8 +10,8 @@ namespace Fusion.Addons.FSM
 	public abstract class StateBehaviour<TState> : NetworkBehaviour, IState, IOwnedState<TState> where TState : StateBehaviour<TState>
 	{
 		// PUBLIC MEMBERS
-
-		public int                  StateId    { get; set; }
+        public IStateMachineOwner   StateManager { get; set; }
+        public int                  StateId    { get; set; }
 		public StateMachine<TState> Machine    { get; set; }
 		public virtual string       Name       => gameObject.name;
 		public int                  Priority   => _priority;

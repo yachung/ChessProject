@@ -1,12 +1,13 @@
 using Fusion;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 /// <summary>
 /// Handles the main state of the game and contains the networked FSM.
 /// </summary>
-public class GameState : NetworkBehaviour, IStateMachineOwner
+public class GameStateManager : NetworkBehaviour, IStateMachineOwner
 {
     public StateBehaviour ActiveState => stateMachine.ActiveState;
     //public bool AllowInput => stateMachine.ActiveStateId == playState.StateId || stateMachine.ActiveStateId == pregameState.StateId;
@@ -17,9 +18,9 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
 
     [Header("Game States Reference")]
     public PregameState pregameState;               // 게임 로비
+    public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
     public BattleReadyState battleReadyState;       // 전투전 기물 구매 및 진형 구성
     public BattleState battleState;                 // 전투
-    public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
     public WinState winState;                       // 게임 승리
 
     private StateMachine<StateBehaviour> stateMachine;
@@ -31,6 +32,8 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
 
     public override void FixedUpdateNetwork()
     {
+        Debug.Log($"remainTime : {Delay.RemainingTime(Runner)}");
+
         if (DelayedStateId >= 0 && Delay.ExpiredOrNotRunning(Runner))
         {
             stateMachine.ForceActivateState(DelayedStateId);
@@ -55,14 +58,27 @@ public class GameState : NetworkBehaviour, IStateMachineOwner
         DelayedStateId = stateMachine.GetState<T>().StateId;
     }
 
-    //public void NextStateTransition()
-    //{
-    //    stateMachine.
-    //}
-
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {
-        stateMachine = new StateMachine<StateBehaviour>("Game State", pregameState, battleReadyState, battleState, selectObjectState, winState);
+        stateMachine = new StateMachine<StateBehaviour>("Game State", pregameState, selectObjectState, battleReadyState, battleState, winState);
+        
+        foreach (var state in stateMachine.States)
+            state.StateManager = this;
+
         stateMachines.Add(stateMachine);
+
+        // Host가 Start버튼 누르면
+        pregameState.AddTransition(selectObjectState, () => true);
+        // Timer 체크
+        selectObjectState.AddTransition(battleReadyState, () => true);
+        // Timer 체크
+        battleReadyState.AddTransition(battleState, () => true);
+        // Timer 체크
+        battleState.AddTransition(battleReadyState, () => true);
+        // Timer 체크, 스테이지 마지막 전투
+        battleState.AddTransition(selectObjectState, () => true);
+
+        // Player가 확인버튼 누르면
+        winState.AddTransition(pregameState, () => true);
     }
 }

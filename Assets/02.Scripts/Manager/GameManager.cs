@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 
+/// <summary>
+/// GamePresenter?
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
-    [Inject] private readonly GameState gameState;
+    [Inject] private readonly GameStateManager gameState;
 
     public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
 
@@ -39,7 +42,6 @@ public class GameManager : MonoBehaviour
             allPlayers.Add(player, networkObject.GetComponent<Player>());
         }
     }
-
 
     /// <summary>
     /// Only Test Method
