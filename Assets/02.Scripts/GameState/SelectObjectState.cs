@@ -9,7 +9,7 @@ public class SelectObjectState : StateBehaviour
     [Inject] private readonly GameManager _gameManager;
     [Inject] private readonly SelectField _selectField;
 
-    private float stateDuration;
+    [SerializeField] private float stateDuration;
 
     protected override bool CanEnterState()
     {
@@ -22,13 +22,14 @@ public class SelectObjectState : StateBehaviour
 
         Debug.Log($"{gameObject.name} is Enter State");
 
+        StateManager.SetTransitionTimer(stateDuration);
         //StateManager.Server_DelaySetState<BattleReadyState>(stateDuration);
     }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
-        StateManager.Server_DelaySetState<BattleReadyState>(5f);
+        //StateManager.Server_DelaySetState<BattleReadyState>(5f);
 
         _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
     }

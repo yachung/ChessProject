@@ -1,12 +1,14 @@
 using Fusion;
+using Michsky.MUIP;
 using TMPro;
 using UnityEngine;
 
 public class GameView : MonoBehaviour
 {
     [SerializeField] TMP_Text txt_RemainTime;
+    [SerializeField] public ProgressBar progressBar;
 
-    [Networked, OnChangedRender(nameof(RemainTimeChanged))] float remainTime { get; set; }
+    float remainTime { get; set; }
 
     private void RemainTimeChanged()
     {

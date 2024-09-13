@@ -9,8 +9,11 @@ namespace Fusion.Addons.FSM
 
 	public abstract class StateBehaviour<TState> : NetworkBehaviour, IState, IOwnedState<TState> where TState : StateBehaviour<TState>
 	{
-		// PUBLIC MEMBERS
+        // Add Variables
         public IStateMachineOwner   StateManager { get; set; }
+        public float StateDuration {  get; set; }
+
+        // PUBLIC MEMBERS
         public int                  StateId    { get; set; }
 		public StateMachine<TState> Machine    { get; set; }
 		public virtual string       Name       => gameObject.name;

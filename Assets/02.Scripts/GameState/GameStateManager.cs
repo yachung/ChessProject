@@ -1,8 +1,9 @@
 using Fusion;
 using Fusion.Addons.FSM;
+using System;
 using System.Collections.Generic;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
+using VContainer;
 
 /// <summary>
 /// Handles the main state of the game and contains the networked FSM.
@@ -16,6 +17,16 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
     [Networked] TickTimer Delay { get; set; }
     [Networked] int DelayedStateId { get; set; }
 
+    [Networked] public TickTimer TransitionTimer { get; set; }
+
+    private float stateDuration;
+
+    public float RemainingTimePercentage => (float)TransitionTimer.RemainingTime(Runner) / stateDuration * 100;
+
+    private int stageIndex;
+    private int roundIndex;
+    public string StageName => $"{stageIndex} - {roundIndex}";
+
     [Header("Game States Reference")]
     public PregameState pregameState;               // 게임 로비
     public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
@@ -24,6 +35,7 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
     public WinState winState;                       // 게임 승리
 
     private StateMachine<StateBehaviour> stateMachine;
+    public bool IsGameStarted { get; set; }
 
     public override void Spawned()
     {
@@ -68,17 +80,29 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
         stateMachines.Add(stateMachine);
 
         // Host가 Start버튼 누르면
-        pregameState.AddTransition(selectObjectState, () => true);
+        pregameState.AddTransition(selectObjectState, () => IsGameStarted);
         // Timer 체크
-        selectObjectState.AddTransition(battleReadyState, () => true);
+        selectObjectState.AddTransition(battleReadyState, () => TransitionTimer.Expired(Runner));
         // Timer 체크
-        battleReadyState.AddTransition(battleState, () => true);
+        battleReadyState.AddTransition(battleState, () => TransitionTimer.Expired(Runner));
         // Timer 체크
-        battleState.AddTransition(battleReadyState, () => true);
-        // Timer 체크, 스테이지 마지막 전투
-        battleState.AddTransition(selectObjectState, () => true);
+        battleState.AddTransition(battleReadyState, () => TransitionTimer.Expired(Runner));
+
+        //Timer 체크, 스테이지 마지막 전투
+        //battleState.AddTransition(selectObjectState, () => TransitionTimer.Expired(Runner) && );
 
         // Player가 확인버튼 누르면
-        winState.AddTransition(pregameState, () => true);
+        //winState.AddTransition(pregameState, () => true);
     }
+
+    public void SetTransitionTimer(float delay)
+    {
+        stateDuration = delay;
+        TransitionTimer = TickTimer.CreateFromSeconds(Runner, stateDuration);
+    }
+
+    //public void TimerPause()
+    //{
+    //    _transitionTimer.
+    //}
 }

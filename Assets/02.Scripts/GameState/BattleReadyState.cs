@@ -5,6 +5,8 @@ using Fusion.Addons.FSM;
 
 public class BattleReadyState : StateBehaviour
 {
+    [SerializeField] private float stateDuration;
+
     protected override bool CanEnterState()
     {
         return base.CanEnterState();
@@ -13,6 +15,7 @@ public class BattleReadyState : StateBehaviour
     protected override void OnEnterState()
     {
         base.OnEnterState();
+        StateManager.SetTransitionTimer(stateDuration);
     }
 
     protected override void OnEnterStateRender()
