@@ -5,15 +5,13 @@ using Fusion.Addons.FSM;
 
 public class WinState : StateBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void OnEnterState()
     {
-
+        base.OnEnterState();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void OnEnterStateRender()
     {
-
+        base.OnEnterStateRender();
     }
 }

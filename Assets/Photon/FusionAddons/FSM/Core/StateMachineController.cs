@@ -9,8 +9,6 @@ namespace Fusion.Addons.FSM
 {
 	public interface IStateMachineOwner
 	{
-        void Server_SetState<T>() where T : StateBehaviour;
-        void Server_DelaySetState<T>(float delay) where T : StateBehaviour;
         void CollectStateMachines(List<IStateMachine> stateMachines);
         void SetTransitionTimer(float delay);
 	}

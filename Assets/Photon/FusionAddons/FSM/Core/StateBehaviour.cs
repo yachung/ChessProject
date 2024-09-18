@@ -3,15 +3,13 @@ using UnityEngine;
 
 namespace Fusion.Addons.FSM
 {
-	public abstract class StateBehaviour : StateBehaviour<StateBehaviour>
+    public abstract class StateBehaviour : StateBehaviour<StateBehaviour>
 	{
 	}
 
 	public abstract class StateBehaviour<TState> : NetworkBehaviour, IState, IOwnedState<TState> where TState : StateBehaviour<TState>
-	{
-        // Add Variables
-        public IStateMachineOwner   StateManager { get; set; }
-        public float StateDuration {  get; set; }
+    {
+        public IStateMachineOwner Owner;
 
         // PUBLIC MEMBERS
         public int                  StateId    { get; set; }

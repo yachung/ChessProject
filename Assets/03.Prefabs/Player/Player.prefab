@@ -259,7 +259,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6312573360258431772}
-  - component: {fileID: -8340952017321808764}
+  - component: {fileID: 63317568484707152}
   - component: {fileID: 4751189913694352309}
   - component: {fileID: -2495000140904568558}
   m_Layer: 0
@@ -285,7 +285,7 @@ Transform:
   - {fileID: 5015947614135816996}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-8340952017321808764
+--- !u!114 &63317568484707152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -314,7 +314,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: -8340952017321808764}
+  - {fileID: 63317568484707152}
   - {fileID: -2495000140904568558}
 --- !u!114 &-2495000140904568558
 MonoBehaviour:

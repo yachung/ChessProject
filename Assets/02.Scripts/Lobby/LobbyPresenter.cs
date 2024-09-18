@@ -8,21 +8,21 @@ using VContainer;
 public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 {
     [Inject] private readonly GameManager _gameManager;
-    [Inject] private readonly LobbyModel _model;
-    [Inject] private readonly LobbyView _view;
+    [Inject] private readonly LobbyModel _lobbyModel;
+    [Inject] private readonly LobbyView _lobbyView;
 
 
     public void Start()
     {
         Debug.Log("Lobby Presenter Initialize");
 
-        _model.Initialize(PlayerInfoChangeCallback);
-        _view.btn_Start.onClick.AddListener(() => OnGameStarted());
+        _lobbyModel.Initialize(PlayerInfoChangeCallback);
+        _lobbyView.btn_Start.onClick.AddListener(() => OnGameStarted());
     }
 
     public void Initialize()
     {
-        _view.Initialize(Runner.IsServer);
+        _lobbyView.Initialize(Runner.IsServer);
 
         UpdateUI();
     }
@@ -34,8 +34,8 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void UpdateUI()
     {
-        _view.DisplayPlayerCount(_model.PlayerCount);
-        _view.ShowPlayerList(_model.GetAllPlayers());
+        _lobbyView.DisplayPlayerCount(_lobbyModel.PlayerCount);
+        _lobbyView.ShowPlayerList(_lobbyModel.GetAllPlayers());
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -50,7 +50,7 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
                 Name = player.ToString()
             };
 
-            _model.AddPlayer(player, playerInfo);
+            _lobbyModel.AddPlayer(player, playerInfo);
         }
     }
 
@@ -58,7 +58,7 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            _model.RemovePlayer(player);
+            _lobbyModel.RemovePlayer(player);
         }
     }
 
@@ -69,7 +69,7 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void DeInitialize()
     {
-        _view.gameObject.SetActive(false);
+        _lobbyView.gameObject.SetActive(false);
     }
 
     public void OnGameStarted()

@@ -11,11 +11,15 @@ public class MainLifeTimeScope : LifetimeScope
 
         builder.RegisterComponentInHierarchy<SelectField>();
 
+        builder.Register<StageStateBehaviour>(Lifetime.Scoped);
+
         builder.RegisterComponentInHierarchy<SelectObjectState>();
         builder.RegisterComponentInHierarchy<BattleReadyState>();
         builder.RegisterComponentInHierarchy<BattleState>();
         builder.RegisterComponentInHierarchy<WinState>();
 
-        builder.RegisterComponentInHierarchy<GameView>();
+        builder.RegisterComponentInHierarchy<StagePresenter>();
+        builder.RegisterComponentInHierarchy<StageView>();
+        builder.RegisterComponentInHierarchy<StageModel>();
     }
 }
