@@ -4,6 +4,8 @@ using VContainer.Unity;
 
 public class MainLifeTimeScope : LifetimeScope
 {
+    [SerializeField] private StageDurationConfig stageDurationConfig;
+
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterComponentInHierarchy<GameManager>();
@@ -12,6 +14,7 @@ public class MainLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<SelectField>();
 
         builder.Register<StageStateBehaviour>(Lifetime.Scoped);
+        builder.RegisterInstance(stageDurationConfig);
 
         builder.RegisterComponentInHierarchy<SelectObjectState>();
         builder.RegisterComponentInHierarchy<BattleReadyState>();

@@ -13,16 +13,14 @@ public class PlayerField : NetworkBehaviour
     public Transform refTransform;
     public Vector3 spawnPosition;
 
-    private Camera mainCamera;
-    private Vector3 defaultCameraPosition = new Vector3(3, 45, -55);
+    //private Camera mainCamera;
     private Vector3 gridOffset;
     private Vector2 hexSize = new Vector2(13f, 15f);
 
     private void Awake()
     {
-        mainCamera = Camera.main;
         refTransform = transform;
-        cameraPosition = defaultCameraPosition + transform.position;
+        cameraPosition = Camera.main.transform.position + transform.position;
         gridOffset = gridStartingPoint.position;
     }
 

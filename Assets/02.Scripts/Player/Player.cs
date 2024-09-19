@@ -5,17 +5,17 @@ using VContainer;
 public class Player : NetworkBehaviour
 {
     private PlayerInfo playerInfo;
-    private NetworkTransform controller;
+    private NetworkTransform netTransform;
     public PlayerField playerField { get; private set; }
-    //private InputManager inputManager;
+    private Camera mainCamera;
 
     [Networked] public NetworkButtons ButtonsPrevious { get; set; }
 
 
     private void Awake()
     {
-        //inputManager = GetComponentInChildren<InputManager>();
-        controller = GetComponent<NetworkTransform>();
+        mainCamera = Camera.main;
+        netTransform = GetComponent<NetworkTransform>();
     }
 
     public override void Spawned()
@@ -26,10 +26,10 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_PlayerFieldInitialize(PlayerField localField)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_PlayerFieldInitialize(PlayerField playerField)
     {
-        playerField = localField;
+        this.playerField = playerField;
     }
 
     public override void FixedUpdateNetwork()
@@ -69,20 +69,33 @@ public class Player : NetworkBehaviour
 
     private void OnMove(Vector3 destination)
     {
-        controller.Teleport(destination);
+        netTransform.Teleport(destination);
 
         Debug.Log("OnMove");
     }
 
-    public void MoveToPlayerField()
+    public void MoveToPlayerField(PlayerField playerField)
     {
-        controller.Teleport(playerField.transform.position);
+        PlayerTeleport(playerField.transform.position);
+        RPC_PlayerTeleport(playerField);
+        //mainCamera.transform.position = playerField.cameraPosition;
     }
 
     public void PlayerTeleport(Vector3 position)
     {
-        Debug.Log($"Teleport is {name}: {position}");
+        if (Runner.IsServer)
+        {
+            Debug.Log($"Teleport is {name}: {position}");
 
-        controller.Teleport(position);
+            netTransform.Teleport(position);
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_PlayerTeleport(PlayerField playerField)
+    {
+        //PlayerTeleport(playerField.transform.position);
+
+        mainCamera.transform.position = playerField.cameraPosition;
     }
 }

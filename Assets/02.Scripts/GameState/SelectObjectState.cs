@@ -11,15 +11,15 @@ public class SelectObjectState : StageStateBehaviour
 
     protected override bool CanEnterState()
     {
-        bool result = false;
+        bool result = base.CanEnterState();
 
-        switch (Machine.PreviousState)
+        switch (Machine.ActiveState)
         {
             case PregameState:
-                result = true;
+                result &= true;
                 break;
             case BattleState:
-                result = _stagePresenter.IsLastRound();
+                result &= _stagePresenter.IsLastRound();
                 break;
         }
 
@@ -31,22 +31,29 @@ public class SelectObjectState : StageStateBehaviour
         base.OnEnterState();
 
         Debug.Log($"{gameObject.name} is Enter State");
+
+        _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
     }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
+    }
 
-        _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
+    protected override void OnExitState()
+    {
+        base.OnExitState();
+
+        foreach (var player in _gameManager.allPlayers.Values)
+        {
+            player.MoveToPlayerField(player.playerField);
+        }
     }
 
     protected override void OnExitStateRender()
     {
         base.OnExitStateRender();
 
-        foreach (var player in _gameManager.allPlayers.Values)
-        {
-            player.MoveToPlayerField();
-        }
+        
     }
 }

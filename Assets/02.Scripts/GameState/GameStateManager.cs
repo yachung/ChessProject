@@ -10,8 +10,6 @@ using VContainer;
 /// </summary>
 public class GameStateManager : NetworkBehaviour, IStateMachineOwner
 {
-    [Inject] public readonly StagePresenter stagePresenter;
-
     public StateBehaviour ActiveState => stateMachine.ActiveState;
     //public bool AllowInput => stateMachine.ActiveStateId == playState.StateId || stateMachine.ActiveStateId == pregameState.StateId;
     public bool IsInGame => stateMachine.ActiveState is StageStateBehaviour;
@@ -25,19 +23,15 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
 
     private StateMachine<StateBehaviour> stateMachine;
 
-    [Networked] public TickTimer TransitionTimer { get; set; }
-    private float stateDuration;
-    public float RemainingTimePercentage => (float)TransitionTimer.RemainingTime(Runner) / stateDuration * 100;
-
     public bool IsGameStarted { get; set; }
 
-    public override void FixedUpdateNetwork()
-    {
-        if (TransitionTimer.IsRunning)
-        {
-            stagePresenter.UpdateProgressBar(RemainingTimePercentage);
-        }
-    }
+    /// <summary>
+    /// Proxy에서 허용되지 않음
+    /// </summary>
+    //public override void FixedUpdateNetwork()
+    //{
+    //    RemainingTimePercentage = (float)TransitionTimer.RemainingTime(Runner) / stateDuration * 100;
+    //}
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {
@@ -49,27 +43,23 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
         {
             state.Owner = this;
 
-            // Player가 확인버튼 누르면
-            if (state is StageStateBehaviour)
-                state.AddTransition(winState, () => !IsGameStarted);
+            // 승리 조건
+            if (state is StageStateBehaviour && state is not WinState)
+            {
+                //state.AddTransition(winState, () => !IsGameStarted);
+            }
         }
 
         // Host가 Start버튼 누르면
-        pregameState.AddTransition(selectObjectState, () => IsGameStarted);
-        // Timer 체크
-        selectObjectState.AddTransition(battleReadyState, () => TransitionTimer.Expired(Runner));
-        // Timer 체크
-        battleReadyState.AddTransition(battleState, () => TransitionTimer.Expired(Runner));
-        // Timer 체크
-        battleState.AddTransition(battleReadyState, () => TransitionTimer.Expired(Runner));
+        pregameState.AddTransition(selectObjectState,       () => IsGameStarted);
+
+        selectObjectState.AddTransition(battleReadyState,   () => true);
+        battleReadyState.AddTransition(battleState,         () => true);
+        battleState.AddTransition(battleReadyState,         () => true);
+        battleState.AddTransition(selectObjectState,        () => true);
+        winState.AddTransition(pregameState,                () => !IsGameStarted);
 
         //Timer 체크, 스테이지 마지막 전투
         //battleState.AddTransition(selectObjectState, () => TransitionTimer.Expired(Runner) && );
-    }
-
-    public void SetTransitionTimer(float delay)
-    {
-        stateDuration = delay;
-        TransitionTimer = TickTimer.CreateFromSeconds(Runner, stateDuration);
     }
 }

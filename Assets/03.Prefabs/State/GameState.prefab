@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _priority: 0
   _checkPriorityOnExit: 1
+  stateDuration: 5
 --- !u!1 &6724422466428728508
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,9 +112,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pregameState: {fileID: 5053769458404963006}
+  selectObjectState: {fileID: 3817810496957333227}
   battleReadyState: {fileID: 7809167953930163758}
   battleState: {fileID: 4115973630270223041}
-  selectObjectState: {fileID: 3817810496957333227}
   winState: {fileID: 1020987987254388529}
 --- !u!114 &1517103511679265875
 MonoBehaviour:
@@ -183,8 +184,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cfee8f19bbbf3c4f8cc14ddd32ba130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _priority: 0
+  _priority: 1
   _checkPriorityOnExit: 1
+  stateDuration: 5
 --- !u!1 &7533256015857407490
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,6 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _priority: 0
   _checkPriorityOnExit: 1
+  stateDuration: 5
 --- !u!1 &8139520159796464907
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,8 +278,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d33eb05dcd8dd4a9adaef434304dde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _priority: 0
+  _priority: 2
   _checkPriorityOnExit: 1
+  stateDuration: 0
 --- !u!1 &8705418642135968949
 GameObject:
   m_ObjectHideFlags: 0

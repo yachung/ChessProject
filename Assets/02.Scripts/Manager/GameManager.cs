@@ -37,7 +37,7 @@ public class GameManager : NetworkBehaviour
         foreach (var player in runner.ActivePlayers)
         {
             NetworkObject networkObject = runner.Spawn(NetworkPlayerPref, Vector3.zero, Quaternion.identity, player);
-            networkObject.GetComponent<Player>().RPC_PlayerFieldInitialize(playerFields[index]);
+            networkObject.GetComponent<Player>().RPC_PlayerFieldInitialize(playerFields[index++]);
             runner.SetPlayerObject(player, networkObject);
 
             allPlayers.Add(player, networkObject.GetComponent<Player>());

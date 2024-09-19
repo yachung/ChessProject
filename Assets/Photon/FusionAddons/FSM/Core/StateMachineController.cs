@@ -10,7 +10,6 @@ namespace Fusion.Addons.FSM
 	public interface IStateMachineOwner
 	{
         void CollectStateMachines(List<IStateMachine> stateMachines);
-        void SetTransitionTimer(float delay);
 	}
 
 	[DisallowMultipleComponent]

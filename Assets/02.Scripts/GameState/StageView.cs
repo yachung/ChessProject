@@ -4,20 +4,34 @@ using TMPro;
 
 public class StageView : MonoBehaviour
 {
-    [SerializeField] public ProgressBar progressBar;
-    [SerializeField] public bool showProgress = true;
-    [SerializeField] public TMP_Text txt_CurrentStage;
+    [SerializeField] private ProgressBar progressBar;
+    [SerializeField] private TMP_Text txt_CurrentStage;
+    //[SerializeField] private bool showProgress = true;
+
+    private Transform refTransform;
+
+    private void Awake()
+    {
+        //refTransform = transform;
+    }
 
     public void DisplayStageName(string stageName)
     {
-        if (!string.IsNullOrEmpty(stageName))
-            return;
-        
         txt_CurrentStage.text = stageName;
     }
 
     public void UpdateProgressBar(float duration)
     {
-        progressBar.SetValue(duration);
+        progressBar.SetValue(duration * 100);
+    }
+
+    public void ShowUI()
+    {
+        transform.gameObject.SetActive(true);
+    }
+
+    public void HideUI()
+    {
+        transform.gameObject.SetActive(false);
     }
 }

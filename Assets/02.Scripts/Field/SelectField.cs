@@ -5,6 +5,7 @@ using UnityEngine;
 public class SelectField : MonoBehaviour
 {
     [SerializeField] private Transform[] spawnPositions;
+    private Vector3 DefaultCameraPosition = new Vector3(0, 45, -55);
 
     public void SetPlayerPosition(Player[] players)
     {
