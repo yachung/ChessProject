@@ -5,17 +5,14 @@ using VContainer;
 public class Player : NetworkBehaviour
 {
     private PlayerInfo playerInfo;
-    private NetworkTransform netTransform;
+    private PlayerController playerController;
     public PlayerField playerField { get; private set; }
     private Camera mainCamera;
-
-    [Networked] public NetworkButtons ButtonsPrevious { get; set; }
-
 
     private void Awake()
     {
         mainCamera = Camera.main;
-        netTransform = GetComponent<NetworkTransform>();
+        playerController = GetComponentInChildren<PlayerController>();
     }
 
     public override void Spawned()
@@ -32,70 +29,22 @@ public class Player : NetworkBehaviour
         this.playerField = playerField;
     }
 
-    public override void FixedUpdateNetwork()
-    {
-        if (GetInput(out NetworkInputData inputData))
-        {
-            if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isMove))
-            {
-                Debug.Log($"isMove WasPressed : {inputData.movePosition}");
-                OnMove(inputData.movePosition);
-            }
-
-            if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isDrag))
-            {
-                Debug.Log($"isDrag WasPressed : {inputData.movePosition}");
-            }
-
-            if (inputData.buttons.WasReleased(ButtonsPrevious, MyButtons.isDrag))
-            {
-                Debug.Log($"isDrag WasReleased : {inputData.movePosition}");
-                //OnMove(inputData.movePosition);
-            }
-
-            if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isRefresh))
-            {
-                Debug.Log($"isRefresh WasPressed");
-            }
-
-            if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isAddExp))
-            {
-                Debug.Log($"isAddExp WasPressed");
-            }
-
-            ButtonsPrevious = inputData.buttons;
-        }
-    }
-
-    private void OnMove(Vector3 destination)
-    {
-        netTransform.Teleport(destination);
-
-        Debug.Log("OnMove");
-    }
-
     public void MoveToPlayerField(PlayerField playerField)
     {
-        PlayerTeleport(playerField.transform.position);
-        RPC_PlayerTeleport(playerField);
-        //mainCamera.transform.position = playerField.cameraPosition;
+        PlayerTeleport(playerField.transform.position, playerField.cameraPosition);
     }
 
-    public void PlayerTeleport(Vector3 position)
+    public void PlayerTeleport(Vector3 position, Vector3 CameraPosition)
     {
-        if (Runner.IsServer)
-        {
-            Debug.Log($"Teleport is {name}: {position}");
+        playerController.PlayerTeleport(position);
 
-            netTransform.Teleport(position);
-        }
+        RPC_SetPlayerCamera(CameraPosition);
+
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_PlayerTeleport(PlayerField playerField)
+    public void RPC_SetPlayerCamera(Vector3 targetPosition)
     {
-        //PlayerTeleport(playerField.transform.position);
-
-        mainCamera.transform.position = playerField.cameraPosition;
+        mainCamera.transform.position = targetPosition;
     }
 }
