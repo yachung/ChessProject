@@ -2,7 +2,7 @@ using Fusion;
 using Fusion.Addons.FSM;
 using System.Collections.Generic;
 
-public class PlayerStateController : NetworkBehaviour, IStateMachineOwner
+public class PlayerStateMachine : NetworkBehaviour, IStateMachineOwner
 {
     private PlayerController _playerController;
 
