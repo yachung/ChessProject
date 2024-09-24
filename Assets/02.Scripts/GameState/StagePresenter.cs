@@ -10,9 +10,9 @@ public class StagePresenter : NetworkBehaviour
 
     private StageStateBehaviour ActiveStageState;
 
-    public void StageViewInitialize(StageStateBehaviour state)
+    public void StageViewInitialize(StageStateBehaviour stageState)
     {
-        if (model.GetStageDuration(state) > 0)
+        if (model.GetStageDuration(stageState) > 0)
             view.ShowUI();
         else
             view.HideUI();
@@ -31,11 +31,11 @@ public class StagePresenter : NetworkBehaviour
         }
     }
 
-    public void OnStageEnter(StageStateBehaviour state)
+    public void OnStageEnter(StageStateBehaviour stageState)
     {
-        ActiveStageState = state;
+        ActiveStageState = stageState;
 
-        switch (state)
+        switch (stageState)
         {
             case BattleReadyState:
                 if (IsLastRound())
@@ -53,12 +53,12 @@ public class StagePresenter : NetworkBehaviour
         view.DisplayStageName(model.StageName);
     }
 
-    public void UpdateProgressBar(StageStateBehaviour state)
+    public void UpdateProgressBar(StageStateBehaviour stageState)
     {
         if (!model.TransitionTimer.IsRunning)
             return;
 
-        float RemainTime = model.TransitionTimer.RemainingTime(Runner).GetValueOrDefault() / model.GetStageDuration(state);
+        float RemainTime = model.TransitionTimer.RemainingTime(Runner).GetValueOrDefault() / model.GetStageDuration(stageState);
 
         view.UpdateProgressBar(RemainTime);
     }
@@ -73,11 +73,11 @@ public class StagePresenter : NetworkBehaviour
         return model.RoundIndex > 1;
     }
 
-    public void Server_SetTransitionTimer(StageStateBehaviour state)
+    public void Server_SetTransitionTimer(StageStateBehaviour stageState)
     {
         if (!Runner.IsServer)
             return;
 
-        model.TransitionTimer = TickTimer.CreateFromSeconds(Runner, model.GetStageDuration(state));
+        model.TransitionTimer = TickTimer.CreateFromSeconds(Runner, model.GetStageDuration(stageState));
     }
 }

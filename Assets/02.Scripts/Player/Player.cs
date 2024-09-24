@@ -6,8 +6,12 @@ public class Player : NetworkBehaviour
 {
     private PlayerInfo playerInfo;
     private PlayerController playerController;
-    public PlayerField playerField { get; private set; }
     private Camera mainCamera;
+    public PlayerField playerField { get; private set; }
+
+    public int Level { get; private set; }
+    public int Exp {  get; private set; }
+    public int Gold { get; private set; }
 
     private void Awake()
     {
@@ -39,7 +43,6 @@ public class Player : NetworkBehaviour
         playerController.PlayerTeleport(position);
 
         RPC_SetPlayerCamera(CameraPosition);
-
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]

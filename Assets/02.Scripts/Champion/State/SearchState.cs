@@ -6,10 +6,10 @@ public class SearchState : ChampionStateBehaviour
     {
         base.OnEnterState();
 
-        championController.EnemySearch(out Champion target);
+        champion.Controller.EnemySearch(out Champion target);
         if (target != null)
         {
-            if (championController.InRangeCheck())
+            if (champion.Controller.InRangeCheck())
             {
                 Machine.TryActivateState<AttackState>();
             }
@@ -18,12 +18,5 @@ public class SearchState : ChampionStateBehaviour
                 Machine.TryActivateState<MoveState>();
             }
         }
-    }
-
-    protected override void OnEnterStateRender()
-    {
-        base.OnEnterStateRender();
-
-        championController.Animator.SetBool("Idle", true);
     }
 }

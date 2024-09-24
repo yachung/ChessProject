@@ -24,5 +24,10 @@ public class MainLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<StagePresenter>();
         builder.RegisterComponentInHierarchy<StageView>();
         builder.RegisterComponentInHierarchy<StageModel>();
+
+        builder.RegisterComponentInHierarchy<ShopPresenter>();
+        builder.RegisterComponentInHierarchy<ShopView>();
+        builder.RegisterComponentInHierarchy<ShopModel>();
+
     }
 }

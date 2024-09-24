@@ -17,12 +17,12 @@ public class LobbyPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         Debug.Log("Lobby Presenter Initialize");
 
         _lobbyModel.Initialize(PlayerInfoChangeCallback);
-        _lobbyView.btn_Start.onClick.AddListener(() => OnGameStarted());
+        //_lobbyView.btn_Start.onClick.AddListener(() => OnGameStarted());
     }
 
     public void Initialize()
     {
-        _lobbyView.Initialize(Runner.IsServer);
+        _lobbyView.Initialize(Runner.IsServer, OnGameStarted);
 
         UpdateUI();
     }

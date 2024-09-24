@@ -9,16 +9,17 @@ using System.Linq;
 public class LobbyView : MonoBehaviour
 {
     [SerializeField] private TMP_Text txt_PlayerCount;
-    [SerializeField] public Button btn_Start;
+    [SerializeField] private Button btn_Start;
     [SerializeField] private PlayerInfoCell[] playerInfoCells;
 
-    public void Initialize(bool isHost)
+    public void Initialize(bool isHost, Action gameStart)
     {
         foreach (var cell in playerInfoCells)
             cell.gameObject.SetActive(false);
 
         gameObject.SetActive(true);
         btn_Start.gameObject.SetActive(isHost);
+        btn_Start.onClick.AddListener(() => gameStart());
     }
 
     public void DisplayPlayerCount(int count)

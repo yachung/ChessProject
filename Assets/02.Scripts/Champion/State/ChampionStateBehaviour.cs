@@ -1,8 +1,24 @@
 using Fusion.Addons.FSM;
 using UnityEngine;
 
-public class ChampionStateBehaviour : StateBehaviour<ChampionStateBehaviour>
+public abstract class ChampionStateBehaviour : StateBehaviour<ChampionStateBehaviour>
 {
     [HideInInspector]
-    public ChampionController championController;
+    public Champion champion;
+
+    protected string stateName = string.Empty;
+
+    protected override void OnEnterStateRender()
+    {
+        base.OnEnterStateRender();
+
+        champion.Animator.SetBool(stateName, true);
+    }
+
+    protected override void OnExitStateRender()
+    {
+        base.OnExitStateRender();
+
+        champion.Animator.SetBool(stateName, false);
+    }
 }

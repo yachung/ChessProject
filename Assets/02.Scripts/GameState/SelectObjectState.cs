@@ -32,6 +32,7 @@ public class SelectObjectState : StageStateBehaviour
 
         Debug.Log($"{gameObject.name} is Enter State");
 
+        _shopPresenter.HideUI();
         _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
     }
 

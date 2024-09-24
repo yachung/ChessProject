@@ -6,6 +6,11 @@ public class ChampionController : MonoBehaviour
     public Champion Target { get; private set; }
 
 
+    public ChampionController (Animator animator)
+    {
+        this.Animator = animator;
+    }
+
     // 탐색
     public bool EnemySearch(out Champion target)
     {

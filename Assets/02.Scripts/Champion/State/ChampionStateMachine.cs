@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class ChampionStateMachine : NetworkBehaviour, IStateMachineOwner
 {
-    public ChampionController ChampionController { get; private set; }
+    public Champion Champion { get; private set; }
 
     private StateMachine<ChampionStateBehaviour> stateMachine;
 
     private void Awake()
     {
-        ChampionController = GetComponent<ChampionController>();
+        Champion = GetComponent<Champion>();
     }
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
@@ -19,7 +19,7 @@ public class ChampionStateMachine : NetworkBehaviour, IStateMachineOwner
 
         foreach (var state in states)
         {
-            state.championController = this.ChampionController;
+            state.champion = this.Champion;
         }
 
         stateMachine = new StateMachine<ChampionStateBehaviour>("Champion State", states);

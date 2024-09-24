@@ -148,24 +148,6 @@ public class PlayerField : NetworkBehaviour
         return GetHexCoordinate(inputPosition);
     }
 
-    //public Vector3 InputPositionToWorldPosition(Vector3 inputPosition)
-    //{
-    //    // 그리드가 위치한 평면을 정의 (y=height 평면)
-    //    Plane gridPlane = new Plane(Vector3.up, this.transform.position);
-
-    //    // 마우스 위치로부터 Ray 생성
-    //    Ray ray = mainCamera.ScreenPointToRay(inputPosition);
-
-    //    // Ray와 평면의 교차점 계산
-    //    if (gridPlane.Raycast(ray, out float distance))
-    //    {
-    //        // Ray와 평면이 교차하는 지점의 월드 좌표 반환
-    //        return ray.GetPoint(distance);
-    //    }
-
-    //    return Vector3.zero;  // 실패한 경우 기본값 반환
-    //}
-
     private Vector2Int GetHexCoordinate(Vector3 worldPosition)
     {
         // 육각형 타일의 가로 및 세로 간격 계산
@@ -184,6 +166,11 @@ public class PlayerField : NetworkBehaviour
         return new Vector2Int(approxX, approxY);
     }
 
+    /// <summary>
+    /// 타일 좌표를 월드 좌표로 변환
+    /// </summary>
+    /// <param name="coordinate"></param>
+    /// <returns></returns>
     private Vector3 CoordinateToWorldPosition(Vector2 coordinate)
     {
         float width = hexSize.x;  // 육각형의 가로 간격
