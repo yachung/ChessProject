@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using Fusion;
 using UnityEngine;
 
-public enum CharacteristicClass
+public enum ChampionType
 {
     Warrior,
     Magician,
@@ -11,7 +11,7 @@ public enum CharacteristicClass
 
 public abstract class Champion : NetworkBehaviour
 {
-    public abstract CharacteristicClass CharacteristicClass {  get; protected set; }
+    public abstract ChampionType CharacteristicClass {  get; protected set; }
     public abstract string Name { get ; protected set; }
     public abstract int Grade { get; protected set; }
     public abstract int Cost { get; protected set; }

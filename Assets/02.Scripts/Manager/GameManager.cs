@@ -40,7 +40,10 @@ public class GameManager : NetworkBehaviour
             networkObject.GetComponent<Player>().RPC_PlayerFieldInitialize(playerFields[index++]);
             runner.SetPlayerObject(player, networkObject);
 
-            allPlayers.Add(player, networkObject.GetComponent<Player>());
+            //allPlayers.Add(player, networkObject.GetComponent<Player>());
         }
     }
+
+    //private void RPC_PlayerInitialize()
+
 }

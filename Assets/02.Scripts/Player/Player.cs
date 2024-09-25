@@ -23,7 +23,13 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
         {
-            //Runner.AddCallbacks(inputManager);
+            // Todo: Spawn은 네트워크 Initialzie와 같은의미이며,
+            // 여기서 값을 받아온다는건 서버에 요청을 보내서 받아온다는 의미.
+            // 현재는 서버에서 플레이어를 생성함과 동시에 값을 보내주고있다.
+            // networkmanager.instance.rpc_getplayerinformation
+
+
+            // Runner.AddCallbacks(inputManager);
         }
     }
 
@@ -42,11 +48,10 @@ public class Player : NetworkBehaviour
     {
         playerController.PlayerTeleport(position);
 
-        RPC_SetPlayerCamera(CameraPosition);
+        SetPlayerCamera(CameraPosition);
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_SetPlayerCamera(Vector3 targetPosition)
+    public void SetPlayerCamera(Vector3 targetPosition)
     {
         mainCamera.transform.position = targetPosition;
     }

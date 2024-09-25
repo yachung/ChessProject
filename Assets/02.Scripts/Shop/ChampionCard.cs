@@ -1,16 +1,39 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChampionCard : MonoBehaviour
 {
-    private Image Img_Champion;
-    private TMP_Text Txt_ChampionName;
-    private TMP_Text Txt_ChampionCost;
+    [SerializeField] private Image Img_Champion;
+    [SerializeField] private TMP_Text Txt_ChampionName;
+    [SerializeField] private TMP_Text Txt_ChampionCost;
+    [SerializeField] private Button Btn_BuyCard;
 
-    public void Intialize(Champion champion)
+    private ChampionData championData;
+
+    public void Initialize(Action<ChampionData> callBack)
     {
-        Txt_ChampionName.text = champion.Name;
-        Txt_ChampionCost.text = champion.Cost.ToString("N0");
+        Btn_BuyCard.onClick.AddListener(() =>
+        { 
+            callBack(championData);
+            gameObject.SetActive(false);
+        });
+    }
+
+    public void SetData(ChampionData championData)
+    {
+        this.championData = championData;
+
+        Img_Champion.sprite = championData.cardImage;
+        Txt_ChampionName.text = championData.championName;
+        Txt_ChampionCost.text = championData.cost.ToString("N0");
+
+        gameObject.SetActive(true);
+    }
+
+    public void OnClickBuyChampion()
+    {
+
     }
 }
