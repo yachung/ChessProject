@@ -3,6 +3,7 @@ using System.Linq;
 using VContainer;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Fusion;
 
 public class SelectObjectState : StageStateBehaviour
 {
@@ -32,7 +33,7 @@ public class SelectObjectState : StageStateBehaviour
 
         Debug.Log($"{gameObject.name} is Enter State");
 
-        _shopPresenter.HideUI();
+        _shopPresenter.HideView();
         _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
     }
 
@@ -44,7 +45,6 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
-
         foreach (var player in _gameManager.allPlayers.Values)
         {
             player.MoveToPlayerField(player.playerField);
@@ -54,7 +54,5 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitStateRender()
     {
         base.OnExitStateRender();
-
-        
     }
 }

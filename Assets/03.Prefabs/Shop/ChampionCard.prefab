@@ -752,3 +752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aa23b7fb27829549bcd5006019a41ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Img_Champion: {fileID: 6058934698012126115}
+  Txt_ChampionName: {fileID: 399862299292424227}
+  Txt_ChampionCost: {fileID: 3490730788791104631}
+  Btn_BuyCard: {fileID: 8248732111933233727}

@@ -35,6 +35,11 @@ public class FieldTile
         return this.champion != null;
     }
 
+    public bool IsOccupied()
+    {
+        return this.champion != null;
+    }
+
     public void DeployChampion(Champion champion, Action<Vector2Int, Vector2Int> deployAction)
     {
         this.champion = champion;

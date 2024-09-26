@@ -9,6 +9,7 @@ public class MainLifeTimeScope : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterComponentInHierarchy<GameManager>();
+        builder.RegisterComponentInHierarchy<ChampionManager>();
         builder.RegisterComponentInHierarchy<GameStateManager>();
 
         builder.RegisterComponentInHierarchy<SelectField>();
@@ -25,9 +26,11 @@ public class MainLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<StageView>();
         builder.RegisterComponentInHierarchy<StageModel>();
 
-        builder.RegisterComponentInHierarchy<ShopPresenter>();
-        builder.RegisterComponentInHierarchy<ShopView>();
+        //builder.Register<IShopPresenter, ShopPresenter>.AsScoped();
+        //builder.Register<IShopPresenter, ShopPresenter>(Lifetime.Singleton);
+        builder.Register<ShopPresenter>(Lifetime.Scoped);
         builder.RegisterComponentInHierarchy<ShopModel>();
-
+        builder.RegisterComponentInHierarchy<ShopView>();
+        //builder.Register<IShopView, ShopView>(Lifetime.Scoped);
     }
 }

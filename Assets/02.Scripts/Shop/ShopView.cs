@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-public class ShopView : MonoBehaviour
+public class ShopView : MonoBehaviour, IShopView
 {
-    [Inject] private readonly ShopPresenter _presenter;
+    private ShopPresenter presenter;
 
     [SerializeField] private TMP_Text txt_HaveCost;
     [SerializeField] private TMP_Text txt_Level;
@@ -15,6 +15,11 @@ public class ShopView : MonoBehaviour
     [SerializeField] private Button btn_BuyXp;
     [SerializeField] private Button btn_Refresh;
     [SerializeField] private ChampionCard[] championCards;
+
+    public void SetPresenter(ShopPresenter presenter)
+    {
+        this.presenter = presenter;
+    }
 
     private void Start()
     {
@@ -26,7 +31,24 @@ public class ShopView : MonoBehaviour
         }
     }
 
-    public void UpdateUI(List<ChampionData> datas)
+    #region EventTriggers
+    private void OnClickRefresh()
+    {
+        presenter.OnRefreshShop();
+    }
+
+    private void OnClickBuyXP()
+    {
+        presenter.OnBuyExperience();
+    }
+
+    private void OnClickBuyChampion(ChampionData data)
+    {
+        presenter.OnBuyChampion(data);
+    }
+    #endregion
+
+    public void SetChampionCards(List<ChampionData> datas)
     {
         for (int i = 0; i < championCards.Length; ++i)
         {
@@ -36,23 +58,6 @@ public class ShopView : MonoBehaviour
             championCards[i].SetData(datas[i]);
         }
     }
-
-    #region OnClickEvents
-    private void OnClickRefresh()
-    {
-        _presenter.OnRefreshShop();
-    }
-
-    private void OnClickBuyXP()
-    {
-        _presenter.RPC_BuyExperience();
-    }
-
-    private void OnClickBuyChampion(ChampionData data)
-    {
-        _presenter.OnBuyChampion(data);
-    }
-    #endregion
 
     public void ShowUI()
     {

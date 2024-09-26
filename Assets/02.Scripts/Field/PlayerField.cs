@@ -69,6 +69,20 @@ public class PlayerField : NetworkBehaviour
         return result;
     }
 
+    public FieldTile GetEmptyWaitField()
+    {
+        for (int x = 0; x < 8; x++) // WaitField는 x 좌표가 0부터 7까지 범위에 존재
+        {
+            if (FieldArray[x, 0] != null && !FieldArray[x, 0].IsOccupied())
+            {
+                return FieldArray[x, 0];
+            }
+        }
+
+        // 빈 필드가 없는 경우 null 반환
+        return null;
+    }
+
     /// <summary>
     /// 커서가 위치한 좌표에 champion이 존재하는지 여부를 리턴하고 존재하면 존재하는 champion을 가져온다.
     /// </summary>
