@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using VContainer;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -29,17 +30,6 @@ public class PlayerController : NetworkBehaviour
         {
             Debug.Log($"isMove WasPressed : {inputData.movePosition}");
             Destination = inputData.movePosition;
-        }
-
-        if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isDrag))
-        {
-            Debug.Log($"isDrag WasPressed : {inputData.movePosition}");
-        }
-
-        if (inputData.buttons.WasReleased(ButtonsPrevious, MyButtons.isDrag))
-        {
-            Debug.Log($"isDrag WasReleased : {inputData.movePosition}");
-            //OnMove(inputData.movePosition);
         }
 
         if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isRefresh))

@@ -6,7 +6,7 @@ using VContainer;
 public class ChampionManager : NetworkBehaviour
 {
     private GameManager _gameManager;
-    private readonly List<Champion> _champions = new List<Champion>();
+    private List<Champion> _champions = new List<Champion>();
 
     [Inject]
     public void Construct(GameManager gameManager)
@@ -47,6 +47,7 @@ public class ChampionManager : NetworkBehaviour
 
             if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity).TryGetComponent<Champion>(out var champion))
             {
+                emptyTile.DeployChampion(champion);
                 _champions.Add(champion);
             }
             else

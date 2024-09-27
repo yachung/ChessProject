@@ -40,6 +40,8 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
+        Player LocalPlayer = _gameManager.LocalPlayer;
+        LocalPlayer.SetPlayerCamera(_selectField.DefaultCameraPosition);
     }
 
     protected override void OnExitState()
@@ -54,5 +56,7 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitStateRender()
     {
         base.OnExitStateRender();
+        Player LocalPlayer = _gameManager.LocalPlayer;
+        LocalPlayer.SetPlayerCamera(LocalPlayer.playerField.cameraPosition);
     }
 }

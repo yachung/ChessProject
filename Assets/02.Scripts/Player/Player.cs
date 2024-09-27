@@ -2,12 +2,14 @@ using Fusion;
 using UnityEngine;
 using VContainer;
 
+    
 public class Player : NetworkBehaviour
 {
-    private PlayerInfo playerInfo;
+    private PlayerInfo playerInfo { get; set; }
+    public PlayerField playerField { get; set; }
+
     private PlayerController playerController;
     private Camera mainCamera;
-    public PlayerField playerField { get; private set; }
 
     public int Level { get; private set; }
     public int Exp {  get; private set; }
@@ -21,22 +23,20 @@ public class Player : NetworkBehaviour
 
     public override void Spawned()
     {
-        if (HasInputAuthority)
-        {
-            // Todo: Spawn은 네트워크 Initialzie와 같은의미이며,
-            // 여기서 값을 받아온다는건 서버에 요청을 보내서 받아온다는 의미.
-            // 현재는 서버에서 플레이어를 생성함과 동시에 값을 보내주고있다.
-            // networkmanager.instance.rpc_getplayerinformation
+        // Todo: Spawn은 네트워크 Initialzie와 같은의미이며,
+        // 여기서 값을 받아온다는건 서버에 요청을 보내서 받아온다는 의미.
+        // 현재는 서버에서 플레이어를 생성함과 동시에 값을 보내주고있다.
+        // networkmanager.instance.rpc_getplayerinformation
 
 
-            // Runner.AddCallbacks(inputManager);
-        }
+        // Runner.AddCallbacks(inputManager);
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_PlayerFieldInitialize(PlayerField playerField)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_PlayerInitialize(PlayerField localField)
     {
-        this.playerField = playerField;
+        this.playerField = localField;
+        GameManager.Instance.LocalPlayer = this;
     }
 
     public void MoveToPlayerField(PlayerField playerField)
@@ -47,8 +47,6 @@ public class Player : NetworkBehaviour
     public void PlayerTeleport(Vector3 position, Vector3 CameraPosition)
     {
         playerController.PlayerTeleport(position);
-
-        SetPlayerCamera(CameraPosition);
     }
 
     public void SetPlayerCamera(Vector3 targetPosition)

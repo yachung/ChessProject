@@ -7,28 +7,28 @@ using VContainer.Unity;
 
 public class ShopPresenter
 {
-    private ShopView view;
-    private ShopModel model;
+    private ShopView shopView;
+    private ShopModel shopModel;
     private ChampionManager championManager;
 
     [Inject] 
     public void Constructor(ShopView shopView, ShopModel model, ChampionManager championManager)
     {
-        this.view = shopView;
-        this.model = model;
+        this.shopView = shopView;
+        this.shopModel = model;
         this.championManager = championManager;
 
-        view.SetPresenter(this);
+        this.shopView.SetPresenter(this);
     }
 
     public void OnBuyChampion(ChampionData championData)
     {
-        championManager.RPC_SummonChampion(championData.championPrefab, model.Runner.LocalPlayer);
+        championManager.RPC_SummonChampion(championData.championPrefab, shopModel.Runner.LocalPlayer);
     }
     
     public void OnRefreshShop()
     {
-        view.SetChampionCards(model.GetRandomChampions());
+        shopView.SetChampionCards(shopModel.GetRandomChampions());
     }
 
     public void OnBuyExperience()
@@ -43,13 +43,13 @@ public class ShopPresenter
 
     public void UpdateView()
     {
-        view.ShowUI();
+        shopView.ShowUI();
         OnRefreshShop();
     }
 
     public void HideView()
     {
-        view.HideUI();
+        shopView.HideUI();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

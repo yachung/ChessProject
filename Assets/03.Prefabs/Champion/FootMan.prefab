@@ -396,6 +396,7 @@ GameObject:
   - component: {fileID: 5736771479619822408}
   - component: {fileID: 3065199925463925925}
   - component: {fileID: 3833876651859853773}
+  - component: {fileID: 5977459549226063104}
   m_Layer: 0
   m_Name: FootMan
   m_TagString: Untagged
@@ -490,10 +491,27 @@ MonoBehaviour:
   - {fileID: 5794164806154121104}
   - {fileID: 5736771479619822408}
   - {fileID: 3065199925463925925}
+  - {fileID: 5977459549226063104}
   - {fileID: 8712590528160719791}
   - {fileID: 4418166580533765431}
   - {fileID: 1913891981525877385}
   - {fileID: 3300132347797276153}
+--- !u!114 &5977459549226063104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714684090192362704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &6724364353090535139
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,8 @@
+using Cysharp.Threading.Tasks;
 using Fusion;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using VContainer;
 
@@ -8,17 +11,36 @@ using VContainer;
 /// </summary>
 public class GameManager : NetworkBehaviour
 {
+    private static GameManager instance;
+    public static GameManager Instance => instance;
+
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
     [Inject] private readonly GameStateManager gameState;
 
     public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
 
-    private NetworkRunner runner;
+    public Player LocalPlayer;
+
+    public Action OnPlayerSpawnedComplete;
+
+    void Awake()
+    {
+        if (null == instance)
+        {
+            instance = this;
+
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     public void GamePlayStart(NetworkRunner runner)
     {
-        this.runner = runner;
+        //this.runner = runner;
 
         PlayerSpawned(runner);
 
@@ -31,19 +53,32 @@ public class GameManager : NetworkBehaviour
             return;
 
         PlayerField[] playerFields = FindObjectsByType<PlayerField>(FindObjectsSortMode.None);
-
         int index = 0;
-
         foreach (var player in runner.ActivePlayers)
         {
             NetworkObject networkObject = runner.Spawn(NetworkPlayerPref, Vector3.zero, Quaternion.identity, player);
-            networkObject.GetComponent<Player>().RPC_PlayerFieldInitialize(playerFields[index++]);
-            //runner.SetPlayerObject(player, networkObject);
-            //runner.GetPlayerObject
+
+            PlayerField playerField = playerFields[index++];
+            playerField.Object.AssignInputAuthority(player);
+            networkObject.GetComponent<Player>().playerField = playerField;
+
             allPlayers.Add(player, networkObject.GetComponent<Player>());
+        }
+
+        PlayerSpawnedComplete();
+    }
+
+    private void PlayerSpawnedComplete()
+    {
+        foreach (var player in allPlayers.Values)
+        {
+            player.RPC_PlayerInitialize(player.playerField);
         }
     }
 
-    //private void RPC_PlayerInitialize()
-
+    //[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    //private void RPC_PlayerInitialize(PlayerRef localPlayerRef)
+    //{
+    //    LocalPlayer = allPlayers[localPlayerRef];
+    //}
 }

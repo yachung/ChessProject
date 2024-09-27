@@ -2,6 +2,7 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class PlayerField : NetworkBehaviour
 {
@@ -13,7 +14,7 @@ public class PlayerField : NetworkBehaviour
     public Transform refTransform;
     public Vector3 spawnPosition;
 
-    //private Camera mainCamera;
+    private ChampionDragAndDrop championDragHandler;
     private Vector3 gridOffset;
     private Vector2 hexSize = new Vector2(13f, 15f);
 
@@ -22,6 +23,8 @@ public class PlayerField : NetworkBehaviour
         refTransform = transform;
         cameraPosition = Camera.main.transform.position + transform.position;
         gridOffset = gridStartingPoint.position;
+        championDragHandler = GetComponentInChildren<ChampionDragAndDrop>();
+        championDragHandler.playerField = this;
     }
 
     private void Start()
@@ -139,7 +142,48 @@ public class PlayerField : NetworkBehaviour
 
     public void SetChampion(Vector3 origin, Vector3 target, Champion selectChampion, Action<Vector2Int, Vector2Int> deployAction)
     {
+
         SetChampion(CalculateCoordinate(origin), CalculateCoordinate(target), selectChampion, deployAction);
+    }
+
+    public void UpdatePositionOnHost(Vector3 origin, Vector3 target)
+    {
+        RPC_UpdatePositionOnHost(CalculateCoordinate(origin), CalculateCoordinate(target));
+    }    
+
+    [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
+    public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
+    {
+        FieldArray[source.x, source.y].IsOccupied(out Champion selectedChampion);
+        FieldArray[target.x, target.y].IsOccupied(out Champion deployedChampion);
+
+        if (selectedChampion == null)
+            return;
+
+        if (deployedChampion == null)
+        {
+            FieldArray[target.x, target.y].DeployChampion(selectedChampion);
+            FieldArray[source.x, source.y].RemoveChampion();
+        }
+        else
+        {
+            FieldArray[target.x, target.y].DeployChampion(selectedChampion);
+            FieldArray[source.x, source.y].DeployChampion(deployedChampion);
+        }
+
+
+        //if (FieldArray[source.x, source.y].IsOccupied(out Champion selectedChampion))
+        //{
+        //    FieldArray[target.x, target.y].DeployChampion(selectedChampion);
+        //    //FieldArray[source.x, source.y].RemoveChampion();
+        //}
+
+        //if (FieldArray[target.x, target.y].IsOccupied(out Champion deployedChampion))
+        //{
+        //    FieldArray[source.x, source.y].DeployChampion(deployedChampion);
+        //    //FieldArray[target.x, target.y].RemoveChampion();
+        //}
+        //FieldArray[target.x, target.y].IsOccupied(out Champion deployedChampion);
     }
 
     /// <summary>

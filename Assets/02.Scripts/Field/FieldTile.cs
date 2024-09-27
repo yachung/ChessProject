@@ -21,7 +21,7 @@ public class FieldTile
     public FieldType fieldType = FieldType.None;
 
     public Vector3 deployPoint { get; private set; }
-    private Champion champion;
+    private Champion champion = null;
 
     /// <summary>
     /// 타일에 챔피언이 존재하는지 여부
@@ -43,6 +43,17 @@ public class FieldTile
     public void DeployChampion(Champion champion, Action<Vector2Int, Vector2Int> deployAction)
     {
         this.champion = champion;
+
+        Debug.Log($"DeployPoint : {deployPoint}");
+
+        //deployAction?.Invoke(champion, deployPoint);
+        //champion.transform.position = deployPoint;
+    }
+
+    public void DeployChampion(Champion champion)
+    {
+        this.champion = champion;
+        champion.transform.position = deployPoint;
 
         Debug.Log($"DeployPoint : {deployPoint}");
 
