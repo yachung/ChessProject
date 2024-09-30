@@ -5,7 +5,12 @@ using UnityEngine;
 public class SelectField : MonoBehaviour
 {
     [SerializeField] private Transform[] spawnPositions;
-    public Vector3 DefaultCameraPosition = new Vector3(0, 45, -65);
+    public Pose DefaultCameraData;
+
+    private void Awake()
+    {
+        DefaultCameraData = new Pose(Camera.main.transform.position, Camera.main.transform.rotation);
+    }
 
     public void SetPlayerPosition(Player[] players)
     {
@@ -14,7 +19,7 @@ public class SelectField : MonoBehaviour
             if (i >= players.Length)
                 return;
 
-            players[i].PlayerTeleport(spawnPositions[i].position, DefaultCameraPosition);
+            players[i].PlayerTeleport(spawnPositions[i].position);
         }
     }
 }

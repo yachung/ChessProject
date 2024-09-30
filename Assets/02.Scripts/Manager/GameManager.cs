@@ -76,6 +76,8 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    //public void Set
+
     //[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     //private void RPC_PlayerInitialize(PlayerRef localPlayerRef)
     //{

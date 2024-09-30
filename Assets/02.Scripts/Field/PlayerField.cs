@@ -2,7 +2,6 @@ using Fusion;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 public class PlayerField : NetworkBehaviour
 {
@@ -10,7 +9,8 @@ public class PlayerField : NetworkBehaviour
 
     public FieldTile[,] FieldArray = new FieldTile[9, 10];
 
-    public Vector3 cameraPosition;
+    public Pose cameraPose;
+    public Pose reverseCameraPose;
     public Transform refTransform;
     public Vector3 spawnPosition;
 
@@ -21,8 +21,12 @@ public class PlayerField : NetworkBehaviour
     private void Awake()
     {
         refTransform = transform;
-        cameraPosition = Camera.main.transform.position + transform.position;
+
+        cameraPose = new Pose(Camera.main.transform.position + transform.position, Camera.main.transform.rotation);
+        reverseCameraPose = new Pose(cameraPose.position + (new Vector3(0, 0, 120)), cameraPose.rotation * Quaternion.Euler(new Vector3(0, 180, 0)));
+
         gridOffset = gridStartingPoint.position;
+
         championDragHandler = GetComponentInChildren<ChampionDragAndDrop>();
         championDragHandler.playerField = this;
     }

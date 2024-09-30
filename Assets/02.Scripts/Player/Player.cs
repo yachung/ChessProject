@@ -5,15 +5,15 @@ using VContainer;
     
 public class Player : NetworkBehaviour
 {
-    private PlayerInfo playerInfo { get; set; }
+    public PlayerInfo playerInfo { get; set; }
     public PlayerField playerField { get; set; }
 
     private PlayerController playerController;
     private Camera mainCamera;
 
-    public int Level { get; private set; }
+    [Networked] public int Level { get; private set; }
     public int Exp {  get; private set; }
-    public int Gold { get; private set; }
+    [Networked] public int Gold { get; private set; }
 
     private void Awake()
     {
@@ -41,16 +41,16 @@ public class Player : NetworkBehaviour
 
     public void MoveToPlayerField(PlayerField playerField)
     {
-        PlayerTeleport(playerField.transform.position, playerField.cameraPosition);
+        PlayerTeleport(playerField.transform.position);
     }
 
-    public void PlayerTeleport(Vector3 position, Vector3 CameraPosition)
+    public void PlayerTeleport(Vector3 position)
     {
         playerController.PlayerTeleport(position);
     }
 
-    public void SetPlayerCamera(Vector3 targetPosition)
+    public void SetPlayerCamera(Pose transformData)
     {
-        mainCamera.transform.position = targetPosition;
+        mainCamera.transform.SetPositionAndRotation(transformData.position, transformData.rotation);
     }
 }

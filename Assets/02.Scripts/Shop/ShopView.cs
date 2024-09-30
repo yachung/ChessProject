@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-public class ShopView : MonoBehaviour, IShopView
+public class ShopView : MonoBehaviour
 {
-    private ShopPresenter presenter;
+    private ShopPresenter shopPresenter;
 
     [SerializeField] private TMP_Text txt_HaveCost;
     [SerializeField] private TMP_Text txt_Level;
@@ -18,7 +18,7 @@ public class ShopView : MonoBehaviour, IShopView
 
     public void SetPresenter(ShopPresenter presenter)
     {
-        this.presenter = presenter;
+        this.shopPresenter = presenter;
     }
 
     private void Start()
@@ -34,17 +34,17 @@ public class ShopView : MonoBehaviour, IShopView
     #region EventTriggers
     private void OnClickRefresh()
     {
-        presenter.OnRefreshShop();
+        shopPresenter.OnRefreshShop();
     }
 
     private void OnClickBuyXP()
     {
-        presenter.OnBuyExperience();
+        shopPresenter.OnBuyExperience();
     }
 
     private void OnClickBuyChampion(ChampionData data)
     {
-        presenter.OnBuyChampion(data);
+        shopPresenter.OnBuyChampion(data);
     }
     #endregion
 

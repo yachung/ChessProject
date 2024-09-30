@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Michsky.MUIP
 {
@@ -8,6 +9,7 @@ namespace Michsky.MUIP
         public ListViewRow row0;
         public ListViewRow row1;
         public ListViewRow row2;
+        public Button button;
 
         [Header("References")]
         public ListView.RowCount rowCount;

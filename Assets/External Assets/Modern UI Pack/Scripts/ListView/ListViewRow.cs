@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -10,5 +10,6 @@ namespace Michsky.MUIP
         public Image iconImage;
         public TextMeshProUGUI textObject;
         public LayoutElement layoutElement;
+        public Button button;
     }
 }

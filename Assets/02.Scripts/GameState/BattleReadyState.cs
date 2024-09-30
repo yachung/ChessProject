@@ -32,7 +32,10 @@ public class BattleReadyState : StageStateBehaviour
     {
         base.OnEnterStateRender();
 
-        _shopPresenter.UpdateView();
+        _shopPresenter.ShowView();
+        _shopPresenter.OnRefreshShop();
+
+        
     }
 
     protected override void OnExitStateRender()

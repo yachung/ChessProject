@@ -5,10 +5,19 @@ using Fusion;
 
 public class StagePresenter : NetworkBehaviour
 {
-    [Inject] private readonly StageView view;
-    [Inject] private readonly StageModel model;
+    private StageView view;
+    private StageModel model;
 
     private StageStateBehaviour ActiveStageState;
+
+    [Inject]
+    public void Constructor(StageView stageView, StageModel stageModel)
+    {
+        this.view = stageView;
+        this.model = stageModel;
+
+        this.view.SetPresenter(this);
+    }
 
     public void StageViewInitialize(StageStateBehaviour stageState)
     {
@@ -79,5 +88,10 @@ public class StagePresenter : NetworkBehaviour
             return;
 
         model.TransitionTimer = TickTimer.CreateFromSeconds(Runner, model.GetStageDuration(stageState));
+    }
+
+    public void OnClickPlayerList(Player player)
+    {
+        player.MoveToPlayerField(player.playerField);
     }
 }

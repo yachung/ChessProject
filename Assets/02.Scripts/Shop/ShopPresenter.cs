@@ -41,15 +41,20 @@ public class ShopPresenter
 
     }
 
-    public void UpdateView()
+    //public void UpdateView()
+    //{
+    //    shopView.ShowUI();
+    //    OnRefreshShop();
+    //}
+
+    public void ShowView()
     {
-        shopView.ShowUI();
-        OnRefreshShop();
+        shopView.gameObject.SetActive(true);
     }
 
     public void HideView()
     {
-        shopView.HideUI();
+        shopView.gameObject.SetActive(false);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
