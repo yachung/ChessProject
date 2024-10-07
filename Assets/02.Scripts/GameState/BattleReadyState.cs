@@ -26,6 +26,8 @@ public class BattleReadyState : StageStateBehaviour
     protected override void OnEnterState()
     {
         base.OnEnterState();
+
+        _stagePresenter.MatchingPlayer();
     }
 
     protected override void OnEnterStateRender()
@@ -34,8 +36,6 @@ public class BattleReadyState : StageStateBehaviour
 
         _shopPresenter.ShowView();
         _shopPresenter.OnRefreshShop();
-
-        
     }
 
     protected override void OnExitStateRender()

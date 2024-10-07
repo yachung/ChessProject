@@ -10,4 +10,5 @@ public class FootMan : Champion
     public override float AttackPoint { get; protected set; }
     public override int Range { get; protected set; }
     public override float Speed { get; protected set; }
+    public override bool IsDeath { get; protected set; } = false;
 }

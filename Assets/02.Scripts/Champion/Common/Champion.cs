@@ -19,6 +19,7 @@ public abstract class Champion : NetworkBehaviour
     public abstract float AttackPoint {  get; protected set; }
     public abstract int Range { get; protected set; }
     public abstract float Speed { get; protected set; }
+    public abstract bool IsDeath { get; protected set; }
 
     public ChampionController Controller { get; private set; }
     public Animator Animator { get; private set; }
@@ -28,6 +29,4 @@ public abstract class Champion : NetworkBehaviour
         Controller = GetComponent<ChampionController>();
         Animator = GetComponentInChildren<Animator>();
     }
-
-
 }

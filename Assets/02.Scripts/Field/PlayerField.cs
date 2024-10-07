@@ -9,6 +9,8 @@ public class PlayerField : NetworkBehaviour
 
     public FieldTile[,] FieldArray = new FieldTile[9, 10];
 
+    public List<Champion> champions = new List<Champion>();
+
     public Pose cameraPose;
     public Pose reverseCameraPose;
     public Transform refTransform;
@@ -51,7 +53,7 @@ public class PlayerField : NetworkBehaviour
                 else if (y >= 1 && y <= 8 && x >= 0 && x <= 8)
                     fieldType = FieldType.BattleField;
 
-                FieldArray[x, y] = new FieldTile(CoordinateToWorldPosition(new Vector2(x, y)), fieldType);
+                FieldArray[x, y] = new FieldTile(CoordinateToWorldPosition(new Vector2(x, y)), new Vector2Int(x, y), fieldType);
             }
         }
     }
@@ -221,7 +223,7 @@ public class PlayerField : NetworkBehaviour
         // 대략적인 타일 좌표 추정
         int approxY = Mathf.RoundToInt(adjustedPosition.z / height);
         float offsetX = (approxY % 2 == 0) ? 0 : width / 2;  // 짝수/홀수 행에 따른 x 오프셋 계산
-        int approxX = Mathf.RoundToInt((adjustedPosition.x + offsetX) / width);
+        int approxX = Mathf.RoundToInt((adjustedPosition.x - offsetX) / width);
 
         // 이 좌표가 정확한 좌표인지, 인접 타일과 비교해 가장 가까운 타일을 찾는 보정 필요
         // 여기서는 간단히 추정 좌표를 반환
@@ -239,7 +241,7 @@ public class PlayerField : NetworkBehaviour
         float height = hexSize.y * 0.75f;  // 세로 간격
 
         float offsetX = (coordinate.y % 2 == 0) ? 0 : width / 2;  // 짝수 행 오프셋 계산
-        float posX = coordinate.x * width - offsetX + gridOffset.x;
+        float posX = coordinate.x * width + offsetX + gridOffset.x;
         float posY = coordinate.y * height + gridOffset.z;
 
         return new Vector3(posX, 0, posY);  // 월드 좌표로 변환된 타일 위치

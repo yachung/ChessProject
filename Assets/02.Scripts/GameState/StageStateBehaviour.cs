@@ -1,3 +1,4 @@
+using Fusion;
 using Fusion.Addons.FSM;
 using VContainer;
 
@@ -5,6 +6,8 @@ public class StageStateBehaviour : StateBehaviour
 {
     [Inject] protected readonly StagePresenter _stagePresenter;
     [Inject] protected readonly ShopPresenter _shopPresenter;
+
+    private PlayerRef matchedPlayer;
 
     protected override bool CanEnterState()
     {

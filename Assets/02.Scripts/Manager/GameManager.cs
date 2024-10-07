@@ -17,6 +17,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
     [Inject] private readonly GameStateManager gameState;
+    [Inject] private readonly StageModel stageModel;
 
     public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
 
@@ -62,6 +63,7 @@ public class GameManager : NetworkBehaviour
             playerField.Object.AssignInputAuthority(player);
             networkObject.GetComponent<Player>().playerField = playerField;
 
+            stageModel.PlayerInfos.Add(player, networkObject.GetComponent<Player>());
             allPlayers.Add(player, networkObject.GetComponent<Player>());
         }
 

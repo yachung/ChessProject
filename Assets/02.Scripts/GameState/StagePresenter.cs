@@ -1,7 +1,7 @@
-
 using VContainer;
 using UnityEngine;
 using Fusion;
+using System.Collections.Generic;
 
 public class StagePresenter : NetworkBehaviour
 {
@@ -17,6 +17,7 @@ public class StagePresenter : NetworkBehaviour
         this.model = stageModel;
 
         this.view.SetPresenter(this);
+        this.model.OnPlayerChanged = UpdatePlayerList;
     }
 
     public void StageViewInitialize(StageStateBehaviour stageState)
@@ -93,5 +94,75 @@ public class StagePresenter : NetworkBehaviour
     public void OnClickPlayerList(Player player)
     {
         player.MoveToPlayerField(player.playerField);
+    }
+
+    public void UpdatePlayerList()
+    {
+        view.UpdatePlayerList(model.PlayerList);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_BattleResult(PlayerRef winnerRef, PlayerRef loserRef)
+    {
+        if (!Runner.IsServer)
+            return;
+
+        int Damage = 0;
+
+        if (model.PlayerInfos.TryGet(winnerRef, out Player winner))
+        {
+            Damage = winner.Level + winner.playerField.champions.Count;
+        }
+
+        if (model.PlayerInfos.TryGet(loserRef, out Player loser))
+        {
+            loser.Hp -= Damage;
+        }
+    }
+
+    public PlayerRef GetMatchingPlayer(PlayerRef playerRef)
+    {
+        return model.matchingPairs[playerRef];
+    }
+
+    public void MatchingPlayer()
+    {
+        List<PlayerRef> remainPlayers = new List<PlayerRef>(model.PlayerRefList);
+        model.matchingPairs.Clear();
+
+        if (remainPlayers.Count % 2 != 0)
+        {
+            int index1 = Random.Range(0, remainPlayers.Count);
+            PlayerRef player1 = remainPlayers[index1];
+            remainPlayers.RemoveAt(index1);
+
+            // ToDo: 원래 여기서 remainPlayers.Count는 1이 올 수 없음.
+            // 하지만 싱글테스트시 오류나서 임시 수정
+            PlayerRef player2;
+
+            if (remainPlayers.Count == 0)
+                player2 = player1;
+            else
+            {
+                int index2 = Random.Range(0, remainPlayers.Count);
+                player2 = remainPlayers[index2];
+            }
+
+            model.matchingPairs.Add(player1, player2);
+        }
+
+        while (remainPlayers.Count > 1)
+        {
+            int index1 = Random.Range(0, remainPlayers.Count);
+            PlayerRef player1 = remainPlayers[index1];
+            remainPlayers.RemoveAt(index1);
+
+            int index2 = Random.Range(0, remainPlayers.Count);
+            PlayerRef player2 = remainPlayers[index2];
+            remainPlayers.RemoveAt(index2);
+
+            model.matchingPairs.Add(player1, player2);
+            model.matchingPairs.Add(player2, player1);
+        }
     }
 }

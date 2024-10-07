@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Addons.FSM;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,9 +14,37 @@ public class StageModel : NetworkBehaviour
     public int RoundIndex { get; set; } = 0;
     public string StageName => $"{StageIndex}-{RoundIndex}";
 
-    [Networked] public TickTimer TransitionTimer { get; set; }
+    public Action OnPlayerChanged;
 
-    //public float RemainingTimePercentage => (float)TransitionTimer.RemainingTime(Runner) / stateDuration * 100;
+    [Networked, Capacity(8), OnChangedRender("PlayerChanged")] public NetworkDictionary<PlayerRef, Player> PlayerInfos => default;
+
+    public Dictionary<PlayerRef, PlayerRef> matchingPairs = new Dictionary<PlayerRef, PlayerRef>();
+
+    public List<PlayerRef> PlayerRefList
+    {
+        get
+        {
+            List<PlayerRef> list = new List<PlayerRef>();
+            foreach (var player in PlayerInfos)
+                list.Add(player.Key);
+
+            return list;
+        }
+    }
+
+    public List<Player> PlayerList
+    {
+        get
+        {
+            List<Player> list = new List<Player>();
+            foreach (var player in PlayerInfos)
+                list.Add(player.Value);
+
+            return list;
+        }
+    }
+
+    [Networked] public TickTimer TransitionTimer { get; set; }
 
     public float GetStageDuration(StageStateBehaviour state)
     {
@@ -38,5 +67,10 @@ public class StageModel : NetworkBehaviour
         }
 
         return result;
+    }
+
+    private void PlayerChanged()
+    {
+        OnPlayerChanged?.Invoke();
     }
 }

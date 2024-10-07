@@ -8,13 +8,9 @@ public class StageView : MonoBehaviour
 {
     [SerializeField] private ProgressBar progressBar;
     [SerializeField] private TMP_Text txt_CurrentStage;
+    [SerializeField] private ListViewItem[] playerList;
 
     private StagePresenter stagePresenter;
-
-    private ListViewItem[] playerList;
-    //[SerializeField] private bool showProgress = true;
-
-    private Transform refTransform;
 
     private void Awake()
     {
@@ -38,12 +34,12 @@ public class StageView : MonoBehaviour
 
     public void UpdatePlayerList(List<Player> players)
     {
-        players = players.OrderBy(p => p.playerInfo.Hp).ToList();
+        players = players.OrderBy(p => p.Hp).ToList();
 
         for (int i = 0; i < players.Count; ++i)
         {
-            playerList[i].row0.textObject.text = players[i].playerInfo.Name.ToString();
-            playerList[i].row1.textObject.text = players[i].playerInfo.Hp.ToString();
+            playerList[i].row0.textObject.text = players[i].Name.ToString();
+            playerList[i].row1.textObject.text = players[i].Hp.ToString();
             playerList[i].button.onClick.AddListener(() => stagePresenter.OnClickPlayerList(players[i]));
         }
     }

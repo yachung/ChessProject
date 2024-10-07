@@ -5,15 +5,17 @@ using VContainer;
     
 public class Player : NetworkBehaviour
 {
-    public PlayerInfo playerInfo { get; set; }
+    //public PlayerInfo playerInfo { get; set; }
     public PlayerField playerField { get; set; }
 
     private PlayerController playerController;
     private Camera mainCamera;
 
-    [Networked] public int Level { get; private set; }
-    public int Exp {  get; private set; }
-    [Networked] public int Gold { get; private set; }
+    public NetworkString<_32> Name => this.gameObject.name;
+    [Networked] public int Level { get; private set; } = 0;
+    public int Exp { get; private set; } = 0;
+    [Networked] public int Gold { get; private set; } = 0;
+    [Networked] public int Hp { get; set; } = 100;
 
     private void Awake()
     {

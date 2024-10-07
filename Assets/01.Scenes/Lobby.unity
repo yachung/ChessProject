@@ -6071,6 +6071,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   progressBar: {fileID: 1313380306}
   txt_CurrentStage: {fileID: 1188883422}
+  playerList:
+  - {fileID: 1010306240}
+  - {fileID: 458307392}
+  - {fileID: 2114698873}
+  - {fileID: 972200463}
+  - {fileID: 1439995162}
+  - {fileID: 1322726552}
+  - {fileID: 122551994}
+  - {fileID: 914513423}
 --- !u!1 &994079055
 GameObject:
   m_ObjectHideFlags: 0
@@ -12919,6 +12928,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4acd47a182d2a7d408fb893a7732c973, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _PlayerInfos:
+    _items: []
 --- !u!1 &2123908042
 GameObject:
   m_ObjectHideFlags: 0
