@@ -13,14 +13,16 @@ public enum FieldType
 
 public class FieldTile
 {
-    public FieldTile(Vector3 position, FieldType fieldType)
+    public FieldTile(Vector3 position, Vector2Int coord, FieldType fieldType)
     {
-        this.deployPoint = position;
+        this.DeployPoint = position;
+        this.Coordinate = coord;
         this.fieldType = fieldType;
     }
     public FieldType fieldType = FieldType.None;
 
-    public Vector3 deployPoint { get; private set; }
+    public Vector2Int Coordinate { get; private set; }
+    public Vector3 DeployPoint { get; private set; }
     private Champion champion = null;
 
     /// <summary>
@@ -44,7 +46,7 @@ public class FieldTile
     {
         this.champion = champion;
 
-        Debug.Log($"DeployPoint : {deployPoint}");
+        Debug.Log($"DeployPoint : {DeployPoint}");
 
         //deployAction?.Invoke(champion, deployPoint);
         //champion.transform.position = deployPoint;
@@ -53,9 +55,9 @@ public class FieldTile
     public void DeployChampion(Champion champion)
     {
         this.champion = champion;
-        champion.transform.position = deployPoint;
+        champion.transform.position = DeployPoint;
 
-        Debug.Log($"DeployPoint : {deployPoint}");
+        Debug.Log($"DeployPoint : {DeployPoint}");
 
         //deployAction?.Invoke(champion, deployPoint);
         //champion.transform.position = deployPoint;

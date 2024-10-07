@@ -43,7 +43,7 @@ public class ChampionManager : NetworkBehaviour
                 return;
             }
             else
-                spawnPosition = emptyTile.deployPoint;
+                spawnPosition = emptyTile.DeployPoint;
 
             if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity).TryGetComponent<Champion>(out var champion))
             {

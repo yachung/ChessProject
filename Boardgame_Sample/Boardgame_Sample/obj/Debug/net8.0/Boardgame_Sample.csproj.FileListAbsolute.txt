@@ -1,0 +1,14 @@
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.AssemblyInfoInputs.cache
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.AssemblyInfo.cs
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.csproj.CoreCompileInputs.cache
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\bin\Debug\net8.0\Boardgame_Sample.exe
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\bin\Debug\net8.0\Boardgame_Sample.deps.json
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\bin\Debug\net8.0\Boardgame_Sample.runtimeconfig.json
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\bin\Debug\net8.0\Boardgame_Sample.dll
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\bin\Debug\net8.0\Boardgame_Sample.pdb
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.dll
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\refint\Boardgame_Sample.dll
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.pdb
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\Boardgame_Sample.genruntimeconfig.cache
+C:\Users\YGL\nbkim\OneDrive\Documents\GitHub\Boardgame_Sample\Boardgame_Sample\obj\Debug\net8.0\ref\Boardgame_Sample.dll
