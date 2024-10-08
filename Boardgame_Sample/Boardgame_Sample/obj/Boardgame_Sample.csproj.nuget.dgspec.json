@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\test\\Downloads\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj": {}
+    "C:\\Users\\test\\Documents\\UnityProject\\ChessProject\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj": {}
   },
   "projects": {
-    "C:\\Users\\test\\Downloads\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj": {
+    "C:\\Users\\test\\Documents\\UnityProject\\ChessProject\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\test\\Downloads\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj",
+        "projectUniqueName": "C:\\Users\\test\\Documents\\UnityProject\\ChessProject\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj",
         "projectName": "Boardgame_Sample",
-        "projectPath": "C:\\Users\\test\\Downloads\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj",
+        "projectPath": "C:\\Users\\test\\Documents\\UnityProject\\ChessProject\\Boardgame_Sample\\Boardgame_Sample\\Boardgame_Sample.csproj",
         "packagesPath": "C:\\Users\\test\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\test\\Downloads\\Boardgame_Sample\\Boardgame_Sample\\obj\\",
+        "outputPath": "C:\\Users\\test\\Documents\\UnityProject\\ChessProject\\Boardgame_Sample\\Boardgame_Sample\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\test\\AppData\\Roaming\\NuGet\\NuGet.Config",

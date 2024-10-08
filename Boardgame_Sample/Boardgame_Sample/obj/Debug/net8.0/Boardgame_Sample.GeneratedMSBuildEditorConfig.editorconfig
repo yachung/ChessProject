@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Boardgame_Sample
-build_property.ProjectDir = C:\Users\test\Downloads\Boardgame_Sample\Boardgame_Sample\
+build_property.ProjectDir = C:\Users\test\Documents\UnityProject\ChessProject\Boardgame_Sample\Boardgame_Sample\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

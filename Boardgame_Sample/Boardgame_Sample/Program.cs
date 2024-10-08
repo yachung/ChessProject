@@ -30,7 +30,7 @@
                 attackRange = 1,
                 speed = 1,
             });
-            board.SpawnUnit(4, 4, new Unit()
+            board.SpawnUnit(3, 4, new Unit()
             {
                 layer = 1,
                 hp = 5,
@@ -45,6 +45,7 @@
                 isFinished = board.SimulationTick();
                 //await Task.Delay(tickDelayMS);
             }
+            board.DisplayMap();
         }
     }
 }

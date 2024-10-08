@@ -1,4 +1,6 @@
-﻿namespace Boardgame_Sample
+using System.Text;
+
+namespace Boardgame_Sample
 {
     internal struct Coord
     {
@@ -68,7 +70,12 @@
         public bool SimulationTick()
         {
             bool isFinished = false;
-            List<(Coord, Coord)> movementBuffer = new List<(Coord, Coord)>();
+
+            // 결과적으로 한 틱에 Target 좌표로 향할 객체는 하나뿐이어야 하므로 Key 값.
+            // (Key : Target, Value : Current)
+            Dictionary<Coord, Coord> movementBuffer = new Dictionary<Coord, Coord>();
+
+            List<(Coord target, Coord source)> attackBuffer = new List<(Coord, Coord)>();
 
             for (int i = 0; i < nodes.GetLength(0); i++)
             {
@@ -85,12 +92,9 @@
 
                         if (targetNode != null)
                         {
-                            // 공격 대상이 있으면 공격 수행
-                            targetNode.unit.hp -= unit.atk;
-                            if (targetNode.unit.hp <= 0)
-                            {
-                                targetNode.unit = null; // 유닛이 사망하면 제거
-                            }
+                            attackBuffer.Add((targetNode.coord, new Coord(i, j)));
+
+                            
                         }
                         else
                         {
@@ -106,21 +110,80 @@
                                 if (newCoord != currentCoord && nodes[newCoord.x, newCoord.y].unit == null)
                                 {
                                     // 유닛 이동
-                                    nodes[newCoord.x, newCoord.y].unit = unit;
-                                    nodes[i, j].unit = null; // 기존 위치에서 유닛 제거
-                                    movementBuffer.Add((newCoord, new Coord(i, j)));
+                                    //nodes[newCoord.x, newCoord.y].unit = unit;
+                                    //nodes[i, j].unit = null; // 기존 위치에서 유닛 제거
+                                    //KeyValuePair<Coord, Coord> buffer = (newCoord, new Coord(i, j));
+
+                                    if (movementBuffer.TryGetValue(newCoord, out Coord coord))
+                                    {
+                                        Unit alreadyUnit = nodes[coord.x, coord.y].unit;
+                                        Unit newUnit = nodes[i, j].unit;
+
+                                        if (newUnit.speed > alreadyUnit.speed)
+                                        {
+                                            movementBuffer[newCoord] = new Coord(i, j);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        movementBuffer.Add(newCoord, new Coord(i, j));
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            foreach (var buffer in movementBuffer)
+            {
+                MovementUnit(buffer.Key, buffer.Value);
+            }
+
+            foreach (var buffer in attackBuffer)
+            {
+                AttackUnit(buffer.target, buffer.source);
+            }
+
             if (IsBattleOver())
             {
                 isFinished = true;
             }
 
             return isFinished;
+        }
+
+        private void MovementUnit(Coord newCoord, Coord currentCoord)
+        {
+            Unit unit = nodes[currentCoord.x, currentCoord.y].unit;
+
+            if (unit == null)
+                return;
+
+            nodes[newCoord.x, newCoord.y].unit = unit;
+            nodes[currentCoord.x, currentCoord.y].unit = null; // 기존 위치에서 유닛 제거
+        }
+
+        private void AttackUnit(Coord target, Coord source)
+        {
+            Unit targetUnit = nodes[target.x, target.y].unit;
+            Unit sourceUnit = nodes[source.x, source.y].unit;
+
+            if (targetUnit == null || sourceUnit == null)
+                return;
+
+            // 공격 대상이 있으면 공격 수행
+            nodes[target.x, target.y].unit.hp -= sourceUnit.atk;
+
+            if (targetUnit.hp <= 0)
+            {
+                nodes[target.x, target.y].unit = null; // 유닛이 사망하면 제거
+            }
+        }
+
+        private void CheckRaceCondition()
+        {
+
         }
 
         public Node FindNodeInRange(Coord coord, int range, Func<Node, bool> condition)
@@ -185,17 +248,32 @@
             int dx = target.x - current.x;
             int dy = target.y - current.y;
 
-            // x 방향 또는 y 방향으로 한 칸 이동
-            if (Math.Abs(dx) > Math.Abs(dy))
+            Coord moveX = new Coord(current.x + Math.Sign(dx), current.y);
+            Coord moveY = moveY = new Coord(current.x, current.y + Math.Sign(dy));
+
+
+            //// x 방향 또는 y 방향으로 한 칸 이동
+            //if (Math.Abs(dx) > Math.Abs(dy))
+            //{
+            //    moveX = new Coord(current.x + Math.Sign(dx), current.y);
+            //}
+            //else if (Math.Abs(dy) > 0)
+            //{
+            //    moveY = new Coord(current.x, current.y + Math.Sign(dy));
+            //}
+
+            if (nodes[moveX.x, moveX.y].unit == null)
             {
-                return new Coord(current.x + Math.Sign(dx), current.y);
+                return moveX;
             }
-            else if (Math.Abs(dy) > 0)
+            else if (nodes[moveY.x, moveY.y].unit == null)
             {
-                return new Coord(current.x, current.y + Math.Sign(dy));
+                return moveY;
             }
 
+            //nodes[newCoord.x, newCoord.y].unit == null
             // 현재 위치가 타겟 위치와 같다면 이동하지 않음
+
             return current;
         }
 
@@ -242,6 +320,8 @@
 
         public void DisplayMap()
         {
+            StringBuilder sb = new StringBuilder();
+
             Console.WriteLine("--------------Render---------------");
             for (int i = 0; i < nodes.GetLength(0); i++)
             {
@@ -253,11 +333,14 @@
                         {
                             Console.BackgroundColor = ConsoleColor.Red;
                             Console.Write("♡ ");
+
+                            sb.AppendLine($"♡ {i}, {j} {nodes[i, j].unit.hp}");
                         }
                         else if (nodes[i, j].unit.layer == 1)
                         {
                             Console.BackgroundColor = ConsoleColor.Cyan;
                             Console.Write("♣ ");
+                            sb.AppendLine($"♣ {i}, {j} {nodes[i, j].unit.hp}");
                         }
                     }
                     else
@@ -268,6 +351,8 @@
                 }
                 Console.WriteLine();
             }
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine(sb);
         }
     }
 }
