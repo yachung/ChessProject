@@ -1,8 +1,9 @@
-﻿namespace Boardgame_Sample
+
+namespace Boardgame_Sample
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Board board = new Board(new Coord(4, 4));
 
@@ -38,14 +39,17 @@
                 attackRange = 3,
                 speed = 1,
             });
-            bool isFinished = false;
-            while (isFinished == false)
-            {
-                board.DisplayMap();
-                isFinished = board.SimulationTick();
-                //await Task.Delay(tickDelayMS);
-            }
-            board.DisplayMap();
+
+            await board.StartSimulationAsync(1000);
+
+            //bool isFinished = false;
+            //while (isFinished == false)
+            //{
+            //    board.DisplayMap();
+            //    isFinished = board.SimulationTick();
+            //    //await Task.Delay(tickDelayMS);
+            //}
+            //board.DisplayMap();
         }
     }
 }

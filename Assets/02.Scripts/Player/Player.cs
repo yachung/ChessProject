@@ -44,6 +44,7 @@ public class Player : NetworkBehaviour
     public void MoveToPlayerField(PlayerField playerField)
     {
         PlayerTeleport(playerField.transform.position);
+        RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
     }
 
     public void PlayerTeleport(Vector3 position)
@@ -54,5 +55,11 @@ public class Player : NetworkBehaviour
     public void SetPlayerCamera(Pose transformData)
     {
         mainCamera.transform.SetPositionAndRotation(transformData.position, transformData.rotation);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_SetPlayerCamera(Vector3 position, Quaternion rotation)
+    {
+        mainCamera.transform.SetPositionAndRotation(position, rotation);
     }
 }

@@ -111,7 +111,7 @@ public class StagePresenter : NetworkBehaviour
 
         if (model.PlayerInfos.TryGet(winnerRef, out Player winner))
         {
-            Damage = winner.Level + winner.playerField.champions.Count;
+            Damage = winner.Level + winner.playerField.Champions.Count;
         }
 
         if (model.PlayerInfos.TryGet(loserRef, out Player loser))
@@ -162,7 +162,7 @@ public class StagePresenter : NetworkBehaviour
             remainPlayers.RemoveAt(index2);
 
             model.matchingPairs.Add(player1, player2);
-            model.matchingPairs.Add(player2, player1);
+            //model.matchingPairs.Add(player2, player1);
         }
     }
 }

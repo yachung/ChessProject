@@ -5,11 +5,16 @@ public class ChampionDragAndDrop : NetworkBehaviour
 {
     [Networked] public NetworkButtons ButtonsPrevious { get; set; }
 
-    public PlayerField playerField;
+    private PlayerField playerField;
 
     private Champion selectedChampion = null;
     private Vector3 originPosition;
     bool isDrag = false;
+
+    private void Awake()
+    {
+        playerField = GetComponentInParent<PlayerField>();
+    }
 
     public override void FixedUpdateNetwork()
     {

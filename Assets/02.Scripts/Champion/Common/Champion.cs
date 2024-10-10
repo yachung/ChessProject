@@ -16,7 +16,7 @@ public abstract class Champion : NetworkBehaviour
     public abstract int Grade { get; protected set; }
     public abstract int Cost { get; protected set; }
     public abstract float HealthPoint { get; protected set; }
-    public abstract float AttackPoint {  get; protected set; }
+    public abstract float AttackPower {  get; protected set; }
     public abstract int Range { get; protected set; }
     public abstract float Speed { get; protected set; }
     public abstract bool IsDeath { get; protected set; }
@@ -28,5 +28,15 @@ public abstract class Champion : NetworkBehaviour
     {
         Controller = GetComponent<ChampionController>();
         Animator = GetComponentInChildren<Animator>();
+    }
+
+    public void Damage(float attackPower)
+    {
+        HealthPoint -= attackPower;
+    }
+
+    public void MoveTowardTile(Vector2Int coord)
+    {
+
     }
 }

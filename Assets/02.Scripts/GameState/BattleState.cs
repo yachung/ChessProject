@@ -13,6 +13,8 @@ public class BattleState : StageStateBehaviour
     protected override void OnEnterState()
     {
         base.OnEnterState();
+
+
     }
 
     protected override void OnEnterStateRender()
@@ -23,6 +25,11 @@ public class BattleState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
+
+        foreach (var player in _gameManager.allPlayers.Values)
+        {
+            player.MoveToPlayerField(player.playerField);
+        }
     }
 
     protected override void OnExitStateRender()

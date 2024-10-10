@@ -7,7 +7,6 @@ using Fusion;
 
 public class SelectObjectState : StageStateBehaviour
 {
-    [Inject] private readonly GameManager _gameManager;
     [Inject] private readonly SelectField _selectField;
 
     protected override bool CanEnterState()
@@ -56,7 +55,7 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitStateRender()
     {
         base.OnExitStateRender();
-        Player LocalPlayer = _gameManager.LocalPlayer;
-        LocalPlayer.SetPlayerCamera(LocalPlayer.playerField.cameraPose);
+        //Player LocalPlayer = _gameManager.LocalPlayer;
+        //LocalPlayer.SetPlayerCamera(LocalPlayer.playerField.cameraPose);
     }
 }

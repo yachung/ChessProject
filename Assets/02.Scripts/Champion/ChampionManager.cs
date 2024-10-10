@@ -35,7 +35,7 @@ public class ChampionManager : NetworkBehaviour
         {
             Vector3 spawnPosition;
 
-            FieldTile emptyTile = playerData.playerField.GetEmptyWaitField();
+            Tile emptyTile = playerData.playerField.GetEmptyWaitField();
 
             if (emptyTile == null)
             {

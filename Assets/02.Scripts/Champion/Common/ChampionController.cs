@@ -9,11 +9,11 @@ public class ChampionController : NetworkBehaviour
 
     private readonly (int, int)[] directions = { (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, 0) };
 
-    public List<FieldTile> FindEnemiesInRange(FieldTile startTile, int range, Dictionary<(int, int), FieldTile> hexGrid)
+    public List<Tile> FindEnemiesInRange(Tile startTile, int range, Dictionary<(int, int), Tile> hexGrid)
     {
-        List<FieldTile> enemiesInRange = new List<FieldTile>();
-        Queue<(FieldTile tile, int distance)> queue = new Queue<(FieldTile, int)>();
-        HashSet<FieldTile> visited = new HashSet<FieldTile>();
+        List<Tile> enemiesInRange = new List<Tile>();
+        Queue<(Tile tile, int distance)> queue = new Queue<(Tile, int)>();
+        HashSet<Tile> visited = new HashSet<Tile>();
 
         queue.Enqueue((startTile, 0));
         visited.Add(startTile);

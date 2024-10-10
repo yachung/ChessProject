@@ -6,6 +6,8 @@ using VContainer;
 
 public class BattleReadyState : StageStateBehaviour
 {
+    [Inject] private readonly StageModel _stageModel;
+
     protected override bool CanEnterState()
     {
         bool result = base.CanEnterState();
@@ -36,6 +38,19 @@ public class BattleReadyState : StageStateBehaviour
 
         _shopPresenter.ShowView();
         _shopPresenter.OnRefreshShop();
+    }
+
+    protected override void OnExitState()
+    {
+        base.OnExitState();
+
+        foreach (var pair in _stageModel.matchingPairs)
+        {
+            Player Source = _gameManager.allPlayers[pair.Value];
+            Player Target = _gameManager.allPlayers[pair.Key];
+
+            Source.MoveToPlayerField(Target.playerField);
+        }
     }
 
     protected override void OnExitStateRender()
