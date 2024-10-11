@@ -1,13 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Fusion.Addons.FSM;
-using VContainer;
+
 
 public class BattleReadyState : StageStateBehaviour
 {
-    [Inject] private readonly StageModel _stageModel;
-
     protected override bool CanEnterState()
     {
         bool result = base.CanEnterState();
@@ -49,7 +43,11 @@ public class BattleReadyState : StageStateBehaviour
             Player Source = _gameManager.allPlayers[pair.Value];
             Player Target = _gameManager.allPlayers[pair.Key];
 
+            Source.playerField.DeepCopyTileArray();
+            Target.playerField.DeepCopyTileArray();
+
             Source.MoveToPlayerField(Target.playerField);
+            Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.BattleTile));
         }
     }
 

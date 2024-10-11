@@ -14,7 +14,13 @@ public class BattleState : StageStateBehaviour
     {
         base.OnEnterState();
 
-
+        foreach (var playerRef in _stageModel.matchingPairs.Keys)
+        {
+            if (_gameManager.allPlayers.TryGetValue(playerRef, out var player))
+            {
+                player.playerField.StartBattle();
+            }
+        }
     }
 
     protected override void OnEnterStateRender()
@@ -25,11 +31,22 @@ public class BattleState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
-
         foreach (var player in _gameManager.allPlayers.Values)
         {
             player.MoveToPlayerField(player.playerField);
+            player.playerField.ChampionRespawn();
         }
+
+        //foreach (var pair in _stageModel.matchingPairs)
+        //{
+        //    Player Source = _gameManager.allPlayers[pair.Value];
+        //    Source.MoveToPlayerField(Source.playerField);
+        //    Source.playerField.ChampionRespawn();
+        //}
+        //foreach (var player in _gameManager.allPlayers.Values)
+        //{
+        //    player.MoveToPlayerField(player.playerField);
+        //}
     }
 
     protected override void OnExitStateRender()

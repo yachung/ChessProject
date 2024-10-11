@@ -15,50 +15,63 @@ public struct Coord
     public static bool operator !=(Coord a, Coord b) => a.x != b.x || a.y != b.y;
 }
 
-public enum FieldType
+public enum TileType
 {
-    None = 0,
+    None = -1,
 
-    WaitField,
-    BattleField,
-    EnemyField
+    WaitTile,
+    BattleTile,
+    EnemyTile
 }
 
 [Serializable]
 public class Tile
 {
-    public Tile(Vector3 position, Vector2Int coord, FieldType fieldType)
+    public Tile() { }
+
+    public Tile(Vector3 position, Vector2Int coord, TileType fieldType)
     {
         this.DeployPoint = position;
         this.Coordinate = coord;
-        this.fieldType = fieldType;
+        this.tileType = fieldType;
     }
-    public FieldType fieldType = FieldType.None;
-
+    public TileType tileType = TileType.None;
     public Vector2Int Coordinate { get; private set; }
     public Vector3 DeployPoint { get; private set; }
-    public Champion champion = null;
+
+    public ChampionStatus? championStatus { get; set; }
+
+    public Tile DeepCopy()
+    {
+        Tile newTile = new Tile();
+        newTile.tileType = this.tileType;
+        newTile.Coordinate = this.Coordinate;
+        newTile.DeployPoint = this.DeployPoint;
+        newTile.championStatus = this.championStatus;
+
+        return newTile;
+    }
 
     /// <summary>
     /// 타일에 챔피언이 존재하는지 여부
     /// </summary>
     /// <param name="champion"></param>
     /// <returns></returns>
-    public bool IsOccupied(out Champion champion)
+    public bool IsOccupied(out ChampionStatus? championStatus)
     {
-        champion = this.champion;
+        championStatus = this.championStatus;
 
-        return this.champion != null;
+        return this.championStatus != null;
     }
 
     public bool IsOccupied()
     {
-        return this.champion != null;
+        return this.championStatus != null;
     }
 
-    public void DeployChampion(Champion champion, Action<Vector2Int, Vector2Int> deployAction)
+    public void DeployChampion(ChampionStatus? champion, Action<Vector2Int, Vector2Int> deployAction)
     {
-        this.champion = champion;
+        this.championStatus = champion;
 
         Debug.Log($"DeployPoint : {DeployPoint}");
 
@@ -66,19 +79,30 @@ public class Tile
         //champion.transform.position = deployPoint;
     }
 
-    public void DeployChampion(Champion champion)
+    public void DeployChampion(ChampionStatus? championStatus)
     {
-        this.champion = champion;
-        champion.transform.position = DeployPoint;
+        if (championStatus == null)
+            return;
+
+        this.championStatus = championStatus;
+        //champion.transform.position = DeployPoint;
 
         Debug.Log($"DeployPoint : {DeployPoint}");
 
         //deployAction?.Invoke(champion, deployPoint);
         //champion.transform.position = deployPoint;
+    }
+
+    public void Respawn()
+    {
+        if (championStatus == null)
+            return;
+
+        //this.championStatus.transform.position = DeployPoint;
     }
 
     public void RemoveChampion()
     {
-        this.champion = null;
+        this.championStatus = null;
     }
 }

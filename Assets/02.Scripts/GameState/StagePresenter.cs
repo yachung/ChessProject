@@ -111,7 +111,8 @@ public class StagePresenter : NetworkBehaviour
 
         if (model.PlayerInfos.TryGet(winnerRef, out Player winner))
         {
-            Damage = winner.Level + winner.playerField.Champions.Count;
+            //Damage = winner.Level + winner.playerField.ChampionTiles.Count;
+            Damage = winner.Level + 1;
         }
 
         if (model.PlayerInfos.TryGet(loserRef, out Player loser))

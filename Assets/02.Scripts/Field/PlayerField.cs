@@ -11,33 +11,39 @@ public class PlayerField : NetworkBehaviour
 
     [SerializeField] private Transform gridStartingPoint;
 
-    public Tile[,] Tiles = new Tile[9, 10];
+    public Tile[,] Tiles = new Tile[8, 10];
+    public Tile[,] cachedTiles = new Tile[8, 10];
 
-    public List<Champion> Champions
-    {
-        get 
-        {
-            List<Champion> list = new List<Champion>();
+    public List<Champion> champions = new List<Champion>();
 
-            foreach (var field in Tiles)
-            {
-                if (gameStateManager.ActiveState is BattleState)
-                {
-                    if (field.fieldType != FieldType.WaitField)
-                        continue;
-                }
-                else if (gameStateManager.ActiveState is BattleReadyState)
-                {
-                    if (field.fieldType == FieldType.EnemyField)
-                        continue;
-                }
+    //public List<Tile> ChampionTiles
+    //{
+    //    get 
+    //    {
+    //        List<Tile> list = new List<Tile>();
 
-                list.Add(field.champion);
-            }
+    //        foreach (var tile in Tiles)
+    //        {
+    //            if (gameStateManager.ActiveState is BattleState)
+    //            {
+    //                if (tile.tileType != TileType.WaitTile)
+    //                    continue;
+    //            }
+    //            else if (gameStateManager.ActiveState is BattleReadyState)
+    //            {
+    //                if (tile.tileType == TileType.EnemyTile)
+    //                    continue;
+    //            }
 
-            return list;
-        }
-    }
+    //            list.Add(tile);
+    //        }
+
+    //        //cachedChampionTiles = new List<Tile>(list);
+
+    //        return list;
+    //    }
+    //}
+
 
     public Pose cameraPose;
     public Pose reverseCameraPose;
@@ -77,14 +83,14 @@ public class PlayerField : NetworkBehaviour
         {
             for (int x = 0; x < Tiles.GetLength(0); ++x)
             {
-                FieldType fieldType = FieldType.None;
+                TileType fieldType = TileType.None;
 
                 if (y == 0 && x >= 0 && x <= 7)
-                    fieldType = FieldType.WaitField;
+                    fieldType = TileType.WaitTile;
                 else if (y >= 1 && y <= 4 && x >= 0 && x <= 7)
-                    fieldType = FieldType.BattleField;
+                    fieldType = TileType.BattleTile;
                 else if (y >= 5 && y <= 9 && x >= 0 && x <= 7)
-                    fieldType = FieldType.EnemyField;
+                    fieldType = TileType.EnemyTile;
                 //else if (y == 9 && x >= 0 && x <= 7)
                     //fieldType = FieldType.EnemyField;
 
@@ -96,12 +102,48 @@ public class PlayerField : NetworkBehaviour
     public void StartBattle()
     {
         // 전투 시작 시 BattleController에서 전투를 시작하도록 호출
-        battleController.StartBattle();
+        // battleController.StartBattle();
     }
 
-    public void SpawnChampion(int x, int y, Champion champion)
+    public void SpawnChampion(int x, int y, ChampionStatus champion)
     {
         Tiles[x, y].DeployChampion(champion);
+    }
+
+    public void BattleInitializeForEnemy(List<Tile> championTiles)
+    {
+        foreach (var tile in championTiles)
+        {
+            Vector2Int target = new Vector2Int(Tiles.GetLength(0) - tile.Coordinate.x - 1, Tiles.GetLength(1) - tile.Coordinate.y - 1);
+
+            if (tile.championStatus != null)
+                RPC_UpdatePositionOnHost(tile.championStatus, target);
+            //Tiles[target.x, target.y].DeployChampion(tile.champion);
+        }
+    }
+
+    public void ChampionRespawn()
+    {
+        Tiles = cachedTiles;
+
+        foreach (var tile in Tiles)
+        {
+            tile.Respawn();
+        }
+    }
+
+    /// <summary>
+    /// 전투 전에 타일 배열 캐싱
+    /// </summary>
+    public void DeepCopyTileArray()
+    {
+        for (int y = 0; y < Tiles.GetLength(1); y++)
+        {
+            for (int x = 0; x < Tiles.GetLength(0); ++x)
+            {
+                cachedTiles[x, y] = Tiles[x, y].DeepCopy();
+            }
+        }
     }
 
     /// <summary>
@@ -109,13 +151,13 @@ public class PlayerField : NetworkBehaviour
     /// </summary>
     /// <param name="fieldType"></param>
     /// <returns></returns>
-    public List<Tile> GetFields(FieldType fieldType)
+    public List<Tile> GetTiles(TileType fieldType)
     {
         List<Tile> result = new List<Tile>();
 
         foreach (var fields in Tiles)
         {
-            if (fields.fieldType == fieldType)
+            if (fields.tileType == fieldType)
             {
                 result.Add(fields);
             }
@@ -155,8 +197,11 @@ public class PlayerField : NetworkBehaviour
 
         Debug.Log(coordinate);
 
-        if (Tiles[coordinate.x, coordinate.y].IsOccupied(out placedChampion))
+        if (Tiles[coordinate.x, coordinate.y].IsOccupied(out var championStatus))
+        {
+
             return true;
+        }
         else
             return false;
     }
@@ -170,7 +215,7 @@ public class PlayerField : NetworkBehaviour
     /// <param name="origin"></param>
     /// <param name="target"></param>
     /// <param name="selectChampion"></param>
-    public void SetChampion(Vector2Int origin, Vector2Int target, Champion selectChampion, Action<Vector2Int, Vector2Int> deployAction)
+    public void SetChampion(Vector2Int origin, Vector2Int target, ChampionStatus selectChampion, Action<Vector2Int, Vector2Int> deployAction)
     {
         Debug.Log($"origin : {origin}, target : {target}");
 
@@ -180,7 +225,7 @@ public class PlayerField : NetworkBehaviour
             return;
         }
 
-        if (Tiles[target.x, target.y].IsOccupied(out Champion placedChampion))
+        if (Tiles[target.x, target.y].IsOccupied(out ChampionStatus? placedChampion))
         {
             Tiles[origin.x, origin.y].DeployChampion(placedChampion, deployAction);
             Tiles[target.x, target.y].DeployChampion(selectChampion, deployAction);
@@ -192,10 +237,15 @@ public class PlayerField : NetworkBehaviour
         }
     }
 
-    public void SetChampion(Vector3 origin, Vector3 target, Champion selectChampion, Action<Vector2Int, Vector2Int> deployAction)
+    public void SetChampion(Vector3 origin, Vector3 target, ChampionStatus selectChampion, Action<Vector2Int, Vector2Int> deployAction)
     {
-
         SetChampion(CalculateCoordinate(origin), CalculateCoordinate(target), selectChampion, deployAction);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_SetChampion(Vector2Int coord, ChampionStatus champion)
+    {
+        Tiles[coord.x, coord.y].championStatus = champion;
     }
 
     public void UpdatePositionOnHost(Vector3 origin, Vector3 target)
@@ -203,11 +253,11 @@ public class PlayerField : NetworkBehaviour
         RPC_UpdatePositionOnHost(CalculateCoordinate(origin), CalculateCoordinate(target));
     }    
 
-    [Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
     {
-        Tiles[source.x, source.y].IsOccupied(out Champion selectedChampion);
-        Tiles[target.x, target.y].IsOccupied(out Champion deployedChampion);
+        Tiles[source.x, source.y].IsOccupied(out ChampionStatus? selectedChampion);
+        Tiles[target.x, target.y].IsOccupied(out ChampionStatus? deployedChampion);
 
         if (selectedChampion == null)
             return;
@@ -222,20 +272,15 @@ public class PlayerField : NetworkBehaviour
             Tiles[target.x, target.y].DeployChampion(selectedChampion);
             Tiles[source.x, source.y].DeployChampion(deployedChampion);
         }
+    }
 
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_UpdatePositionOnHost(ChampionStatus? champion, Vector2Int target)
+    {
+        if (champion == null)
+            return;
 
-        //if (FieldArray[source.x, source.y].IsOccupied(out Champion selectedChampion))
-        //{
-        //    FieldArray[target.x, target.y].DeployChampion(selectedChampion);
-        //    //FieldArray[source.x, source.y].RemoveChampion();
-        //}
-
-        //if (FieldArray[target.x, target.y].IsOccupied(out Champion deployedChampion))
-        //{
-        //    FieldArray[source.x, source.y].DeployChampion(deployedChampion);
-        //    //FieldArray[target.x, target.y].RemoveChampion();
-        //}
-        //FieldArray[target.x, target.y].IsOccupied(out Champion deployedChampion);
+        Tiles[target.x, target.y].DeployChampion(champion);
     }
 
     /// <summary>
@@ -254,7 +299,6 @@ public class PlayerField : NetworkBehaviour
     #region Coordinate Calculate
     public Vector2Int CalculateCoordinate(Vector3 inputPosition)
     {
-        //return GetHexCoordinate(InputPositionToWorldPosition(inputPosition));
         return GetHexCoordinate(inputPosition);
     }
 
