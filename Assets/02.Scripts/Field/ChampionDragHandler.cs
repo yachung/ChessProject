@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-public class ChampionDragAndDrop : NetworkBehaviour
+public class ChampionDragHandler : NetworkBehaviour
 {
     [Networked] public NetworkButtons ButtonsPrevious { get; set; }
 

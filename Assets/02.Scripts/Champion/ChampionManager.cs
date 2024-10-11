@@ -45,9 +45,11 @@ public class ChampionManager : NetworkBehaviour
             else
                 spawnPosition = emptyTile.DeployPoint;
 
-            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity).TryGetComponent<Champion>(out var champion))
+            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity, player).TryGetComponent<Champion>(out var champion))
             {
                 emptyTile.DeployChampion(champion);
+                playerData.playerField.RPC_SetChampion(emptyTile.Coordinate, champion);
+
                 _champions.Add(champion);
             }
             else

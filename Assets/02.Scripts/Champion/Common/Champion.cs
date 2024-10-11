@@ -11,15 +11,7 @@ public enum ChampionType
 
 public abstract class Champion : NetworkBehaviour
 {
-    public abstract ChampionType CharacteristicClass {  get; protected set; }
-    public abstract string Name { get ; protected set; }
-    public abstract int Grade { get; protected set; }
-    public abstract int Cost { get; protected set; }
-    public abstract float HealthPoint { get; protected set; }
-    public abstract float AttackPower {  get; protected set; }
-    public abstract int Range { get; protected set; }
-    public abstract float Speed { get; protected set; }
-    public abstract bool IsDeath { get; protected set; }
+    public ChampionStatus ChampionStatus;
 
     public ChampionController Controller { get; private set; }
     public Animator Animator { get; private set; }
@@ -28,15 +20,21 @@ public abstract class Champion : NetworkBehaviour
     {
         Controller = GetComponent<ChampionController>();
         Animator = GetComponentInChildren<Animator>();
+        ChampionStatus = new ChampionStatus();
     }
 
     public void Damage(float attackPower)
     {
-        HealthPoint -= attackPower;
+        ChampionStatus.HealthPoint -= attackPower;
     }
 
-    public void MoveTowardTile(Vector2Int coord)
+    public override void Spawned()
     {
+        base.Spawned();
 
+        //if (HasInputAuthority)
+        //{
+        //    GameManager.Instance.allPlayers
+        //}
     }
 }
