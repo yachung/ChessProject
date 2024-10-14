@@ -2,19 +2,6 @@ using Fusion;
 using System;
 using UnityEngine;
 
-public struct Coord
-{
-    public int x, y;
-
-    public Coord(int x, int y)
-    {
-        this.x = x; this.y = y;
-    }
-
-    public static bool operator ==(Coord a, Coord b) => a.x == b.x && a.y == b.y;
-    public static bool operator !=(Coord a, Coord b) => a.x != b.x || a.y != b.y;
-}
-
 public enum TileType
 {
     None = -1,
@@ -34,12 +21,14 @@ public class Tile
         this.DeployPoint = position;
         this.Coordinate = coord;
         this.tileType = fieldType;
+        this.championStatus = default; // 기본값으로 초기화
     }
+
     public TileType tileType = TileType.None;
     public Vector2Int Coordinate { get; private set; }
     public Vector3 DeployPoint { get; private set; }
 
-    public ChampionStatus? championStatus { get; set; }
+    public ChampionStatus championStatus { get; set; }
 
     public Tile DeepCopy()
     {
@@ -57,19 +46,19 @@ public class Tile
     /// </summary>
     /// <param name="champion"></param>
     /// <returns></returns>
-    public bool IsOccupied(out ChampionStatus? championStatus)
+    public bool IsOccupied(out ChampionStatus championStatus)
     {
         championStatus = this.championStatus;
 
-        return this.championStatus != null;
+        return !this.championStatus.Equals(default(ChampionStatus));
     }
 
     public bool IsOccupied()
     {
-        return this.championStatus != null;
+        return !championStatus.Equals(default(ChampionStatus));
     }
 
-    public void DeployChampion(ChampionStatus? champion, Action<Vector2Int, Vector2Int> deployAction)
+    public void DeployChampion(ChampionStatus champion, Action<Vector2Int, Vector2Int> deployAction)
     {
         this.championStatus = champion;
 
@@ -79,11 +68,8 @@ public class Tile
         //champion.transform.position = deployPoint;
     }
 
-    public void DeployChampion(ChampionStatus? championStatus)
+    public void DeployChampion(ChampionStatus championStatus)
     {
-        if (championStatus == null)
-            return;
-
         this.championStatus = championStatus;
         //champion.transform.position = DeployPoint;
 
@@ -95,14 +81,16 @@ public class Tile
 
     public void Respawn()
     {
-        if (championStatus == null)
-            return;
+        //if (championStatus == null)
+        //    return;
 
+        //this.championStatus
         //this.championStatus.transform.position = DeployPoint;
     }
 
     public void RemoveChampion()
     {
-        this.championStatus = null;
+        this.championStatus = default; // 기본값으로 초기화하여 제거
+        Debug.Log($"Champion removed from tile at {DeployPoint}");
     }
 }

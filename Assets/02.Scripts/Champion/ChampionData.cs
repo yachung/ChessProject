@@ -5,7 +5,7 @@ using Fusion;
 public class ChampionData : ScriptableObject
 {
     // 기본 챔피언 정보
-    public string championID; // 고유 ID
+    public double championID; // 고유 ID
     public NetworkPrefabRef championPrefab; // 챔피언 프리팹
     public string championName; // 챔피언 이름
     public ChampionType championType; // 챔피언 타입 (예: 전사, 마법사)
@@ -16,6 +16,8 @@ public class ChampionData : ScriptableObject
     public float attackDamage;
     public float abilityPower;
     public float skillCooldown;
+    public float speed;
+    public int range;
 
     // 카드 비주얼 정보
     public Sprite cardImage; // 카드 이미지

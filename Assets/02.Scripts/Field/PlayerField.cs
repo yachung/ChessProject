@@ -14,7 +14,7 @@ public class PlayerField : NetworkBehaviour
     public Tile[,] Tiles = new Tile[8, 10];
     public Tile[,] cachedTiles = new Tile[8, 10];
 
-    public List<Champion> champions = new List<Champion>();
+    private Dictionary<Vector2Int, Champion> spawnedChampions = new Dictionary<Vector2Int, Champion>();
 
     //public List<Tile> ChampionTiles
     //{
@@ -44,7 +44,6 @@ public class PlayerField : NetworkBehaviour
     //    }
     //}
 
-
     public Pose cameraPose;
     public Pose reverseCameraPose;
     public Transform refTransform;
@@ -53,15 +52,16 @@ public class PlayerField : NetworkBehaviour
     //private ChampionDragAndDrop championDragHandler;
     //private BattleController battleController;
     private Vector3 gridOffset;
-    private BattleController battleController;
     private Vector2 hexSize = new Vector2(13f, 15f);
+
+    private BattleController battleController;
 
     private void Awake()
     {
         refTransform = transform;
 
         cameraPose = new Pose(Camera.main.transform.position + transform.position, Camera.main.transform.rotation);
-        reverseCameraPose = new Pose(cameraPose.position + (new Vector3(0, 0, 120)), cameraPose.rotation * Quaternion.Euler(new Vector3(0, 180, 0)));
+        reverseCameraPose = new Pose(cameraPose.position + (new Vector3(0, 0, 120f)), cameraPose.rotation * Quaternion.Euler(new Vector3(0, 180f, 0)));
 
         gridOffset = gridStartingPoint.position;
 
@@ -116,8 +116,8 @@ public class PlayerField : NetworkBehaviour
         {
             Vector2Int target = new Vector2Int(Tiles.GetLength(0) - tile.Coordinate.x - 1, Tiles.GetLength(1) - tile.Coordinate.y - 1);
 
-            if (tile.championStatus != null)
-                RPC_UpdatePositionOnHost(tile.championStatus, target);
+           // if (tile.IsOccupied())
+                //RPC_UpdatePositionOnHost(tile.championStatus, target);
             //Tiles[target.x, target.y].DeployChampion(tile.champion);
         }
     }
@@ -186,9 +186,9 @@ public class PlayerField : NetworkBehaviour
     /// <param name="inputPosition">커서 위치</param>
     /// <param name="placedChampion"></param>
     /// <returns></returns>
-    public bool IsOccupied(Vector3 inputPosition, out Champion placedChampion)
+    public bool IsOccupied(Vector3 inputPosition, out ChampionStatus placedChampion)
     {
-        placedChampion = null;
+        placedChampion = default;
 
         var coordinate = CalculateCoordinate(inputPosition);
 
@@ -199,7 +199,7 @@ public class PlayerField : NetworkBehaviour
 
         if (Tiles[coordinate.x, coordinate.y].IsOccupied(out var championStatus))
         {
-
+            placedChampion = championStatus;
             return true;
         }
         else
@@ -225,7 +225,7 @@ public class PlayerField : NetworkBehaviour
             return;
         }
 
-        if (Tiles[target.x, target.y].IsOccupied(out ChampionStatus? placedChampion))
+        if (Tiles[target.x, target.y].IsOccupied(out ChampionStatus placedChampion))
         {
             Tiles[origin.x, origin.y].DeployChampion(placedChampion, deployAction);
             Tiles[target.x, target.y].DeployChampion(selectChampion, deployAction);
@@ -256,13 +256,10 @@ public class PlayerField : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
     {
-        Tiles[source.x, source.y].IsOccupied(out ChampionStatus? selectedChampion);
-        Tiles[target.x, target.y].IsOccupied(out ChampionStatus? deployedChampion);
-
-        if (selectedChampion == null)
+        if (!Tiles[source.x, source.y].IsOccupied(out ChampionStatus selectedChampion))
             return;
 
-        if (deployedChampion == null)
+        if (!Tiles[target.x, target.y].IsOccupied(out ChampionStatus deployedChampion))
         {
             Tiles[target.x, target.y].DeployChampion(selectedChampion);
             Tiles[source.x, source.y].RemoveChampion();
@@ -274,14 +271,11 @@ public class PlayerField : NetworkBehaviour
         }
     }
 
-    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
-    public void RPC_UpdatePositionOnHost(ChampionStatus? champion, Vector2Int target)
-    {
-        if (champion == null)
-            return;
-
-        Tiles[target.x, target.y].DeployChampion(champion);
-    }
+    //[Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    //public void RPC_UpdatePositionOnHost(ChampionStatus champion, Vector2Int target)
+    //{
+    //    Tiles[target.x, target.y].DeployChampion(champion);
+    //}
 
     /// <summary>
     /// 입력된 좌표가 PlayerField에 유효한 좌표인지 확인

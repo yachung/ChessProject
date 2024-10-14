@@ -41,15 +41,13 @@ public class BattleController : NetworkBehaviour
         {
             for (int j = 0; j < Tiles.GetLength(1); j++)
             {
-                Champion champion = Tiles[i, j].championStatus;
-
-                if (champion != null)
+                if (Tiles[i, j].IsOccupied(out var champion))
                 {
                     Vector2Int currentCoord = new Vector2Int(i, j);
 
                     // 공격 범위 내에서 다른 레이어의 유닛을 찾음
                     // 타겟 타일에 챔피언이 존재하고 현재 타일과 InputAuthority가 다른경우 리턴
-                    Tile targetTile = FindNodeInRange(currentCoord, champion.Range, tile => tile.championStatus != null && tile.championStatus.Object.InputAuthority != champion.Object.InputAuthority);
+                    Tile targetTile = FindNodeInRange(currentCoord, champion.Range, tile => tile.IsOccupied() && tile.championStatus.InputAuthority != champion.InputAuthority);
 
                     if (targetTile != null)
                     {
@@ -58,7 +56,7 @@ public class BattleController : NetworkBehaviour
                     else
                     {
                         // todo -> Find nearest different layer unit and chase 1 index meter to the unit.
-                        Tile nearestTargetTile = FindNearestTarget(currentCoord, champion.Object.InputAuthority);
+                        Tile nearestTargetTile = FindNearestTarget(currentCoord, champion.InputAuthority);
 
                         if (nearestTargetTile != null)
                         {
@@ -66,7 +64,7 @@ public class BattleController : NetworkBehaviour
 
                             // 한 칸씩 이동 (x와 y 중 먼저 이동 가능한 방향으로 이동)
                             Vector2Int newCoord = GetNextStepTowards(currentCoord, targetCoord);
-                            if (newCoord != currentCoord && Tiles[newCoord.x, newCoord.y].championStatus == null)
+                            if (newCoord != currentCoord && !Tiles[newCoord.x, newCoord.y].IsOccupied())
                             {
                                 // 유닛 이동
                                 //nodes[newCoord.x, newCoord.y].unit = unit;
@@ -75,8 +73,8 @@ public class BattleController : NetworkBehaviour
 
                                 if (movementBuffers.TryGetValue(newCoord, out Vector2Int coord))
                                 {
-                                    Champion alreadyUnit = Tiles[coord.x, coord.y].championStatus;
-                                    Champion newUnit = Tiles[i, j].championStatus;
+                                    ChampionStatus alreadyUnit = Tiles[coord.x, coord.y].championStatus;
+                                    ChampionStatus newUnit = Tiles[i, j].championStatus;
 
                                     if (newUnit.Speed > alreadyUnit.Speed)
                                     {
@@ -114,17 +112,15 @@ public class BattleController : NetworkBehaviour
 
     private void MovementUnit(Vector2Int newCoord, Vector2Int currentCoord)
     {
-        Champion champion = Tiles[currentCoord.x, currentCoord.y].championStatus;
-
-        if (champion == null)
+        if (!Tiles[currentCoord.x, currentCoord.y].IsOccupied(out var championStatus))
             return;
 
         // 유닛의 자연스러운 이동 구현
-        StartCoroutine(MoveChampion(champion, Tiles[newCoord.x, newCoord.y].DeployPoint));
+        //StartCoroutine(MoveChampion(champion, Tiles[newCoord.x, newCoord.y].DeployPoint));
 
         // 타일 데이터 업데이트
-        Tiles[newCoord.x, newCoord.y].championStatus = champion;
-        Tiles[currentCoord.x, currentCoord.y].championStatus = null;
+        Tiles[newCoord.x, newCoord.y].championStatus = championStatus;
+        Tiles[currentCoord.x, currentCoord.y].RemoveChampion();
     }
 
     private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition)
@@ -132,7 +128,7 @@ public class BattleController : NetworkBehaviour
         //float speed = 2.0f; // 이동 속도
         while (Vector3.Distance(champion.transform.position, targetPosition) > 0.1f)
         {
-            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.ChampionStatus.Speed * Time.deltaTime);
+            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.Status.Speed * Time.deltaTime);
             yield return null;
         }
         champion.transform.position = targetPosition; // 이동 완료 후 정확히 위치
@@ -140,19 +136,16 @@ public class BattleController : NetworkBehaviour
 
     private void AttackUnit(Vector2Int target, Vector2Int source)
     {
-        Champion targetUnit = Tiles[target.x, target.y].championStatus;
-        Champion sourceUnit = Tiles[source.x, source.y].championStatus;
-
-        if (targetUnit == null || sourceUnit == null)
+        if (!Tiles[target.x, target.y].IsOccupied(out var targetUnit) || !Tiles[source.x, source.y].IsOccupied(out var sourceUnit))
             return;
 
         // 공격 대상이 있으면 공격 수행
-        targetUnit.Damage(sourceUnit.ChampionStatus.AttackPower);
+        //targetUnit.Damage(sourceUnit.AttackPower);
 
-        if (targetUnit.ChampionStatus.HealthPoint <= 0)
+        if (targetUnit.HealthPoint <= 0)
         {
-            Tiles[target.x, target.y].championStatus = null; // 유닛이 사망하면 제거
-            Destroy(targetUnit.gameObject);
+            Tiles[target.x, target.y].RemoveChampion(); // 유닛이 사망하면 제거
+            //Destroy(targetUnit.gameObject);
         }
     }
 
@@ -196,7 +189,7 @@ public class BattleController : NetworkBehaviour
             {
                 Tile tile = Tiles[i, j];
 
-                if (tile.championStatus != null && tile.championStatus.Object.InputAuthority != layer)
+                if (tile.IsOccupied() && tile.championStatus.InputAuthority != layer)
                 {
                     int distance = Math.Abs(coord.x - i) + Math.Abs(coord.y - j); // 맨해튼 거리 계산
 
@@ -232,11 +225,11 @@ public class BattleController : NetworkBehaviour
         //    moveY = new Coord(current.x, current.y + Math.Sign(dy));
         //}
 
-        if (Tiles[moveX.x, moveX.y].championStatus == null)
+        if (!Tiles[moveX.x, moveX.y].IsOccupied())
         {
             return moveX;
         }
-        else if (Tiles[moveY.x, moveY.y].championStatus == null)
+        else if (!Tiles[moveY.x, moveY.y].IsOccupied())
         {
             return moveY;
         }
@@ -256,9 +249,9 @@ public class BattleController : NetworkBehaviour
             for (int j = 0; j < Tiles.GetLength(1); j++)
             {
                 Tile tile = Tiles[i, j];
-                if (tile.championStatus != null)
+                if (tile.IsOccupied())
                 {
-                    layersPresent.TryAdd(tile.championStatus.Object.InputAuthority, true);
+                    layersPresent.TryAdd(tile.championStatus.InputAuthority, true);
                     //layersPresent[tile.champion.layer] = true; // 해당 레이어의 유닛이 존재함
                 }
             }

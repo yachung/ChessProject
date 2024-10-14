@@ -28,8 +28,8 @@ public class PlayerController : NetworkBehaviour
     {
         if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isMove))
         {
-            Debug.Log($"isMove WasPressed : {inputData.movePosition}");
-            Destination = inputData.movePosition;
+            Debug.Log($"isMove WasPressed : {inputData.mousePosition}");
+            Destination = inputData.mousePosition;
         }
 
         if (inputData.buttons.WasPressed(ButtonsPrevious, MyButtons.isRefresh))

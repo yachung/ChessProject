@@ -24,9 +24,9 @@ public class ChampionController : NetworkBehaviour
 
             if (distance > range) continue; // 범위를 초과하면 탐색 중단
 
-            if (currentTile.IsOccupied(out Champion champion))
+            if (currentTile.IsOccupied(out ChampionStatus champion))
             {
-                if (champion.Object.InputAuthority != Object.InputAuthority)
+                if (champion.InputAuthority != Object.InputAuthority)
                 {
 
                     enemiesInRange.Add(currentTile); // 적을 찾음

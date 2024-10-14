@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc48df4557fa4c449b89c76b7d583eb, type: 3}
   m_Name: FootManData
   m_EditorClassIdentifier: 
-  championID: 1111
+  championID: 1000
   championPrefab:
     RawGuidValue: 27405eb5c0875034a9e1e998306cd8b8
   championName: FootMan
@@ -22,6 +22,8 @@ MonoBehaviour:
   attackDamage: 0
   abilityPower: 0
   skillCooldown: 0
+  speed: 0
+  range: 0
   cardImage: {fileID: 21300000, guid: 2f6a053a813cda44cb9d5a898568d47a, type: 3}
   description: 
   cost: 1

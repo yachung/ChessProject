@@ -23,7 +23,7 @@ public class ShopPresenter
 
     public void OnBuyChampion(ChampionData championData)
     {
-        championManager.RPC_SummonChampion(championData.championPrefab, shopModel.Runner.LocalPlayer);
+        championManager.RPC_SummonChampion(championData.championPrefab, shopModel.Runner.LocalPlayer, championData.championName);
     }
     
     public void OnRefreshShop()
