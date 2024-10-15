@@ -31,8 +31,10 @@ public class BattleState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
+
         foreach (var player in _gameManager.allPlayers.Values)
         {
+            player.playerField.BattleEnd();
             player.MoveToPlayerField(player.playerField);
             player.playerField.ChampionRespawn();
         }

@@ -21,7 +21,8 @@ public class PlayerField : NetworkBehaviour
         {
             if ((coord.x is >= 0 and < 8) && (coord.y is >= 0 and < 10))
                 return Tiles[coord.x, coord.y];
-            throw new ArgumentOutOfRangeException($"Coordinate was out of range: {coord}");
+            else
+                return null;
         }
 
         set
@@ -123,6 +124,14 @@ public class PlayerField : NetworkBehaviour
         battleController.StartBattle();
     }
 
+    public void BattleEnd()
+    {
+        foreach (var tile in Tiles)
+            tile.RemoveChampion();
+
+        battleController.BattleEnd();
+    }
+
     public void SpawnChampion(Vector2Int Coord, Champion champion)
     {
         this[Coord].DeployChampion(champion);
@@ -136,7 +145,7 @@ public class PlayerField : NetworkBehaviour
 
             if (tile.Champion != null)
             {
-                Tiles[target.x, target.y].DeployChampion(tile.Champion, true);
+                this[target].DeployChampion(tile.Champion, true);
             }
                 //SpawnChampion(target.x, target.y, tile.Champion);
                 //RPC_UpdatePositionOnHost(, target);
@@ -276,32 +285,32 @@ public class PlayerField : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
     {
-        Tiles[source.x, source.y].IsOccupied(out Champion selectedChampion);
-        Tiles[target.x, target.y].IsOccupied(out Champion deployedChampion);
+        this[source].IsOccupied(out Champion selectedChampion);
+        this[target].IsOccupied(out Champion deployedChampion);
 
         if (selectedChampion == null)
             return;
 
         if (deployedChampion == null)
         {
-            Tiles[target.x, target.y].DeployChampion(selectedChampion);
-            Tiles[source.x, source.y].RemoveChampion();
+            this[target].DeployChampion(selectedChampion);
+            this[source].RemoveChampion();
         }
         else
         {
-            Tiles[target.x, target.y].DeployChampion(selectedChampion);
-            Tiles[source.x, source.y].DeployChampion(deployedChampion);
+            this[target].DeployChampion(selectedChampion);
+            this[source].DeployChampion(deployedChampion);
         }
     }
 
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
-    public void RPC_UpdatePositionOnHost(Champion? champion, Vector2Int target)
+    public void RPC_UpdatePositionOnHost(Champion champion, Vector2Int target)
     {
         if (champion == null)
             return;
 
         champion.ReadyCoord = target;
-        Tiles[target.x, target.y].DeployChampion(champion);
+        this[target].DeployChampion(champion);
     }
 
     /// <summary>
