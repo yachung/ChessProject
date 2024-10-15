@@ -41,10 +41,14 @@ public class Player : NetworkBehaviour
         GameManager.Instance.LocalPlayer = this;
     }
 
-    public void MoveToPlayerField(PlayerField playerField)
+    public void MoveToPlayerField(PlayerField playerField, bool isBattle = false)
     {
         PlayerTeleport(playerField.transform.position);
-        RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
+
+        if (isBattle)
+            RPC_SetPlayerCamera(playerField.reverseCameraPose.position, playerField.reverseCameraPose.rotation);
+        else
+            RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
     }
 
     public void PlayerTeleport(Vector3 position)

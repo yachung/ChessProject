@@ -43,11 +43,12 @@ public class BattleReadyState : StageStateBehaviour
             Player Source = _gameManager.allPlayers[pair.Value];
             Player Target = _gameManager.allPlayers[pair.Key];
 
-            Source.playerField.DeepCopyTileArray();
-            Target.playerField.DeepCopyTileArray();
+            Source.playerField.ChampionRespawn();
+            Target.playerField.ChampionRespawn();
 
-            Source.MoveToPlayerField(Target.playerField);
+            Source.MoveToPlayerField(Target.playerField, true);
             Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.BattleTile));
+            Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.WaitTile));
         }
     }
 

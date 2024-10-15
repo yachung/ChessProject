@@ -16,6 +16,8 @@ public class ChampionData : ScriptableObject
     public float attackDamage;
     public float abilityPower;
     public float skillCooldown;
+    public float speed;
+    public int range;
 
     // 카드 비주얼 정보
     public Sprite cardImage; // 카드 이미지

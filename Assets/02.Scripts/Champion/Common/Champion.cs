@@ -24,6 +24,9 @@ public abstract class Champion : NetworkBehaviour
     public ChampionController Controller { get; private set; }
     public Animator Animator { get; private set; }
 
+    public Vector2Int ReadyCoord;
+    public Vector2Int BattleCoord;
+
     private void Awake()
     {
         Controller = GetComponent<ChampionController>();
@@ -39,4 +42,27 @@ public abstract class Champion : NetworkBehaviour
     {
 
     }
+
+    public void DataInitialize(ChampionData data)
+    {
+        CharacteristicClass = data.championType;
+        Name = data.championName;
+        Grade = 1;
+        HealthPoint = data.health;
+        AttackPower = data.attackDamage;
+        Speed = data.speed;
+        Range = data.range;
+        Cost = data.cost;
+        IsDeath = false;
+    }
+
+    //public override void Spawned()
+    //{
+    //    base.Spawned();
+
+    //    if (HasInputAuthority)
+    //    {
+    //        Runner
+    //    }
+    //}
 }

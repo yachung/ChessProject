@@ -21,18 +21,22 @@ public class ChampionManager : NetworkBehaviour
 
     // 클라이언트가 소환 요청을 보내면 서버에서 소환을 처리
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_SummonChampion(NetworkPrefabRef championPrefab, PlayerRef player)
+    public void RPC_SummonChampion(NetworkString<_32> name, PlayerRef player)
     {
         if (Runner.IsServer)
         {
-            SummonChampion(championPrefab, player);
+            SummonChampion(name.Value, player);
         }
     }
 
-    private void SummonChampion(NetworkPrefabRef championPrefab, PlayerRef player)
+    private void SummonChampion(string name, PlayerRef player)
     {
         if (_gameManager.allPlayers.TryGetValue(player, out Player playerData))
         {
+            ChampionData championData = Resources.Load($"Data/{name}Data") as ChampionData;
+
+            NetworkPrefabRef championPrefab = championData.championPrefab;
+            
             Vector3 spawnPosition;
 
             Tile emptyTile = playerData.playerField.GetEmptyWaitField();
@@ -45,9 +49,12 @@ public class ChampionManager : NetworkBehaviour
             else
                 spawnPosition = emptyTile.DeployPoint;
 
-            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity).TryGetComponent<Champion>(out var champion))
+            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity, player).TryGetComponent<Champion>(out var champion))
             {
+                champion.DataInitialize(championData);
+
                 emptyTile.DeployChampion(champion);
+                playerData.playerField.champions.Add(champion);
                 _champions.Add(champion);
             }
             else

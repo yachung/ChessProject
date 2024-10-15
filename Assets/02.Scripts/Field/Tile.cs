@@ -2,19 +2,6 @@ using Fusion;
 using System;
 using UnityEngine;
 
-public struct Coord
-{
-    public int x, y;
-
-    public Coord(int x, int y)
-    {
-        this.x = x; this.y = y;
-    }
-
-    public static bool operator ==(Coord a, Coord b) => a.x == b.x && a.y == b.y;
-    public static bool operator !=(Coord a, Coord b) => a.x != b.x || a.y != b.y;
-}
-
 public enum TileType
 {
     None = -1,
@@ -39,7 +26,7 @@ public class Tile
     public Vector2Int Coordinate { get; private set; }
     public Vector3 DeployPoint { get; private set; }
 
-    public ChampionStatus? championStatus { get; set; }
+    public Champion Champion { get; set; }
 
     public Tile DeepCopy()
     {
@@ -47,7 +34,7 @@ public class Tile
         newTile.tileType = this.tileType;
         newTile.Coordinate = this.Coordinate;
         newTile.DeployPoint = this.DeployPoint;
-        newTile.championStatus = this.championStatus;
+        newTile.Champion = this.Champion;
 
         return newTile;
     }
@@ -57,52 +44,54 @@ public class Tile
     /// </summary>
     /// <param name="champion"></param>
     /// <returns></returns>
-    public bool IsOccupied(out ChampionStatus? championStatus)
+    public bool IsOccupied(out Champion championStatus)
     {
-        championStatus = this.championStatus;
+        championStatus = this.Champion;
 
-        return this.championStatus != null;
+        return this.Champion != null;
     }
 
     public bool IsOccupied()
     {
-        return this.championStatus != null;
+        return this.Champion != null;
     }
 
-    public void DeployChampion(ChampionStatus? champion, Action<Vector2Int, Vector2Int> deployAction)
+    public void DeployChampion(Champion champion, Action<Vector2Int, Vector2Int> deployAction)
     {
-        this.championStatus = champion;
+        this.Champion = champion;
 
         Debug.Log($"DeployPoint : {DeployPoint}");
 
-        //deployAction?.Invoke(champion, deployPoint);
-        //champion.transform.position = deployPoint;
+        champion.transform.position = DeployPoint;
     }
 
-    public void DeployChampion(ChampionStatus? championStatus)
+    public void DeployChampion(Champion champion, bool isBattle = false)
     {
-        if (championStatus == null)
+        if (champion == null)
             return;
 
-        this.championStatus = championStatus;
-        //champion.transform.position = DeployPoint;
+        this.Champion = champion;
 
         Debug.Log($"DeployPoint : {DeployPoint}");
 
-        //deployAction?.Invoke(champion, deployPoint);
-        //champion.transform.position = deployPoint;
+        champion.transform.position = DeployPoint;
+
+        if (isBattle)
+            champion.BattleCoord = Coordinate;
+        else
+            champion.ReadyCoord = Coordinate;
     }
 
     public void Respawn()
     {
-        if (championStatus == null)
+        if (Champion == null)
             return;
 
-        //this.championStatus.transform.position = DeployPoint;
+        this.Champion.transform.position = DeployPoint;
     }
 
     public void RemoveChampion()
     {
-        this.championStatus = null;
+        this.Champion = null;
     }
 }
