@@ -80,6 +80,8 @@ public class Tile
             champion.BattleCoord = Coordinate;
         else
             champion.ReadyCoord = Coordinate;
+
+        champion.Busy = false;
     }
 
     public void Respawn()

@@ -56,6 +56,10 @@ public class BattleController : NetworkBehaviour
             {
                 if (Tiles[i, j].IsOccupied(out var champion))
                 {
+                    // 이미 챔피언이 다른 행동을 하고 있는 경우 버퍼에 추가하지 않음.
+                    if (champion.Busy)
+                        continue;
+
                     Vector2Int currentCoord = new Vector2Int(i, j);
 
                     // 공격 범위 내에서 적 유닛을 찾음
@@ -75,11 +79,11 @@ public class BattleController : NetworkBehaviour
                             Vector2Int targetCoord = nearestTargetTile.Coordinate;
 
                             // 타겟 방향으로 한 칸씩 이동
-                            Vector2Int newCoord = GetNextStepTowards(currentCoord, targetCoord);
-                            if (newCoord != currentCoord && Tiles[newCoord.x, newCoord.y].Champion == null)
+                            Vector2Int nextStepCoord = GetNextStepTowards(currentCoord, targetCoord);
+                            if (nextStepCoord != currentCoord && Tiles[nextStepCoord.x, nextStepCoord.y].Champion == null)
                             {
-                                // 이동할 타일이 비어있는지 확인 후 이동
-                                if (movementBuffers.TryGetValue(newCoord, out Vector2Int coord))
+                                // 이동할 좌표가 이미 버퍼에 등록되어 있는지 확인 후 추가
+                                if (movementBuffers.TryGetValue(nextStepCoord, out Vector2Int coord))
                                 {
                                     Champion existingChampion = Tiles[coord.x, coord.y].Champion;
                                     Champion movingChampion = Tiles[i, j].Champion;
@@ -87,12 +91,12 @@ public class BattleController : NetworkBehaviour
                                     // 속도가 더 빠른 유닛이 이동하도록 결정
                                     if (movingChampion.Speed > existingChampion.Speed)
                                     {
-                                        movementBuffers[newCoord] = new Vector2Int(i, j);
+                                        movementBuffers[nextStepCoord] = new Vector2Int(i, j);
                                     }
                                 }
                                 else
                                 {
-                                    movementBuffers.Add(newCoord, new Vector2Int(i, j));
+                                    movementBuffers.Add(nextStepCoord, new Vector2Int(i, j));
                                 }
                             }
                         }
@@ -121,30 +125,40 @@ public class BattleController : NetworkBehaviour
         return isFinished;
     }
 
-    private void MovementUnit(Vector2Int newCoord, Vector2Int currentCoord)
+    private void MovementUnit(Vector2Int nextStepCoord, Vector2Int currentCoord)
     {
-        Champion champion = Tiles[currentCoord.x, currentCoord.y].Champion;
-
-        if (champion == null)
+        if (playerField[currentCoord] == null || !playerField[currentCoord].IsOccupied(out var champion))
             return;
 
+        playerField[nextStepCoord].Champion = champion;
+        playerField[currentCoord].RemoveChampion();
+
+        Debug.Log($"MoveLog {champion.Object.Id}{champion.Object.InputAuthority} is {currentCoord} to {nextStepCoord}");
+
+        champion.Busy = true;
+
         // 유닛을 타겟 위치로 이동
-        StartCoroutine(MoveChampion(champion, Tiles[newCoord.x, newCoord.y].DeployPoint));
+        StartCoroutine(MoveChampion(champion, Tiles[nextStepCoord.x, nextStepCoord.y].DeployPoint,
+            () =>
+            {
+                playerField[nextStepCoord].DeployChampion(champion, true);
+                champion.Busy = false;
+            }));
 
-        Debug.Log($"MoveLog {champion.Object.InputAuthority} is {currentCoord} to {newCoord}");
+    // 타일 데이터 업데이트
+    //Tiles[newCoord.x, newCoord.y].DeployChampion(champion, true);
+    //Tiles[currentCoord.x, currentCoord.y].RemoveChampion();
+}
 
-        // 타일 데이터 업데이트
-        Tiles[newCoord.x, newCoord.y].DeployChampion(champion, true);
-        Tiles[currentCoord.x, currentCoord.y].RemoveChampion();
-    }
-
-    private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition)
+    private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action callBack)
     {
-        while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f || !isBattleFinished)
+        while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
         {
-            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.Speed * Time.deltaTime);
+            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.Speed * Runner.DeltaTime);
             yield return null;
         }
+
+        callBack?.Invoke();
     }
 
     private void AttackUnit(Vector2Int target, Vector2Int source)
@@ -247,23 +261,46 @@ public class BattleController : NetworkBehaviour
         return result;
     }
 
-    // 오프셋 좌표계에서 두 타일 간의 거리 계산
-    private int GetHexDistance(Vector2Int a, Vector2Int b)
+    //// 오프셋 좌표계에서 두 타일 간의 거리 계산
+    //private int GetHexDistance(Vector2Int a, Vector2Int b)
+    //{
+    //    int dx = b.x - a.x;
+    //    int dy = b.y - a.y;
+    //    if (a.y % 2 == 0)
+    //    {
+    //        dy -= dx / 2;
+    //    }
+    //    else
+    //    {
+    //        dy += dx / 2;
+    //    }
+    //    return Mathf.Abs(dx) + Mathf.Abs(dy);
+    //}
+
+    /// <summary>
+    /// offset 좌표계를 Cube 좌표계로 변환
+    /// </summary>
+    /// <param name="col"></param>
+    /// <param name="row"></param>
+    /// <returns></returns>
+    private (int x, int y, int z) OffsetToCube(int col, int row)
     {
-        int dx = b.x - a.x;
-        int dy = b.y - a.y;
+        int x = col - (row - (row & 1)) / 2;
+        int z = row;
+        int y = -x - z;
 
-        if (a.y % 2 == 0)
-        {
-            dy -= dx / 2;
-        }
-        else
-        {
-            dy += dx / 2;
-        }
-
-        return Mathf.Abs(dx) + Mathf.Abs(dy);
+        return (x, y, z);
     }
+
+    public int GetHexDistance(Vector2Int a, Vector2Int b)
+    {
+        // Convert a and b from Odd-r offset to cube coordinates.
+        var (ax, ay, az) = OffsetToCube(a.x, a.y);
+        var (bx, by, bz) = OffsetToCube(b.x, b.y);
+
+        return Mathf.Max(Mathf.Abs(ax - bx), Mathf.Abs(ay - by), Mathf.Abs(az - bz));
+    }
+
 
     public bool IsBattleOver(bool forcedEnd = false)
     {

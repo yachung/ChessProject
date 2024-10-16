@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectObjectDuration: 5
   battleReadyDuration: 5
-  battleDuration: 5
+  battleDuration: 10
   winDuration: 0

@@ -23,6 +23,7 @@ public abstract class Champion : NetworkBehaviour
 
     public ChampionController Controller { get; private set; }
     public Animator Animator { get; private set; }
+    public bool Busy { get; set; }
 
     public Vector2Int ReadyCoord;
     public Vector2Int BattleCoord;
