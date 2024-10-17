@@ -51,7 +51,7 @@ public class ChampionManager : NetworkBehaviour
 
             if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity, player).TryGetComponent<Champion>(out var champion))
             {
-                champion.DataInitialize(championData);
+                champion.RPC_DataInitialize(new ChampionStatus(championData));
 
                 emptyTile.DeployChampion(champion);
                 playerData.playerField.champions.Add(champion);

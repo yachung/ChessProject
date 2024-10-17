@@ -19,7 +19,7 @@ MonoBehaviour:
   championType: 0
   championLevel: 0
   health: 100
-  attackDamage: 0
+  attackDamage: 10
   abilityPower: 0
   skillCooldown: 0
   speed: 20

@@ -10,7 +10,7 @@ public class ChampionStateMachine : NetworkBehaviour, IStateMachineOwner
 
     private void Awake()
     {
-        Champion = GetComponent<Champion>();
+        Champion = GetComponentInParent<Champion>();
     }
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)

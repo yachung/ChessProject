@@ -12,26 +12,23 @@ public class PlayerField : NetworkBehaviour
     [SerializeField] private Transform gridStartingPoint;
 
     public Tile[,] Tiles = new Tile[8, 10];
-    //public Tile[,] cachedTiles = new Tile[8, 10];
 
-    //private Champion[,] Champions = new Champion[8, 10];
-    public Tile this[Vector2Int coord]
+    private Tile this[Vector2Int coord, bool isBattle = false]
     {
         get
         {
-            if ((coord.x is >= 0 and < 8) && (coord.y is >= 0 and < 10))
+            if (isBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 1 and <= 8))
                 return Tiles[coord.x, coord.y];
-            else
-                return null;
-        }
 
-        set
-        {
-            if ((coord.x is >= 0 and < 8) && (coord.y is >= 0 and < 10))
-                Tiles[coord.x, coord.y] = value;
-            throw new ArgumentOutOfRangeException($"Coordinate was out of range: {coord}");
+            if (!isBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 9))
+                return Tiles[coord.x, coord.y];
+
+            return null;
         }
     }
+
+    public Tile GetBattleTile(Vector2Int coord) => this[coord, true];
+    public Tile GetAllTile(Vector2Int coord) => this[coord, false];
 
     public List<Champion> champions = new List<Champion>();
 
@@ -110,8 +107,6 @@ public class PlayerField : NetworkBehaviour
                     fieldType = TileType.BattleTile;
                 else if (y >= 5 && y <= 9 && x >= 0 && x <= 7)
                     fieldType = TileType.EnemyTile;
-                //else if (y == 9 && x >= 0 && x <= 7)
-                    //fieldType = FieldType.EnemyField;
 
                 Tiles[x, y] = new Tile(CoordinateToWorldPosition(new Vector2(x, y)), new Vector2Int(x, y), fieldType);
             }
@@ -157,6 +152,7 @@ public class PlayerField : NetworkBehaviour
     {
         foreach (var champion in champions)
         {
+            champion.Respawn();
             SpawnChampion(champion.ReadyCoord, champion);
         }
     }

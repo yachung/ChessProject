@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: StageDurationConfig
   m_EditorClassIdentifier: 
   selectObjectDuration: 5
-  battleReadyDuration: 5
-  battleDuration: 10
+  battleReadyDuration: 10
+  battleDuration: 20
   winDuration: 0

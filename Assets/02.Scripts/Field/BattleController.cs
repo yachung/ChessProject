@@ -7,12 +7,22 @@ using UnityEngine;
 public class BattleController : NetworkBehaviour
 {
     public PlayerField playerField;
-    private Tile[,] Tiles => playerField.Tiles;
+    private Tile Tile(Vector2Int coord) => playerField.GetBattleTile(coord);
 
     private bool isBattleFinished = false;
 
     private readonly (int, int)[] evenDirections = { (-1, 1), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 0) };
     private readonly (int, int)[] oddDirections = { (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, 0) };
+    private readonly Vector3Int[] cubeDirections =
+        {
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int( 0, 1,-1),
+            new Vector3Int( 1, 0,-1),
+            new Vector3Int( 1,-1, 0),
+            new Vector3Int( 0,-1, 1),
+            new Vector3Int(-1, 0, 1)
+        };
+
 
     private (int, int)[] GetDirections(int y)
     {
@@ -30,7 +40,7 @@ public class BattleController : NetworkBehaviour
     {
         while (!isBattleFinished)
         {
-            yield return new WaitForSeconds(1f); // 1초에 한 번씩 틱을 처리
+            yield return new WaitForSeconds(0.5f); // 1초에 한 번씩 틱을 처리
             isBattleFinished = SimulationTick();  // 한 틱 처리
         }
     }
@@ -50,24 +60,24 @@ public class BattleController : NetworkBehaviour
         List<(Vector2Int target, Vector2Int source)> attackBuffers = new List<(Vector2Int, Vector2Int)>();
 
         // 모든 타일을 순회하며 각 챔피언의 이동 및 공격을 처리
-        for (int i = 0; i < Tiles.GetLength(0); i++)
+        for (int i = 0; i <= 7; i++)
         {
-            for (int j = 0; j < Tiles.GetLength(1); j++)
+            for (int j = 1; j <= 8; j++)
             {
-                if (Tiles[i, j].IsOccupied(out var champion))
+                Vector2Int currentCoord = new Vector2Int(i, j);
+
+                if (Tile(currentCoord).IsOccupied(out var champion))
                 {
                     // 이미 챔피언이 다른 행동을 하고 있는 경우 버퍼에 추가하지 않음.
                     if (champion.Busy)
                         continue;
 
-                    Vector2Int currentCoord = new Vector2Int(i, j);
-
                     // 공격 범위 내에서 적 유닛을 찾음
-                    Tile targetTile = FindNodeInRange(currentCoord, champion.Range, target => target.Champion != null && target.Champion.Object.InputAuthority != champion.Object.InputAuthority);
+                    Tile targetTile = FindInRangeTarget(currentCoord, champion.status.Range, target => target.Champion != null && target.Champion.Object.InputAuthority != champion.Object.InputAuthority);
 
                     if (targetTile != null)
                     {
-                        attackBuffers.Add((targetTile.Coordinate, new Vector2Int(i, j)));
+                        attackBuffers.Add((targetTile.Coordinate, currentCoord));
                     }
                     else
                     {
@@ -80,23 +90,23 @@ public class BattleController : NetworkBehaviour
 
                             // 타겟 방향으로 한 칸씩 이동
                             Vector2Int nextStepCoord = GetNextStepTowards(currentCoord, targetCoord);
-                            if (nextStepCoord != currentCoord && Tiles[nextStepCoord.x, nextStepCoord.y].Champion == null)
+                            if (nextStepCoord != currentCoord && Tile(nextStepCoord).Champion == null)
                             {
                                 // 이동할 좌표가 이미 버퍼에 등록되어 있는지 확인 후 추가
                                 if (movementBuffers.TryGetValue(nextStepCoord, out Vector2Int coord))
                                 {
-                                    Champion existingChampion = Tiles[coord.x, coord.y].Champion;
-                                    Champion movingChampion = Tiles[i, j].Champion;
+                                    Champion existingChampion = Tile(coord).Champion;
+                                    Champion movingChampion = Tile(currentCoord).Champion;
 
                                     // 속도가 더 빠른 유닛이 이동하도록 결정
-                                    if (movingChampion.Speed > existingChampion.Speed)
+                                    if (movingChampion.status.Speed > existingChampion.status.Speed)
                                     {
-                                        movementBuffers[nextStepCoord] = new Vector2Int(i, j);
+                                        movementBuffers[nextStepCoord] = currentCoord;
                                     }
                                 }
                                 else
                                 {
-                                    movementBuffers.Add(nextStepCoord, new Vector2Int(i, j));
+                                    movementBuffers.Add(nextStepCoord, currentCoord);
                                 }
                             }
                         }
@@ -127,84 +137,90 @@ public class BattleController : NetworkBehaviour
 
     private void MovementUnit(Vector2Int nextStepCoord, Vector2Int currentCoord)
     {
-        if (playerField[currentCoord] == null || !playerField[currentCoord].IsOccupied(out var champion))
+        if (Tile(currentCoord) == null || !Tile(currentCoord).IsOccupied(out var champion))
             return;
 
-        playerField[nextStepCoord].Champion = champion;
-        playerField[currentCoord].RemoveChampion();
+        Tile(nextStepCoord).Champion = champion;
+        Tile(currentCoord).RemoveChampion();
 
         Debug.Log($"MoveLog {champion.Object.Id}{champion.Object.InputAuthority} is {currentCoord} to {nextStepCoord}");
 
         champion.Busy = true;
 
         // 유닛을 타겟 위치로 이동
-        StartCoroutine(MoveChampion(champion, Tiles[nextStepCoord.x, nextStepCoord.y].DeployPoint,
-            () =>
-            {
-                playerField[nextStepCoord].DeployChampion(champion, true);
-                champion.Busy = false;
-            }));
+        StartCoroutine(MoveChampion(champion, Tile(nextStepCoord).DeployPoint,
+            () => Tile(nextStepCoord).DeployChampion(champion, true)));
+    }
 
-    // 타일 데이터 업데이트
-    //Tiles[newCoord.x, newCoord.y].DeployChampion(champion, true);
-    //Tiles[currentCoord.x, currentCoord.y].RemoveChampion();
-}
-
-    private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action callBack)
+    private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
     {
         while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
         {
-            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.Speed * Runner.DeltaTime);
+            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
             yield return null;
         }
 
-        callBack?.Invoke();
+        completeCallback?.Invoke();
     }
 
     private void AttackUnit(Vector2Int target, Vector2Int source)
     {
-        Champion targetUnit = Tiles[target.x, target.y].Champion;
-        Champion sourceUnit = Tiles[source.x, source.y].Champion;
-
-        if (targetUnit == null || sourceUnit == null)
+        if (Tile(target).Champion == null || Tile(source).Champion == null)
             return;
 
         // 타겟 유닛에게 데미지 적용
-        targetUnit.Damage(sourceUnit.AttackPower);
+        Tile(target).Champion.Damage(Tile(source).Champion.status.AttackPower);
 
-        if (targetUnit.HealthPoint <= 0)
+        if (Tile(target).Champion.status.HealthPoint <= 0)
         {
-            playerField[target].RemoveChampion();
-            Destroy(targetUnit.gameObject);
+            Tile(target).RemoveChampion();
         }
     }
 
-    // 오프셋 좌표계를 사용하여 범위 내에서 타겟을 찾는 함수
-    public Tile FindNodeInRange(Vector2Int source, int range, Func<Tile, bool> condition)
+    public Tile FindInRangeTarget(Vector2Int source, int radius, Func<Tile, bool> condition)
     {
-        for (int dx = -range; dx <= range; dx++)
+        Vector3Int center = OffsetToCube(source);
+        Tile target;
+
+        for (int k = 1; k <= radius; ++k)
         {
-            int dyMin = Mathf.Max(-range, -dx - range);
-            int dyMax = Mathf.Min(range, -dx + range);
+            var hex = Cube_Add(center, Cube_Scale(cubeDirections[4], k));
 
-            for (int dy = dyMin; dy <= dyMax; dy++)
+            for (int i = 0; i < 6; ++i)
             {
-                int x = source.x + dx;
-                int y = source.y + dy;
-
-                if (x < 0 || x >= Tiles.GetLength(0) || y < 0 || y >= Tiles.GetLength(1))
-                    continue;
-
-                Tile target = Tiles[x, y];
-
-                if (condition.Invoke(target))
+                for (int j = 0; j < k; ++j)
                 {
-                    return target;
+                    target = Tile(CubeToOffset(hex));
+
+                    if (target == null)
+                        continue;
+
+                    if (condition.Invoke(target))
+                    {
+                        return target;
+                    }
+
+                    hex = Cube_Neighbor(hex, i);
                 }
             }
         }
 
         return null;
+    }
+
+    public Vector3Int Cube_Scale(Vector3Int hex, int factor)
+    {
+        return new Vector3Int(hex.x * factor, hex.y * factor, hex.z * factor);
+    }
+
+    public Vector3Int Cube_Add(Vector3Int hex, Vector3Int vec)
+    {
+        return hex + vec;
+    }
+
+    public Vector3Int Cube_Neighbor(Vector3Int cube, int index)
+    {
+        return Cube_Add(cube, cubeDirections[index]);
     }
 
     // 오프셋 좌표계에서 가장 가까운 타겟을 찾는 함수
@@ -213,11 +229,11 @@ public class BattleController : NetworkBehaviour
         Tile nearestTile = null;
         int nearestDistance = int.MaxValue;
 
-        for (int i = 0; i < Tiles.GetLength(0); i++)
+        for (int i = 0; i <= 7; i++)
         {
-            for (int j = 0; j < Tiles.GetLength(1); j++)
+            for (int j = 1; j <= 8; j++)
             {
-                Tile target = Tiles[i, j];
+                Tile target = Tile(new Vector2Int(i, j));
 
                 if (target.Champion != null && target.Champion.Object.InputAuthority != playerRef)
                 {
@@ -239,19 +255,21 @@ public class BattleController : NetworkBehaviour
     public Vector2Int GetNextStepTowards(Vector2Int current, Vector2Int target)
     {
         int distance = int.MaxValue;
+
+        // 이동할수 있는 타일이 없다면 현위치에 멈춤.
         Vector2Int result = current;
         
         foreach (var direction in GetDirections(current.y))
         {
             Vector2Int coord = new Vector2Int(current.x + direction.Item1, current.y + direction.Item2);
 
-            if (playerField[coord] == null)
+            if (Tile(coord) == null)
                 continue;
 
-            if (playerField[coord].IsOccupied())
+            if (Tile(coord).IsOccupied())
                 continue;
 
-            if (distance > GetHexDistance(target, coord))
+            if (distance >= GetHexDistance(target, coord))
             {
                 distance = GetHexDistance(target, coord);
                 result = coord;
@@ -261,46 +279,35 @@ public class BattleController : NetworkBehaviour
         return result;
     }
 
-    //// 오프셋 좌표계에서 두 타일 간의 거리 계산
-    //private int GetHexDistance(Vector2Int a, Vector2Int b)
-    //{
-    //    int dx = b.x - a.x;
-    //    int dy = b.y - a.y;
-    //    if (a.y % 2 == 0)
-    //    {
-    //        dy -= dx / 2;
-    //    }
-    //    else
-    //    {
-    //        dy += dx / 2;
-    //    }
-    //    return Mathf.Abs(dx) + Mathf.Abs(dy);
-    //}
-
     /// <summary>
     /// offset 좌표계를 Cube 좌표계로 변환
     /// </summary>
     /// <param name="col"></param>
     /// <param name="row"></param>
     /// <returns></returns>
-    private (int x, int y, int z) OffsetToCube(int col, int row)
+    private Vector3Int OffsetToCube(Vector2Int hex)
     {
-        int x = col - (row - (row & 1)) / 2;
-        int z = row;
-        int y = -x - z;
+        var q = hex.x - (hex.y - (hex.y & 1)) / 2;
+        var r = hex.y;
 
-        return (x, y, z);
+        return new Vector3Int(q, r, -q - r);
+    }
+
+    private Vector2Int CubeToOffset(Vector3Int hex)
+    {
+        var x = hex.x + (hex.y - (hex.y & 1)) / 2;
+        var y = hex.y;
+
+        return new Vector2Int(x, y);
     }
 
     public int GetHexDistance(Vector2Int a, Vector2Int b)
     {
         // Convert a and b from Odd-r offset to cube coordinates.
-        var (ax, ay, az) = OffsetToCube(a.x, a.y);
-        var (bx, by, bz) = OffsetToCube(b.x, b.y);
+        Vector3Int distance = OffsetToCube(a) - OffsetToCube(b);
 
-        return Mathf.Max(Mathf.Abs(ax - bx), Mathf.Abs(ay - by), Mathf.Abs(az - bz));
+        return Mathf.Max(Mathf.Abs(distance.x), Mathf.Abs(distance.y), Mathf.Abs(distance.z));
     }
-
 
     public bool IsBattleOver(bool forcedEnd = false)
     {
@@ -309,14 +316,14 @@ public class BattleController : NetworkBehaviour
 
         Dictionary<PlayerRef, bool> layersPresent = new Dictionary<PlayerRef, bool>();
 
-        for (int i = 0; i < Tiles.GetLength(0); i++)
+        for (int i = 0; i <= 7; i++)
         {
-            for (int j = 0; j < Tiles.GetLength(1); j++)
+            for (int j = 1; j <= 8; j++)
             {
-                Tile tile = Tiles[i, j];
-                if (tile.Champion != null)
+                Tile target = Tile(new Vector2Int(i, j));
+                if (target.Champion != null)
                 {
-                    layersPresent.TryAdd(tile.Champion.Object.InputAuthority, true);
+                    layersPresent.TryAdd(target.Champion.Object.InputAuthority, true);
                 }
             }
         }
