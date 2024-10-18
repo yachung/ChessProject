@@ -12,54 +12,39 @@ public class PlayerField : NetworkBehaviour
     [SerializeField] private Transform gridStartingPoint;
 
     public Tile[,] Tiles = new Tile[8, 10];
+    [Networked, OnChangedRender(nameof(IsBattleChanged))] public bool IsBattle { get; set; }
 
-    private Tile this[Vector2Int coord, bool isBattle = false]
+    public Action<bool> OnIsBattleChanged;
+
+    private Tile this[Vector2Int coord, bool isDrag = false]
     {
         get
         {
-            if (isBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 1 and <= 8))
+            if (isDrag)
+            {
+                if (!IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 4))
+                    return Tiles[coord.x, coord.y];
+
+                if (IsBattle && (coord.x is >= 0 and <= 7) && (coord.y == 0))
+                    return Tiles[coord.x, coord.y];
+
+                return null;
+            }
+
+            if (IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 1 and <= 8))
                 return Tiles[coord.x, coord.y];
 
-            if (!isBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 9))
+            if (!IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 9))
                 return Tiles[coord.x, coord.y];
 
             return null;
         }
     }
 
-    public Tile GetBattleTile(Vector2Int coord) => this[coord, true];
-    public Tile GetAllTile(Vector2Int coord) => this[coord, false];
+    public Tile GetBattleTile(Vector2Int coord) => this[coord];
+    public Tile GetDragTile(Vector2Int coord) => this[coord, isDrag: true];
 
-    public List<Champion> champions = new List<Champion>();
-
-    //public List<Tile> ChampionTiles
-    //{
-    //    get 
-    //    {
-    //        List<Tile> list = new List<Tile>();
-
-    //        foreach (var tile in Tiles)
-    //        {
-    //            if (gameStateManager.ActiveState is BattleState)
-    //            {
-    //                if (tile.tileType != TileType.WaitTile)
-    //                    continue;
-    //            }
-    //            else if (gameStateManager.ActiveState is BattleReadyState)
-    //            {
-    //                if (tile.tileType == TileType.EnemyTile)
-    //                    continue;
-    //            }
-
-    //            list.Add(tile);
-    //        }
-
-    //        //cachedChampionTiles = new List<Tile>(list);
-
-    //        return list;
-    //    }
-    //}
-
+    [Networked, Capacity(40)] public NetworkLinkedList<Champion> Champions => default;
 
     public Pose cameraPose;
     public Pose reverseCameraPose;
@@ -81,9 +66,6 @@ public class PlayerField : NetworkBehaviour
 
         gridOffset = gridStartingPoint.position;
 
-        //championDragHandler = GetComponentInChildren<ChampionDragAndDrop>();
-        //championDragHandler.playerField = this;
-        //
         battleController = GetComponentInChildren<BattleController>();
         battleController.playerField = this;
     }
@@ -113,18 +95,30 @@ public class PlayerField : NetworkBehaviour
         }
     }
 
+    public void IsBattleChanged()
+    {
+        OnIsBattleChanged?.Invoke(IsBattle);
+    }
+
     public void StartBattle()
     {
+        IsBattle = true;
+
         // 전투 시작 시 BattleController에서 전투를 시작하도록 호출
         battleController.StartBattle();
     }
 
     public void BattleEnd()
     {
+        IsBattle = false;
+
         foreach (var tile in Tiles)
             tile.RemoveChampion();
 
         battleController.BattleEnd();
+
+        foreach (var champion in Champions)
+            champion.IsAwayTeam = false;
     }
 
     public void SpawnChampion(Vector2Int Coord, Champion champion)
@@ -140,36 +134,20 @@ public class PlayerField : NetworkBehaviour
 
             if (tile.Champion != null)
             {
+                tile.Champion.IsAwayTeam = true;
                 this[target].DeployChampion(tile.Champion, true);
             }
-                //SpawnChampion(target.x, target.y, tile.Champion);
-                //RPC_UpdatePositionOnHost(, target);
-            //Tiles[target.x, target.y].DeployChampion(tile.champion);
         }
     }
 
     public void ChampionRespawn()
     {
-        foreach (var champion in champions)
+        foreach (var champion in Champions)
         {
             champion.Respawn();
             SpawnChampion(champion.ReadyCoord, champion);
         }
     }
-
-    /// <summary>
-    /// 전투 전에 타일 배열 캐싱
-    /// </summary>
-    //public void DeepCopyTileArray()
-    //{
-    //    for (int y = 0; y < Tiles.GetLength(1); y++)
-    //    {
-    //        for (int x = 0; x < Tiles.GetLength(0); ++x)
-    //        {
-    //            cachedTiles[x, y] = Tiles[x, y].DeepCopy();
-    //        }
-    //    }
-    //}
 
     /// <summary>
     /// TestCode
@@ -217,12 +195,12 @@ public class PlayerField : NetworkBehaviour
 
         var coordinate = CalculateCoordinate(inputPosition);
 
-        if (!IsValidCoordinate(coordinate))
+        if (GetDragTile(coordinate) == null)
             return false;
 
         Debug.Log(coordinate);
 
-        if (this[coordinate].IsOccupied(out var champion))
+        if (GetDragTile(coordinate).IsOccupied(out var champion))
         {
             placedChampion = champion;
             return true;
@@ -281,6 +259,13 @@ public class PlayerField : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
     {
+        if (GetDragTile(target) == null)
+        {
+            this[source].RespawnChampion();
+
+            return;
+        }
+
         this[source].IsOccupied(out Champion selectedChampion);
         this[target].IsOccupied(out Champion deployedChampion);
 

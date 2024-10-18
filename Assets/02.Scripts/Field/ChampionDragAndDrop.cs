@@ -14,6 +14,18 @@ public class ChampionDragAndDrop : NetworkBehaviour
     private void Awake()
     {
         playerField = GetComponentInParent<PlayerField>();
+        playerField.OnIsBattleChanged += OnBattleStart;
+    }
+
+    private void OnBattleStart(bool IsBattle)
+    {
+        if (IsBattle)
+        {
+            isDrag = false;
+
+            //if (selectedChampion != null)
+            //    selectedChampion.transform.position = originPosition;
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -34,7 +46,7 @@ public class ChampionDragAndDrop : NetworkBehaviour
             isDrag = playerField.IsOccupied(originPosition, out selectedChampion);
         }
 
-        if (inputData.buttons.WasReleased(ButtonsPrevious, MyButtons.isDrag))
+        if (inputData.buttons.WasReleased(ButtonsPrevious, MyButtons.isDrag) && isDrag)
         {
             Debug.Log($"isDrag WasReleased : {inputData.movePosition}");
 

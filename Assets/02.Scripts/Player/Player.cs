@@ -6,7 +6,7 @@ using VContainer;
 public class Player : NetworkBehaviour
 {
     //public PlayerInfo playerInfo { get; set; }
-    public PlayerField playerField { get; set; }
+    [Networked] public PlayerField playerField { get; set; }
 
     private PlayerController playerController;
     private Camera mainCamera;
@@ -49,6 +49,13 @@ public class Player : NetworkBehaviour
             RPC_SetPlayerCamera(playerField.reverseCameraPose.position, playerField.reverseCameraPose.rotation);
         else
             RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
+    }
+
+    public void MoveToSelectField(Vector3 position, Pose cameraData)
+    {
+        PlayerTeleport(position);
+
+        RPC_SetPlayerCamera(cameraData.position, cameraData.rotation);
     }
 
     public void PlayerTeleport(Vector3 position)

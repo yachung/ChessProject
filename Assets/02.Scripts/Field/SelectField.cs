@@ -19,7 +19,7 @@ public class SelectField : MonoBehaviour
             if (i >= players.Length)
                 return;
 
-            players[i].PlayerTeleport(spawnPositions[i].position);
+            players[i].MoveToSelectField(spawnPositions[i].position, DefaultCameraData);
         }
     }
 }

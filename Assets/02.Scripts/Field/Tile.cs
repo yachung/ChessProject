@@ -28,16 +28,16 @@ public class Tile
 
     public Champion Champion { get; set; }
 
-    public Tile DeepCopy()
-    {
-        Tile newTile = new Tile();
-        newTile.tileType = this.tileType;
-        newTile.Coordinate = this.Coordinate;
-        newTile.DeployPoint = this.DeployPoint;
-        newTile.Champion = this.Champion;
+    //public Tile DeepCopy()
+    //{
+    //    Tile newTile = new Tile();
+    //    newTile.tileType = this.tileType;
+    //    newTile.Coordinate = this.Coordinate;
+    //    newTile.DeployPoint = this.DeployPoint;
+    //    newTile.Champion = this.Champion;
 
-        return newTile;
-    }
+    //    return newTile;
+    //}
 
     /// <summary>
     /// 타일에 챔피언이 존재하는지 여부
@@ -80,11 +80,18 @@ public class Tile
             champion.BattleCoord = Coordinate;
         else
             champion.ReadyCoord = Coordinate;
-
-        champion.Busy = false;
     }
 
-    public void Respawn()
+    public void OnMoveComplete()
+    {
+        if (Champion == null)
+            return;
+
+        this.Champion.transform.position = DeployPoint;
+        this.Champion.Busy = false;
+    }
+
+    public void RespawnChampion()
     {
         if (Champion == null)
             return;

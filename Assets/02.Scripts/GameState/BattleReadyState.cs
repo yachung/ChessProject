@@ -1,5 +1,7 @@
 
 
+using Fusion;
+
 public class BattleReadyState : StageStateBehaviour
 {
     protected override bool CanEnterState()
@@ -42,9 +44,6 @@ public class BattleReadyState : StageStateBehaviour
         {
             Player Source = _gameManager.allPlayers[pair.Value];
             Player Target = _gameManager.allPlayers[pair.Key];
-
-            Source.playerField.ChampionRespawn();
-            Target.playerField.ChampionRespawn();
 
             Source.MoveToPlayerField(Target.playerField, true);
             Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.BattleTile));

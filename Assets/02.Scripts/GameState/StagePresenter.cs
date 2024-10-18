@@ -30,6 +30,7 @@ public class StagePresenter : NetworkBehaviour
 
     public override void Spawned()
     {
+        //Object.AssignInputAuthority(Runner.LocalPlayer);
         Runner.SetIsSimulated(Object, true);
     }
 

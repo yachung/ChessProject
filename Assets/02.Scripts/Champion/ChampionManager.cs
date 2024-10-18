@@ -54,7 +54,7 @@ public class ChampionManager : NetworkBehaviour
                 champion.RPC_DataInitialize(new ChampionStatus(championData));
 
                 emptyTile.DeployChampion(champion);
-                playerData.playerField.champions.Add(champion);
+                playerData.playerField.Champions.Add(champion);
                 _champions.Add(champion);
             }
             else

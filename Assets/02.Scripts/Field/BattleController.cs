@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class BattleController : NetworkBehaviour
@@ -11,16 +13,16 @@ public class BattleController : NetworkBehaviour
 
     private bool isBattleFinished = false;
 
-    private readonly (int, int)[] evenDirections = { (-1, 1), (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 0) };
-    private readonly (int, int)[] oddDirections = { (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, 0) };
+    private readonly (int, int)[] evenDirections = { (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1)};
+    private readonly (int, int)[] oddDirections = { (1, 1), (1, 0), (1, -1), (0, -1), (-1, 0), (0, 1)};
     private readonly Vector3Int[] cubeDirections =
         {
-            new Vector3Int(-1, 1, 0),
             new Vector3Int( 0, 1,-1),
             new Vector3Int( 1, 0,-1),
             new Vector3Int( 1,-1, 0),
             new Vector3Int( 0,-1, 1),
-            new Vector3Int(-1, 0, 1)
+            new Vector3Int(-1, 0, 1),
+            new Vector3Int(-1, 1, 0)
         };
 
 
@@ -135,29 +137,46 @@ public class BattleController : NetworkBehaviour
         return isFinished;
     }
 
-    private void MovementUnit(Vector2Int nextStepCoord, Vector2Int currentCoord)
+    private async void MovementUnit(Vector2Int nextStepCoord, Vector2Int previousCoord)
     {
-        if (Tile(currentCoord) == null || !Tile(currentCoord).IsOccupied(out var champion))
+        if (Tile(previousCoord) == null || !Tile(previousCoord).IsOccupied())
             return;
 
-        Tile(nextStepCoord).Champion = champion;
-        Tile(currentCoord).RemoveChampion();
+        Tile(nextStepCoord).Champion = Tile(previousCoord).Champion;
+        Tile(previousCoord).RemoveChampion();
 
-        Debug.Log($"MoveLog {champion.Object.Id}{champion.Object.InputAuthority} is {currentCoord} to {nextStepCoord}");
+        Debug.Log($"MoveLog {Tile(nextStepCoord).Champion.Object.Id}{Tile(nextStepCoord).Champion.Object.InputAuthority} is {previousCoord} to {nextStepCoord}");
 
-        champion.Busy = true;
+        Tile(nextStepCoord).Champion.Busy = true;
+        Vector3 targetPosition = Tile(nextStepCoord).DeployPoint;
 
-        // 유닛을 타겟 위치로 이동
-        StartCoroutine(MoveChampion(champion, Tile(nextStepCoord).DeployPoint,
-            () => Tile(nextStepCoord).DeployChampion(champion, true)));
+        while (Tile(nextStepCoord).Champion != null &&
+               Vector3.Distance(Tile(nextStepCoord).Champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
+        {
+            Tile(nextStepCoord).Champion.transform.position = Vector3.MoveTowards(Tile(nextStepCoord).Champion.transform.position, targetPosition, Tile(nextStepCoord).Champion.status.Speed * Runner.DeltaTime);
+            await UniTask.Yield();
+        }
+
+        Tile(nextStepCoord).OnMoveComplete();
     }
 
-    private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
+    //private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
+    //{
+    //    while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
+    //    {
+    //        champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
+    //        yield return null;
+    //    }
+
+    //    completeCallback?.Invoke();
+    //}
+
+    private async UniTask MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
     {
         while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
         {
             champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
-            yield return null;
+            await UniTask.Yield();
         }
 
         completeCallback?.Invoke();
@@ -170,8 +189,9 @@ public class BattleController : NetworkBehaviour
 
         // 타겟 유닛에게 데미지 적용
         Tile(target).Champion.Damage(Tile(source).Champion.status.AttackPower);
+        //Debug.Log($"Attack")
 
-        if (Tile(target).Champion.status.HealthPoint <= 0)
+        if (Tile(target).Champion.RemainHp <= 0)
         {
             Tile(target).RemoveChampion();
         }
@@ -269,7 +289,7 @@ public class BattleController : NetworkBehaviour
             if (Tile(coord).IsOccupied())
                 continue;
 
-            if (distance >= GetHexDistance(target, coord))
+            if (distance > GetHexDistance(target, coord))
             {
                 distance = GetHexDistance(target, coord);
                 result = coord;

@@ -13,6 +13,7 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
     public StateBehaviour ActiveState => stateMachine.ActiveState;
     //public bool AllowInput => stateMachine.ActiveStateId == playState.StateId || stateMachine.ActiveStateId == pregameState.StateId;
     public bool IsInGame => stateMachine.ActiveState is StageStateBehaviour;
+    public bool IsBattle => stateMachine.ActiveState is BattleState;
 
     [Header("Game States Reference")]
     public PregameState pregameState;               // 게임 로비

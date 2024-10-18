@@ -39,8 +39,6 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
-        Player LocalPlayer = _gameManager.LocalPlayer;
-        LocalPlayer.SetPlayerCamera(_selectField.DefaultCameraData);
     }
 
     protected override void OnExitState()

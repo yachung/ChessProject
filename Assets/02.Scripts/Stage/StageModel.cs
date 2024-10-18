@@ -19,6 +19,8 @@ public class StageModel : NetworkBehaviour
     [Networked, Capacity(8), OnChangedRender("PlayerChanged")] public NetworkDictionary<PlayerRef, Player> PlayerInfos => default;
 
     public Dictionary<PlayerRef, PlayerRef> matchingPairs = new Dictionary<PlayerRef, PlayerRef>();
+    [Networked] public PlayerRef matchingPlayer { get; set; }
+    
 
     public List<PlayerRef> PlayerRefList
     {
@@ -39,6 +41,18 @@ public class StageModel : NetworkBehaviour
             List<Player> list = new List<Player>();
             foreach (var player in PlayerInfos)
                 list.Add(player.Value);
+
+            return list;
+        }
+    }
+
+    public List<PlayerField> PlayerFieldList
+    {
+        get
+        {
+            List<PlayerField> list = new List<PlayerField>();
+            foreach (var player in PlayerInfos)
+                list.Add(player.Value.playerField);
 
             return list;
         }

@@ -17,7 +17,7 @@ public struct ChampionStatus : INetworkStruct
         Name = data.championName;
         Grade = 1;
         Cost = data.cost;
-        HealthPoint = data.health;
+        MaxHp = data.health;
         AttackPower = data.attackDamage;
         Range = data.range;
         Speed = data.speed;
@@ -27,7 +27,7 @@ public struct ChampionStatus : INetworkStruct
     public NetworkString<_32> Name;
     public int Grade;
     public int Cost;
-    public float HealthPoint;
+    public float MaxHp;
     public float AttackPower;
     public int Range;
     public float Speed;
@@ -37,17 +37,10 @@ public struct ChampionStatus : INetworkStruct
 public abstract class Champion : NetworkBehaviour
 {
     public ChampionStatus status;
-    //public abstract ChampionType CharacteristicClass {  get; protected set; }
-    //public abstract string Name { get ; protected set; }
-    //public abstract int Grade { get; protected set; }
-    //public abstract int Cost { get; protected set; }
-    //public abstract float HealthPoint { get; protected set; }
-    //public abstract float AttackPower { get; protected set; }
-    //public abstract int Range { get; protected set; }
-    //public abstract float Speed { get; protected set; }
 
     [Networked, OnChangedRender(nameof(OnIsDeathChanged))] public bool IsDeath { get; set; }
     [Networked, OnChangedRender(nameof(OnHpChanged))] public float RemainHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnBattleTeamChanged))] public bool IsAwayTeam { get; set; }
 
     [SerializeField] public GameObject Model;
 
@@ -68,18 +61,35 @@ public abstract class Champion : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_DataInitialize(ChampionStatus status)
     {
-        //if (Object.HasInputAuthority)
-        //{
-        //}
-        
         this.status = status;
 
         if (Runner.IsServer)
         {
-            RemainHp = status.HealthPoint;
+            RemainHp = status.MaxHp;
             IsDeath = false;
+            IsAwayTeam = false;
         }
     }
+
+    public void OnBattleTeamChanged()
+    {
+        //if (HasInputAuthority)
+        //    return;
+
+        if (IsAwayTeam)
+        {
+            Controller.HpColorChange(Color.red);
+        }
+        else
+        {
+            Controller.HpColorChange(Color.green);
+        }
+    }
+
+    //public void BattleEnd()
+    //{
+    //    Controller.HpColorChange(Color.green);
+    //}
 
     public void Damage(float attackPower)
     {
@@ -88,7 +98,7 @@ public abstract class Champion : NetworkBehaviour
 
     private void OnHpChanged()
     {
-        Controller.OnHpChanged(RemainHp / status.HealthPoint);
+        Controller.OnHpChanged(RemainHp / status.MaxHp);
 
         if (Runner.IsServer && RemainHp <= 0)
         {
@@ -111,20 +121,11 @@ public abstract class Champion : NetworkBehaviour
     public void Respawn()
     {
         IsDeath = false;
-        RemainHp = status.HealthPoint;
+        RemainHp = status.MaxHp;
     }
 
     public void Death()
     {
         IsDeath = true;
     }
-    //public override void Spawned()
-    //{
-    //    base.Spawned();
-
-    //    if (HasInputAuthority)
-    //    {
-    //        Runner
-    //    }
-    //}
 }
