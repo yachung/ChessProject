@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using UnityEngine;
 using VContainer;
 
@@ -12,10 +13,32 @@ public class Player : NetworkBehaviour
     private Camera mainCamera;
 
     public NetworkString<_32> Name => this.gameObject.name;
-    [Networked] public int Level { get; private set; } = 0;
-    public int Exp { get; private set; } = 0;
-    [Networked] public int Gold { get; private set; } = 0;
-    [Networked] public int Hp { get; set; } = 100;
+    [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level { get; set; } = 1;
+    [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp { get; set; } = 0;
+    [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold { get; set; } = 3;
+    [Networked, OnChangedRender(nameof(OnHpChangedRender))] public int Hp { get; set; } = 100;
+
+    public event Action<int> OnGoldChanged;
+    public event Action<int> OnExperienceChanged;
+    public event Action<int> OnLevelChanged;
+    public event Action<int> OnHealthChanged;
+
+    public void OnGoldChangedRender()
+    {
+        OnGoldChanged?.Invoke(Gold);
+    }
+    public void OnLevelChangedRender()
+    {
+        OnLevelChanged?.Invoke(Level);
+    }
+    public void OnHpChangedRender()
+    {
+        OnHealthChanged?.Invoke(Hp);
+    }
+    public void OnExpChangedRender()
+    {
+        OnExperienceChanged?.Invoke(Exp);
+    }
 
     private void Awake()
     {

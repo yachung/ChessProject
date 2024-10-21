@@ -35,6 +35,8 @@ public class ChampionManager : NetworkBehaviour
         {
             ChampionData championData = Resources.Load($"Data/{name}Data") as ChampionData;
 
+            playerData.Gold -= championData.cost;
+
             NetworkPrefabRef championPrefab = championData.championPrefab;
             
             Vector3 spawnPosition;

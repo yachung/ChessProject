@@ -19,13 +19,17 @@ public class ShopPresenter
         this.championManager = championManager;
 
         this.shopView.SetPresenter(this);
+
+        shopModel.Player.OnGoldChanged += UpdateGoldView;
+        shopModel.Player.OnExperienceChanged += UpdateExperienceView;
+        shopModel.Player.OnLevelChanged += UpdateLevelView;
     }
 
     public void OnBuyChampion(ChampionData championData, Action<bool> OnCheckedGold)
     {
-        bool IsPass = shopModel.player.Gold >= championData.cost;
+        bool IsPass = shopModel.Player.Gold >= championData.cost;
 
-        Debug.Log($"챔피언 구매 : {IsPass}, 잔돈 : {shopModel.player.Gold}");
+        Debug.Log($"챔피언 구매 : {IsPass}, 잔돈 : {shopModel.Player.Gold}");
 
         OnCheckedGold?.Invoke(IsPass);
 
@@ -48,11 +52,20 @@ public class ShopPresenter
 
     }
 
-    //public void UpdateView()
-    //{
-    //    shopView.ShowUI();
-    //    OnRefreshShop();
-    //}
+    public void UpdateGoldView(int gold) 
+    {
+        shopView.UpdateGold(gold);
+    }
+
+    public void UpdateLevelView(int level)
+    {
+        shopView.UpdateLevel(level);
+    }
+
+    public void UpdateExperienceView(int exp)
+    {
+        shopView.UpdateExp(exp);
+    }
 
     public void ShowView()
     {

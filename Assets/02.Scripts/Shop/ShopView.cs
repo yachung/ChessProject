@@ -9,7 +9,7 @@ public class ShopView : MonoBehaviour
 {
     private ShopPresenter shopPresenter;
 
-    [SerializeField] private TMP_Text txt_HaveCost;
+    [SerializeField] private TMP_Text txt_HaveGold;
     [SerializeField] private TMP_Text txt_Level;
     [SerializeField] private ProgressBar progressBar;
     [SerializeField] private Button btn_BuyXp;
@@ -61,6 +61,20 @@ public class ShopView : MonoBehaviour
 
             championCards[i].SetData(datas[i]);
         }
+    }
+
+    public void UpdateGold(int haveGold)
+    {
+        txt_HaveGold.text = haveGold.ToString("N0");
+    }
+
+    public void UpdateLevel(int Level)
+    {
+        txt_Level.text = Level.ToString();
+    }
+
+    public void UpdateExp(int Exp)
+    {
     }
 
     public void ShowUI()
