@@ -21,9 +21,16 @@ public class ShopPresenter
         this.shopView.SetPresenter(this);
     }
 
-    public void OnBuyChampion(ChampionData championData)
+    public void OnBuyChampion(ChampionData championData, Action<bool> OnCheckedGold)
     {
-        championManager.RPC_SummonChampion(championData.championName, shopModel.Runner.LocalPlayer);
+        bool IsPass = shopModel.player.Gold >= championData.cost;
+
+        Debug.Log($"챔피언 구매 : {IsPass}, 잔돈 : {shopModel.player.Gold}");
+
+        OnCheckedGold?.Invoke(IsPass);
+
+        if (IsPass)
+            championManager.RPC_SummonChampion(championData.championName, shopModel.Runner.LocalPlayer);
     }
     
     public void OnRefreshShop()

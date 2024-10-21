@@ -42,9 +42,13 @@ public class ShopView : MonoBehaviour
         shopPresenter.OnBuyExperience();
     }
 
-    private void OnClickBuyChampion(ChampionData data)
+    private bool OnClickBuyChampion(ChampionData data)
     {
-        shopPresenter.OnBuyChampion(data);
+        bool result = false;
+
+        shopPresenter.OnBuyChampion(data, (IsPass) => result = IsPass);
+
+        return result;
     }
     #endregion
 

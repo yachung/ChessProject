@@ -38,17 +38,6 @@ public class BattleState : StageStateBehaviour
             player.MoveToPlayerField(player.playerField);
             player.playerField.ChampionRespawn();
         }
-
-        //foreach (var pair in _stageModel.matchingPairs)
-        //{
-        //    Player Source = _gameManager.allPlayers[pair.Value];
-        //    Source.MoveToPlayerField(Source.playerField);
-        //    Source.playerField.ChampionRespawn();
-        //}
-        //foreach (var player in _gameManager.allPlayers.Values)
-        //{
-        //    player.MoveToPlayerField(player.playerField);
-        //}
     }
 
     protected override void OnExitStateRender()

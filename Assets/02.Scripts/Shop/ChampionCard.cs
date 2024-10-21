@@ -12,12 +12,14 @@ public class ChampionCard : MonoBehaviour
 
     private ChampionData championData;
 
-    public void Initialize(Action<ChampionData> callBack)
+    public void Initialize(Func<ChampionData, bool> callBack)
     {
         Btn_BuyCard.onClick.AddListener(() =>
-        { 
-            callBack(championData);
-            gameObject.SetActive(false);
+        {
+            bool isPass = callBack(championData);
+
+            if (isPass)
+                gameObject.SetActive(false);
         });
     }
 

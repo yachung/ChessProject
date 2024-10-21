@@ -6,6 +6,7 @@ public class ShopModel : NetworkBehaviour
 {
     [SerializeField] private List<ChampionData> championDatas;
     public List<ChampionData> ChampionDatas => championDatas;
+    public Player player => GameManager.Instance.LocalPlayer;
 
     private readonly int MaxCardCount = 5;
 
