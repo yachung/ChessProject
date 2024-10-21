@@ -20,9 +20,9 @@ public class ShopPresenter
 
         this.shopView.SetPresenter(this);
 
-        shopModel.Player.OnGoldChanged += UpdateGoldView;
-        shopModel.Player.OnExperienceChanged += UpdateExperienceView;
-        shopModel.Player.OnLevelChanged += UpdateLevelView;
+        //shopModel.Player.OnGoldChanged += UpdateGoldView;
+        //shopModel.Player.OnExperienceChanged += UpdateExperienceView;
+        //shopModel.Player.OnLevelChanged += UpdateLevelView;
     }
 
     public void OnBuyChampion(ChampionData championData, Action<bool> OnCheckedGold)

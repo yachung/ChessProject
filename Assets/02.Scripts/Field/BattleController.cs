@@ -288,6 +288,8 @@ public class BattleController : NetworkBehaviour
                 {
                     target = Tile(CubeToOffset(hex));
 
+                    hex = Cube_Neighbor(hex, i);
+
                     if (target == null)
                         continue;
 
@@ -296,7 +298,6 @@ public class BattleController : NetworkBehaviour
                         return target;
                     }
 
-                    hex = Cube_Neighbor(hex, i);
                 }
             }
         }
