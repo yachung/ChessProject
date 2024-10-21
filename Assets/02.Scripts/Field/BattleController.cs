@@ -3,7 +3,6 @@ using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class BattleController : NetworkBehaviour
@@ -71,7 +70,7 @@ public class BattleController : NetworkBehaviour
                 if (Tile(currentCoord).IsOccupied(out var champion))
                 {
                     // 이미 챔피언이 다른 행동을 하고 있는 경우 버퍼에 추가하지 않음.
-                    if (champion.Busy)
+                    if (champion.IsMovementBusy || champion.IsAttack)
                         continue;
 
                     // 공격 범위 내에서 적 유닛을 찾음
@@ -144,20 +143,50 @@ public class BattleController : NetworkBehaviour
 
         Tile(nextStepCoord).Champion = Tile(previousCoord).Champion;
         Tile(previousCoord).RemoveChampion();
+        Champion champion = Tile(nextStepCoord).Champion;
 
-        Debug.Log($"MoveLog {Tile(nextStepCoord).Champion.Object.Id}{Tile(nextStepCoord).Champion.Object.InputAuthority} is {previousCoord} to {nextStepCoord}");
+        Debug.Log($"MoveLog {champion.Object.Id}{champion.Object.InputAuthority} is {previousCoord} to {nextStepCoord}");
 
-        Tile(nextStepCoord).Champion.Busy = true;
+        champion.IsMovementBusy = true;
         Vector3 targetPosition = Tile(nextStepCoord).DeployPoint;
 
-        while (Tile(nextStepCoord).Champion != null &&
-               Vector3.Distance(Tile(nextStepCoord).Champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
+        float distance;
+        while (Tile(nextStepCoord).Champion != null)
         {
-            Tile(nextStepCoord).Champion.transform.position = Vector3.MoveTowards(Tile(nextStepCoord).Champion.transform.position, targetPosition, Tile(nextStepCoord).Champion.status.Speed * Runner.DeltaTime);
+            distance = MoveToward(champion.transform, targetPosition, champion.status.Speed);
+            if (distance < 0.5f)
+                break;
+
+            RotateToward(champion.transform, targetPosition, 180f);
+
             await UniTask.Yield();
         }
 
         Tile(nextStepCoord).OnMoveComplete();
+    }
+
+    private void RotateToward(Transform selfTransform, Vector3 destination, float rotateSpeed)
+    {
+        //Quaternion targetRotation = Quaternion.LookRotation(destination - selfTransform.position);
+
+        Vector3 direction = destination - selfTransform.position;
+
+        Vector3 directionXZ = new Vector3(direction.x, 0f, direction.z);
+        if (directionXZ != Vector3.zero)
+        {
+            selfTransform.rotation = Quaternion.RotateTowards(
+                selfTransform.rotation,
+                Quaternion.LookRotation(directionXZ),
+                rotateSpeed * Runner.DeltaTime
+                );
+        }
+    }
+
+    private float MoveToward(Transform selfTransform, Vector3 destination, float speed)
+    {
+        selfTransform.position = Vector3.MoveTowards(selfTransform.position, destination, speed * Runner.DeltaTime);
+
+        return Vector3.Distance(selfTransform.position, destination); 
     }
 
     //private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
@@ -171,30 +200,77 @@ public class BattleController : NetworkBehaviour
     //    completeCallback?.Invoke();
     //}
 
-    private async UniTask MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
-    {
-        while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
-        {
-            champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
-            await UniTask.Yield();
-        }
+    //private async UniTask MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
+    //{
+    //    while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
+    //    {
+    //        champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
+    //        await UniTask.Yield();
+    //    }
 
-        completeCallback?.Invoke();
-    }
+    //    completeCallback?.Invoke();
+    //}
 
-    private void AttackUnit(Vector2Int target, Vector2Int source)
+    //private void AttackUnit(Vector2Int target, Vector2Int source)
+    //{
+    //    if (Tile(target).Champion == null || Tile(source).Champion == null)
+    //        return;
+
+    //    Tile(source).Champion.IsAttack = true;
+
+    //    // 타겟 유닛에게 데미지 적용
+    //    Tile(target).Champion.Damage(Tile(source).Champion.status.AttackPower);
+
+    //    if (Tile(target).Champion.RemainHp <= 0)
+    //    {
+    //        Tile(target).RemoveChampion();
+    //    }
+
+    //    if (Tile(target).Champion == null)
+    //    {
+    //        Tile(source).Champion.IsAttack = false;
+    //    }
+    //}
+
+    private async void AttackUnit(Vector2Int target, Vector2Int source)
     {
         if (Tile(target).Champion == null || Tile(source).Champion == null)
             return;
 
-        // 타겟 유닛에게 데미지 적용
-        Tile(target).Champion.Damage(Tile(source).Champion.status.AttackPower);
-        //Debug.Log($"Attack")
+        Champion attacker = Tile(source).Champion;
+        Champion defender = Tile(target).Champion;
 
-        if (Tile(target).Champion.RemainHp <= 0)
+        // 챔피언이 이미 공격 중인 경우 중복 실행 방지
+        if (attacker.IsAttack)
+            return;
+
+        attacker.IsAttack = true;
+
+        // 적 방향으로 회전 및 공격 애니메이션 실행
+        Vector3 targetPosition = Tile(target).DeployPoint;
+
+        float attackDelay = 1.0f / attacker.status.AttackSpeed;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < attackDelay)
         {
-            Tile(target).RemoveChampion();
+            RotateToward(attacker.transform, targetPosition, 360f); // 적을 바라보도록 지속적으로 회전
+            elapsedTime += Runner.DeltaTime;
+            await UniTask.Yield();
         }
+
+        // 타겟 유닛에게 데미지 적용
+        if (defender != null && defender.RemainHp > 0) // 타겟이 아직 살아있는지 확인
+        {
+            defender.Damage(attacker.status.AttackPower);
+
+            if (defender.RemainHp <= 0)
+            {
+                Tile(target).RemoveChampion();
+            }
+        }
+
+        attacker.IsAttack = false;
     }
 
     public Tile FindInRangeTarget(Vector2Int source, int radius, Func<Tile, bool> condition)
@@ -281,18 +357,18 @@ public class BattleController : NetworkBehaviour
         
         foreach (var direction in GetDirections(current.y))
         {
-            Vector2Int coord = new Vector2Int(current.x + direction.Item1, current.y + direction.Item2);
+            Vector2Int neighbor = new Vector2Int(current.x + direction.Item1, current.y + direction.Item2);
 
-            if (Tile(coord) == null)
+            if (Tile(neighbor) == null)
                 continue;
 
-            if (Tile(coord).IsOccupied())
+            if (Tile(neighbor).IsOccupied())
                 continue;
 
-            if (distance > GetHexDistance(target, coord))
+            if (distance > GetHexDistance(target, neighbor))
             {
-                distance = GetHexDistance(target, coord);
-                result = coord;
+                distance = GetHexDistance(target, neighbor);
+                result = neighbor;
             }
         }
 

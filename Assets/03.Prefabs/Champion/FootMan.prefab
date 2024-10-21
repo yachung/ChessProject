@@ -50,6 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _IsDeath: 0
   _RemainHp: 0
+  _IsAwayTeam: 0
+  _IsMovementBusy: 0
   Model: {fileID: 8592686606892100077}
   ReadyCoord: {x: 0, y: 0}
   BattleCoord: {x: 0, y: 0}
@@ -107,26 +109,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChampionController
       objectReference: {fileID: 0}
-    - target: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: m_Type
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: m_Color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: m_FillAmount
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4464060927359928712, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -167,14 +149,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6114401252118198124, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: championUI
-      value: 
-      objectReference: {fileID: 7176283699495419709}
-    - target: {fileID: 6114401252118198124, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-      propertyPath: Img_RemainHp
-      value: 
-      objectReference: {fileID: 2565890557933754232}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -189,17 +163,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 624b3aa5807b6ad4489b1e51a5b7e1fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2565890557933754232 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4167888560707029618, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-  m_PrefabInstance: {fileID: 1895047110037921034}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &2864017291401335938 stripped
@@ -251,11 +214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8756f5482c0e29b4a812a8b3e5733afe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &7176283699495419709 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8780831039156740663, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
-  m_PrefabInstance: {fileID: 1895047110037921034}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7207146572265240620 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9099631697803863334, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}

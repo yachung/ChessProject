@@ -88,7 +88,7 @@ public class Tile
             return;
 
         this.Champion.transform.position = DeployPoint;
-        this.Champion.Busy = false;
+        this.Champion.IsMovementBusy = false;
     }
 
     public void RespawnChampion()

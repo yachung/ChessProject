@@ -87,6 +87,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: ChampionController
       objectReference: {fileID: 0}
+    - target: {fileID: 3982627966305563186, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.92387956
+      objectReference: {fileID: 0}
+    - target: {fileID: 3982627966305563186, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.38268343
+      objectReference: {fileID: 0}
     - target: {fileID: 4464060927359928712, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -130,7 +138,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8780831039156740663, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8787411865101018089}
   m_SourcePrefab: {fileID: 100100000, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
 --- !u!114 &169791247643397132 stripped
 MonoBehaviour:
@@ -143,6 +154,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2615d364a70f4817830b874e07a6cc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1307577651455080340 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8780831039156740663, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}
+  m_PrefabInstance: {fileID: 7781857027861599651}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8787411865101018089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307577651455080340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25acde9209338d24d83cc1c826297be4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 0}
 --- !u!114 &1564674786543186053 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9099631697803863334, guid: 9e38ab149be0fec49b6f9df8b987f8d0, type: 3}

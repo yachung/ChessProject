@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class MoveState : ChampionStateBehaviour
 {
+    protected override string StateName => "Move";
+
     protected override void OnEnterState()
     {
         base.OnEnterState();

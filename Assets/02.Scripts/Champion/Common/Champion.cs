@@ -21,6 +21,7 @@ public struct ChampionStatus : INetworkStruct
         AttackPower = data.attackDamage;
         Range = data.range;
         Speed = data.speed;
+        AttackSpeed = data.attackSpeed;
     }
 
     public ChampionType CharacteristicClass;
@@ -31,6 +32,7 @@ public struct ChampionStatus : INetworkStruct
     public float AttackPower;
     public int Range;
     public float Speed;
+    public float AttackSpeed;
 }
 
 
@@ -41,13 +43,14 @@ public abstract class Champion : NetworkBehaviour
     [Networked, OnChangedRender(nameof(OnIsDeathChanged))] public bool IsDeath { get; set; }
     [Networked, OnChangedRender(nameof(OnHpChanged))] public float RemainHp { get; set; }
     [Networked, OnChangedRender(nameof(OnBattleTeamChanged))] public bool IsAwayTeam { get; set; }
+    [Networked, OnChangedRender(nameof(OnIsMovementBusyChanged))] public bool IsMovementBusy { get; set; }
+    [Networked, OnChangedRender(nameof(OnIsAttackChanged))] public bool IsAttack { get; set; }
 
     [SerializeField] public GameObject Model;
 
     public ChampionController Controller { get; private set; }
     public Animator Animator { get; private set; }
 
-    public bool Busy { get; set; }
 
     public Vector2Int ReadyCoord;
     public Vector2Int BattleCoord;
@@ -73,23 +76,25 @@ public abstract class Champion : NetworkBehaviour
 
     public void OnBattleTeamChanged()
     {
-        //if (HasInputAuthority)
-        //    return;
-
         if (IsAwayTeam)
         {
-            Controller.HpColorChange(Color.red);
+            this.transform.rotation = Quaternion.Euler(new Vector3(0f, 210f, 0f));
         }
         else
         {
-            Controller.HpColorChange(Color.green);
+            this.transform.rotation = Quaternion.Euler(new Vector3(0f, 30f, 0f));
         }
     }
 
-    //public void BattleEnd()
-    //{
-    //    Controller.HpColorChange(Color.green);
-    //}
+    public override void Spawned()
+    {
+        base.Render();
+
+        if (HasInputAuthority)
+            return;
+
+        Controller.HpColorChange(Color.red);
+    }
 
     public void Damage(float attackPower)
     {
@@ -108,20 +113,27 @@ public abstract class Champion : NetworkBehaviour
 
     private void OnIsDeathChanged()
     {
-        if (IsDeath)
-        {
-            Model.SetActive(false);
-        }
-        else
-        {
-            Model.SetActive(true);
-        }
+        Model.SetActive(!IsDeath);
+    }
+
+    private void OnIsMovementBusyChanged()
+    {
+        Animator.SetBool("Move", IsMovementBusy);
+    }
+
+    private void OnIsAttackChanged()
+    {
+        Animator.SetBool("Attack", IsAttack);
     }
 
     public void Respawn()
     {
         IsDeath = false;
         RemainHp = status.MaxHp;
+        IsMovementBusy = false;
+        IsAttack = false;
+
+        this.transform.rotation = Quaternion.identity;
     }
 
     public void Death()

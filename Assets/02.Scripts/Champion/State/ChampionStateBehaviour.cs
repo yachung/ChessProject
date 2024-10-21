@@ -6,19 +6,19 @@ public abstract class ChampionStateBehaviour : StateBehaviour<ChampionStateBehav
     [HideInInspector]
     public Champion champion;
 
-    protected string stateName = string.Empty;
+    protected virtual string StateName { get; set; }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
 
-        champion.Animator.SetBool(stateName, true);
+        champion.Animator.SetBool(StateName, true);
     }
 
     protected override void OnExitStateRender()
     {
         base.OnExitStateRender();
 
-        champion.Animator.SetBool(stateName, false);
+        champion.Animator.SetBool(StateName, false);
     }
 }
