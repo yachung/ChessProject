@@ -15,6 +15,6 @@ enum MyButtons
 /// </summary>
 public struct NetworkInputData : INetworkInput
 {
-    public Vector3 movePosition;
+    public Vector3 mousePosition;
     public NetworkButtons buttons;
 }
