@@ -4,6 +4,10 @@ on:
   pull_request_target:
     types: [opened, synchronize] # PR이 생성되거나 업데이트될 때 실행
 
+permissions: 
+  contents: write
+  pull-requests: write
+
 jobs:
   code_review:
     runs-on: ubuntu-latest
