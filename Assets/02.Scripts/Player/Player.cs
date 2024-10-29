@@ -63,11 +63,6 @@ public class Player : NetworkBehaviour
         if (Runner.IsServer)
         {
             RPC_PlayerInitialize(this.playerField);
-
-            Level = 1;
-            Exp = 0;
-            Gold = 3;
-            Hp = 100;
         }
     }
 
