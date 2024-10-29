@@ -1,40 +1,27 @@
 using Fusion;
-using System;
-using UnityEngine;
 
 public struct ChampionStatus : INetworkStruct
 {
-    public ChampionStatus(PlayerRef inputAuthority, ChampionData data)
+    public ChampionStatus(ChampionData data)
     {
-        InputAuthority = inputAuthority;
+        CharacteristicClass = data.championType;
         Name = data.championName;
         Grade = 1;
         Cost = data.cost;
-        HealthPoint = data.health;
+        MaxHp = data.health;
         AttackPower = data.attackDamage;
         Range = data.range;
         Speed = data.speed;
-        IsDeath = false;
-        IsDrag = false;
-
-        BattleCoord = Vector2Int.zero;
-        ReadyCoord = Vector2Int.zero;
+        AttackSpeed = data.attackSpeed;
     }
 
-    //public event Action<ChampionStatus> OnStatusChanged;
-    public PlayerRef InputAuthority;
+    public ChampionType CharacteristicClass;
     public NetworkString<_32> Name;
-    public Vector2Int BattleCoord;
-    public Vector2Int ReadyCoord;
-
     public int Grade;
     public int Cost;
-    public float HealthPoint;
+    public float MaxHp;
     public float AttackPower;
     public int Range;
     public float Speed;
-    public bool IsDeath;
-    public bool IsDrag;
-    //[Networked]  { get; set; }
-
+    public float AttackSpeed;
 }

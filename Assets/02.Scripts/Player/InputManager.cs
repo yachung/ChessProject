@@ -76,7 +76,7 @@ public class InputManager : NetworkBehaviour
         inputData.buttons.Set(MyButtons.isRefresh, refreshInput.IsPressed());
         inputData.buttons.Set(MyButtons.isAddExp, addExpInput.IsPressed());
 
-        inputData.mousePosition = InputPositionToWorldPosition(pointInput.ReadValue<Vector2>());
+        inputData.movePosition = InputPositionToWorldPosition(pointInput.ReadValue<Vector2>());
 
         input.Set(inputData);
     }
