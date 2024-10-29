@@ -20,6 +20,7 @@ jobs:
       - name: Review code with GPT
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GH_TOKEN 설정
           LANGUAGE: Korean
         run: |
           # 환경 변수 및 수정된 파일 목록 가져오기
