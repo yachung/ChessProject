@@ -2824,7 +2824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d10329ca475b0d47b23e0180fc6756a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txt_HaveCost: {fileID: 1285690377}
+  txt_HaveGold: {fileID: 1285690377}
   txt_Level: {fileID: 1684683089}
   progressBar: {fileID: 463939147}
   btn_BuyXp: {fileID: 1752916732}
@@ -5799,7 +5799,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fcbf7db2199fd324d89b6058ea145298, type: 2}
   - {fileID: 11400000, guid: 19a9c364b25073b4ca4f7186f4bb6ad5, type: 2}
   - {fileID: 11400000, guid: e5782c3765a0d6148949f144b479d784, type: 2}
-  player: {fileID: 0}
 --- !u!4 &971633770
 Transform:
   m_ObjectHideFlags: 0

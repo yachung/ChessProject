@@ -1,12 +1,13 @@
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
 
 public class ShopModel : NetworkBehaviour
 {
     [SerializeField] private List<ChampionData> championDatas;
     public List<ChampionData> ChampionDatas => championDatas;
-    public Player Player => GameManager.Instance.LocalPlayer;
+    public PlayerData PlayerData;
 
     private readonly int MaxCardCount = 5;
 
