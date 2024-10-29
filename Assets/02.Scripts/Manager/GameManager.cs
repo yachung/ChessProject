@@ -16,6 +16,7 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
+    [Inject] private readonly IObjectResolver container; // VContainer의 DI 컨테이너
     [Inject] private readonly GameStateManager gameState;
     [Inject] private readonly StageModel stageModel;
 
@@ -55,28 +56,31 @@ public class GameManager : NetworkBehaviour
 
         PlayerField[] playerFields = FindObjectsByType<PlayerField>(FindObjectsSortMode.None);
         int index = 0;
-        foreach (var player in runner.ActivePlayers)
+        foreach (var playerRef in runner.ActivePlayers)
         {
-            NetworkObject networkObject = runner.Spawn(NetworkPlayerPref, Vector3.zero, Quaternion.identity, player);
+            NetworkObject networkObject = runner.Spawn(NetworkPlayerPref, Vector3.zero, Quaternion.identity, playerRef);
 
             PlayerField playerField = playerFields[index++];
-            playerField.Object.AssignInputAuthority(player);
-            networkObject.GetComponent<Player>().playerField = playerField;
+            playerField.Object.AssignInputAuthority(playerRef);
 
-            stageModel.PlayerInfos.Add(player, networkObject.GetComponent<Player>());
-            allPlayers.Add(player, networkObject.GetComponent<Player>());
-        }
+            Player player = networkObject.GetComponent<Player>();
+            player.playerField = playerField;
+            container.Inject(player);
 
-        PlayerSpawnedComplete();
-    }
+            stageModel.PlayerInfos.Add(playerRef, player);
+            allPlayers.Add(playerRef, player);
 
-    private void PlayerSpawnedComplete()
-    {
-        foreach (var player in allPlayers.Values)
-        {
-            player.RPC_PlayerInitialize(player.playerField);
+            player.SpawnedComplete();
         }
     }
+
+    //private void PlayerSpawnedComplete()
+    //{
+    //    foreach (var player in allPlayers.Values)
+    //    {
+    //        player.RPC_PlayerInitialize(player.playerField);
+    //    }
+    //}
 
     //public void Set
 

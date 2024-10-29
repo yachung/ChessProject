@@ -8,29 +8,41 @@ public class MainLifeTimeScope : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
+        RegisterGameComponents(builder);
+        RegisterStateComponents(builder);
+        RegisterStageComponents(builder);
+        RegisterShopComponents(builder);
+    }
+
+    private void RegisterGameComponents(IContainerBuilder builder)
+    {
         builder.RegisterComponentInHierarchy<GameManager>();
         builder.RegisterComponentInHierarchy<ChampionManager>();
         builder.RegisterComponentInHierarchy<GameStateManager>();
+    }
 
-        builder.RegisterComponentInHierarchy<SelectField>();
-
-        builder.Register<StageStateBehaviour>(Lifetime.Scoped);
-        builder.RegisterInstance(stageDurationConfig);
-
+    private void RegisterStateComponents(IContainerBuilder builder)
+    {
         builder.RegisterComponentInHierarchy<SelectObjectState>();
         builder.RegisterComponentInHierarchy<BattleReadyState>();
         builder.RegisterComponentInHierarchy<BattleState>();
         builder.RegisterComponentInHierarchy<WinState>();
+        builder.RegisterInstance(stageDurationConfig);
+        builder.RegisterComponentInHierarchy<SelectField>();
+        builder.Register<StageStateBehaviour>(Lifetime.Singleton);
+    }
 
+    private void RegisterStageComponents(IContainerBuilder builder)
+    {
         builder.RegisterComponentInHierarchy<StagePresenter>();
         builder.RegisterComponentInHierarchy<StageView>();
         builder.RegisterComponentInHierarchy<StageModel>();
+    }
 
-        //builder.Register<IShopPresenter, ShopPresenter>.AsScoped();
-        //builder.Register<IShopPresenter, ShopPresenter>(Lifetime.Singleton);
-        builder.Register<ShopPresenter>(Lifetime.Scoped);
+    private void RegisterShopComponents(IContainerBuilder builder)
+    {
+        builder.Register<ShopPresenter>(Lifetime.Singleton);
         builder.RegisterComponentInHierarchy<ShopModel>();
         builder.RegisterComponentInHierarchy<ShopView>();
-        //builder.Register<IShopView, ShopView>(Lifetime.Scoped);
     }
 }
