@@ -21,7 +21,7 @@ public class ShopPresenter
         this.shopView.SetPresenter(this);
     }
 
-    public void PlayerInitialize()
+    public void SubscribeToDataEvents()
     {
         shopModel.PlayerData.OnGoldChanged += UpdateGoldView;
         shopModel.PlayerData.OnExperienceChanged += UpdateExperienceView;
