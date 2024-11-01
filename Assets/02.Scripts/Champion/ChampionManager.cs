@@ -29,19 +29,19 @@ public class ChampionManager : NetworkBehaviour
         }
     }
 
-    private void SummonChampion(string name, PlayerRef player)
+    private void SummonChampion(string name, PlayerRef playerRef)
     {
-        if (_gameManager.allPlayers.TryGetValue(player, out Player playerData))
+        if (_gameManager.allPlayers.TryGetValue(playerRef, out Player player))
         {
             ChampionData championData = Resources.Load($"Data/{name}Data") as ChampionData;
 
-            playerData.Gold -= championData.cost;
+            player.PlayerData.Gold -= championData.cost;
 
             NetworkPrefabRef championPrefab = championData.championPrefab;
             
             Vector3 spawnPosition;
 
-            Tile emptyTile = playerData.playerField.GetEmptyWaitField();
+            Tile emptyTile = player.playerField.GetEmptyWaitField();
 
             if (emptyTile == null)
             {
@@ -51,12 +51,12 @@ public class ChampionManager : NetworkBehaviour
             else
                 spawnPosition = emptyTile.DeployPoint;
 
-            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity, player).TryGetComponent<Champion>(out var champion))
+            if (Runner.Spawn(championPrefab, spawnPosition, Quaternion.identity, playerRef).TryGetComponent<Champion>(out var champion))
             {
                 champion.RPC_DataInitialize(new ChampionStatus(championData));
 
                 emptyTile.DeployChampion(champion);
-                playerData.playerField.Champions.Add(champion);
+                player.playerField.Champions.Add(champion);
                 _champions.Add(champion);
             }
             else
@@ -66,7 +66,7 @@ public class ChampionManager : NetworkBehaviour
         }
         else
         {
-            Debug.LogWarning($"Player {player} not found in GameManager.");
+            Debug.LogWarning($"Player {playerRef} not found in GameManager.");
         }
     }
 }

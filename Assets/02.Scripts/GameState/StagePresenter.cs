@@ -118,7 +118,7 @@ public class StagePresenter : NetworkBehaviour
 
         if (model.PlayerInfos.TryGet(loserRef, out Player loser))
         {
-            loser.Hp -= Damage;
+            loser.PlayerData.Hp -= Damage;
         }
     }
 

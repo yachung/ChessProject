@@ -14,15 +14,7 @@ public class BattleController : NetworkBehaviour
 
     private readonly (int, int)[] evenDirections = { (0, 1), (1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1)};
     private readonly (int, int)[] oddDirections = { (1, 1), (1, 0), (1, -1), (0, -1), (-1, 0), (0, 1)};
-    private readonly Vector3Int[] cubeDirections =
-        {
-            new Vector3Int( 0, 1,-1),
-            new Vector3Int( 1, 0,-1),
-            new Vector3Int( 1,-1, 0),
-            new Vector3Int( 0,-1, 1),
-            new Vector3Int(-1, 0, 1),
-            new Vector3Int(-1, 1, 0)
-        };
+
 
 
     private (int, int)[] GetDirections(int y)
@@ -167,8 +159,6 @@ public class BattleController : NetworkBehaviour
 
     private void RotateToward(Transform selfTransform, Vector3 destination, float rotateSpeed)
     {
-        //Quaternion targetRotation = Quaternion.LookRotation(destination - selfTransform.position);
-
         Vector3 direction = destination - selfTransform.position;
 
         Vector3 directionXZ = new Vector3(direction.x, 0f, direction.z);
@@ -188,49 +178,6 @@ public class BattleController : NetworkBehaviour
 
         return Vector3.Distance(selfTransform.position, destination); 
     }
-
-    //private IEnumerator MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
-    //{
-    //    while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
-    //    {
-    //        champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
-    //        yield return null;
-    //    }
-
-    //    completeCallback?.Invoke();
-    //}
-
-    //private async UniTask MoveChampion(Champion champion, Vector3 targetPosition, Action completeCallback)
-    //{
-    //    while (Vector3.Distance(champion.transform.position, targetPosition) > 0.5f && !isBattleFinished)
-    //    {
-    //        champion.transform.position = Vector3.MoveTowards(champion.transform.position, targetPosition, champion.status.Speed * Runner.DeltaTime);
-    //        await UniTask.Yield();
-    //    }
-
-    //    completeCallback?.Invoke();
-    //}
-
-    //private void AttackUnit(Vector2Int target, Vector2Int source)
-    //{
-    //    if (Tile(target).Champion == null || Tile(source).Champion == null)
-    //        return;
-
-    //    Tile(source).Champion.IsAttack = true;
-
-    //    // 타겟 유닛에게 데미지 적용
-    //    Tile(target).Champion.Damage(Tile(source).Champion.status.AttackPower);
-
-    //    if (Tile(target).Champion.RemainHp <= 0)
-    //    {
-    //        Tile(target).RemoveChampion();
-    //    }
-
-    //    if (Tile(target).Champion == null)
-    //    {
-    //        Tile(source).Champion.IsAttack = false;
-    //    }
-    //}
 
     private async void AttackUnit(Vector2Int target, Vector2Int source)
     {
@@ -275,20 +222,20 @@ public class BattleController : NetworkBehaviour
 
     public Tile FindInRangeTarget(Vector2Int source, int radius, Func<Tile, bool> condition)
     {
-        Vector3Int center = OffsetToCube(source);
+        Vector3Int center = source.OffsetToCube();
         Tile target;
 
         for (int k = 1; k <= radius; ++k)
         {
-            var hex = Cube_Add(center, Cube_Scale(cubeDirections[4], k));
+            var hex = center.Cube_Add(Utils.cubeDirections[4].Cube_Scale(k));
 
             for (int i = 0; i < 6; ++i)
             {
                 for (int j = 0; j < k; ++j)
                 {
-                    target = Tile(CubeToOffset(hex));
+                    target = Tile(hex.CubeToOffset());
 
-                    hex = Cube_Neighbor(hex, i);
+                    hex = hex.Cube_Neighbor(i);
 
                     if (target == null)
                         continue;
@@ -305,21 +252,6 @@ public class BattleController : NetworkBehaviour
         return null;
     }
 
-    public Vector3Int Cube_Scale(Vector3Int hex, int factor)
-    {
-        return new Vector3Int(hex.x * factor, hex.y * factor, hex.z * factor);
-    }
-
-    public Vector3Int Cube_Add(Vector3Int hex, Vector3Int vec)
-    {
-        return hex + vec;
-    }
-
-    public Vector3Int Cube_Neighbor(Vector3Int cube, int index)
-    {
-        return Cube_Add(cube, cubeDirections[index]);
-    }
-
     // 오프셋 좌표계에서 가장 가까운 타겟을 찾는 함수
     public Tile FindNearestTarget(Vector2Int source, PlayerRef playerRef)
     {
@@ -334,7 +266,7 @@ public class BattleController : NetworkBehaviour
 
                 if (target.Champion != null && target.Champion.Object.InputAuthority != playerRef)
                 {
-                    int distance = GetHexDistance(source, new Vector2Int(i, j)); // 오프셋 좌표계에서 거리 계산
+                    int distance = Utils.GetHexDistance(source, new Vector2Int(i, j)); // 오프셋 좌표계에서 거리 계산
 
                     if (distance < nearestDistance)
                     {
@@ -366,44 +298,14 @@ public class BattleController : NetworkBehaviour
             if (Tile(neighbor).IsOccupied())
                 continue;
 
-            if (distance > GetHexDistance(target, neighbor))
+            if (distance > Utils.GetHexDistance(target, neighbor))
             {
-                distance = GetHexDistance(target, neighbor);
+                distance = Utils.GetHexDistance(target, neighbor);
                 result = neighbor;
             }
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// offset 좌표계를 Cube 좌표계로 변환
-    /// </summary>
-    /// <param name="col"></param>
-    /// <param name="row"></param>
-    /// <returns></returns>
-    private Vector3Int OffsetToCube(Vector2Int hex)
-    {
-        var q = hex.x - (hex.y - (hex.y & 1)) / 2;
-        var r = hex.y;
-
-        return new Vector3Int(q, r, -q - r);
-    }
-
-    private Vector2Int CubeToOffset(Vector3Int hex)
-    {
-        var x = hex.x + (hex.y - (hex.y & 1)) / 2;
-        var y = hex.y;
-
-        return new Vector2Int(x, y);
-    }
-
-    public int GetHexDistance(Vector2Int a, Vector2Int b)
-    {
-        // Convert a and b from Odd-r offset to cube coordinates.
-        Vector3Int distance = OffsetToCube(a) - OffsetToCube(b);
-
-        return Mathf.Max(Mathf.Abs(distance.x), Mathf.Abs(distance.y), Mathf.Abs(distance.z));
     }
 
     public bool IsBattleOver(bool forcedEnd = false)
