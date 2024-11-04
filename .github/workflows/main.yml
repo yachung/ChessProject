@@ -33,7 +33,7 @@ jobs:
           # 각 파일의 내용을 GPT에게 전달하여 리뷰 요청
           for FILE in $FILES; do
             CONTENT=$(cat "$FILE")
-            PROMPT="Please review the following code file and provide feedback:\n\nFile: $FILE\n\nContent:\n$CONTENT"
+            PROMPT="Please review the following code file and provide feedback in Korean:\n\nFile: $FILE\n\nContent:\n$CONTENT"
             
             # GPT-4 API로 코드 리뷰 요청
             RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
