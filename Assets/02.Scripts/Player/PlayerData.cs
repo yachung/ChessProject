@@ -2,14 +2,48 @@ using System;
 
 public class PlayerData
 {
-    public int Health { get; set; }
-    public int Level { get; set; }
-    public int Gold { get; set; }
-    public int Exp { get; set; }
+    public string Name { get; set; }
+    public int Hp 
+    {
+        get => this.Hp;
+        set
+        {
+            this.Hp = value;
+            OnHpChanged(Hp);
+        }
+    }
+
+    public int Level
+    {
+        get => this.Level;
+        set
+        {
+            this.Level = value;
+            OnLevelChanged(Level);
+        }
+    }
+    public int Gold
+    {
+        get => this.Gold;
+        set
+        {
+            this.Gold = value;
+            OnGoldChanged(Gold);
+        }
+    }
+    public int Exp
+    {
+        get => this.Exp;
+        set
+        {
+            this.Exp = value;
+            OnExperienceChanged(Exp);
+        }
+    }
 
     public PlayerData()
     {
-        Health = 100;
+        Hp = 100;
         Level = 1;
         Gold = 5;
         Exp = 0;
@@ -17,7 +51,7 @@ public class PlayerData
 
     public PlayerData(int health, int level, int gold, int exp)
     {
-        Health = health;
+        Hp = health;
         Level = level;
         Gold = gold;
         Exp = Exp;
@@ -26,5 +60,5 @@ public class PlayerData
     public Action<int> OnGoldChanged;
     public Action<int> OnExperienceChanged;
     public Action<int> OnLevelChanged;
-    public Action<int> OnHealthChanged;
+    public Action<int> OnHpChanged;
 }

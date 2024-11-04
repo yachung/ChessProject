@@ -14,20 +14,26 @@ public class Player : NetworkBehaviour
         this.shopPresenter = shopPresenter;
     }
 
-    //public PlayerInfo playerInfo { get; set; }
+    private PlayerData playerData;
+    public PlayerData PlayerData => playerData;
+
+    public NetworkString<_32> Name => this.gameObject.name;
+
+
+    /// <summary>
+    /// 변화가 생기면 변화를 감지해서 UI를 수정해야함
+    /// 
+    /// </summary>
+
+    [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level     {get => playerData.Level; set {} }
+    [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp         {get => playerData.Exp;   set {} }
+    [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold       {get => playerData.Gold;  set {} }
+    [Networked, OnChangedRender(nameof(OnHpChangedRender))] public int Hp           {get => playerData.Hp;    set {} }
+
     [Networked] public PlayerField playerField { get; set; }
 
     private PlayerController playerController;
     private Camera mainCamera;
-
-    private PlayerData playerData;
-
-    public NetworkString<_32> Name => this.gameObject.name;
-
-    [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level { get; set; }
-    [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp { get; set; }
-    [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold { get; set; }
-    [Networked, OnChangedRender(nameof(OnHpChangedRender))] public int Hp { get; set; }
 
 
     public void OnGoldChangedRender()
@@ -40,7 +46,7 @@ public class Player : NetworkBehaviour
     }
     public void OnHpChangedRender()
     {
-        playerData.OnHealthChanged?.Invoke(Hp);
+        playerData.OnHpChanged?.Invoke(Hp);
     }
     public void OnExpChangedRender()
     {
@@ -63,11 +69,6 @@ public class Player : NetworkBehaviour
         if (Runner.IsServer)
         {
             RPC_PlayerInitialize(this.playerField);
-
-            Level = 1;
-            Exp = 0;
-            Gold = 3;
-            Hp = 100;
         }
     }
 
@@ -76,7 +77,7 @@ public class Player : NetworkBehaviour
     {
         this.playerField = localField;
         GameManager.Instance.LocalPlayer = this;
-        shopPresenter.PlayerInitialize();
+        shopPresenter.SubscribeToDataEvents();
     }
 
     public void MoveToPlayerField(PlayerField playerField, bool isBattle = false)
@@ -111,4 +112,6 @@ public class Player : NetworkBehaviour
     {
         mainCamera.transform.SetPositionAndRotation(position, rotation);
     }
+
+
 }
