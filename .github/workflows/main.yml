@@ -1,58 +1,22 @@
-name: Code Review with GPT
+name: Code Review
 
-on:
-  pull_request_target:
-    types: [opened, synchronize] # PR이 생성되거나 업데이트될 때 실행
-
-permissions: 
+permissions:
   contents: read
   pull-requests: write
 
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
 jobs:
-  code_review:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get list of changed files
-        id: changes
-        run: |
-          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
-
-      - name: Review code with GPT
+      - uses: anc95/ChatGPT-CodeReview@main
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # optional
           LANGUAGE: Korean
-        run: |
-          FILES="${{ steps.changes.outputs.files }}"
-          REVIEW=""
-
-          # 각 파일의 내용을 GPT에게 전달하여 리뷰 요청
-          for FILE in $FILES; do
-            CONTENT=$(cat "$FILE")
-            PROMPT="Please review the following code file and provide feedback in Korean:\n\nFile: $FILE\n\nContent:\n$CONTENT"
-            
-            # GPT-4 API로 코드 리뷰 요청
-            RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $OPENAI_API_KEY" \
-              -d '{
-                "model": "gpt-4",
-                "messages": [{"role": "user", "content": "'"$PROMPT"'"}]
-              }' | jq -r '.choices[0].message.content' || echo "Error: Unable to get response from GPT-4.")
-            
-            # 리뷰 결과 저장
-            if [ -n "$RESPONSE" ]; then
-              REVIEW+="File: $FILE\n\n$RESPONSE\n\n---\n"
-            fi
-          done
-
-          # GitHub PR에 리뷰 결과 게시 (REVIEW가 비어있지 않을 때만 실행)
-          if [ -n "$REVIEW" ]; then
-            echo "$REVIEW" | gh pr comment ${{ github.event.pull_request.number }} --body "$REVIEW"
-          else
-            echo "No review content available to post."
-          fi
+          PROMPT:
+          IGNORE_PATTERNS: /node_modules,*.md # Regex pattern to ignore files, separated by comma
