@@ -15,10 +15,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          # 모든 히스토리를 가져와서 브랜치 간 비교가 가능하도록 설정
+          fetch-depth: 0
+
+      - name: Set up target branch
+        # 타겟 브랜치와 소스 브랜치를 모두 fetch하여 로컬에 준비
+        run: |
+          git fetch origin $GITHUB_BASE_REF
+          git fetch origin $GITHUB_HEAD_REF
 
       - name: Get list of changed files
         id: changes
         run: |
+          # 'GITHUB_BASE_REF'와 'GITHUB_HEAD_REF' 간 변경 파일 목록 가져오기
           FILES=$(git diff --name-only $GITHUB_BASE_REF...$GITHUB_HEAD_REF)
           echo "FILES=$FILES" >> $GITHUB_ENV
 
@@ -30,7 +40,7 @@ jobs:
         run: |
           REVIEW=""
 
-          # 각 파일의 내용을 GPT에게 전달하여 리뷰 요청
+          # 각 파일의 내용을 GPT에게 전달하여 한국어 리뷰 요청
           for FILE in $FILES; do
             CONTENT=$(cat "$FILE")
             PROMPT="Please review the following code file and provide feedback in Korean:\n\nFile: $FILE\n\nContent:\n$CONTENT"
