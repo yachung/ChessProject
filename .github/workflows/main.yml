@@ -2,7 +2,7 @@ name: Code Review with GPT
 
 on:
   pull_request_target:
-    types: [opened, synchronize] # PR이 생성되거나 업데이트될 때 실행
+    types: [opened, synchronize]
 
 permissions: 
   contents: read
@@ -19,21 +19,21 @@ jobs:
       - name: Get list of changed files
         id: changes
         run: |
-          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+          FILES=$(git diff --name-only $GITHUB_BASE_REF...$GITHUB_HEAD_REF)
+          echo "FILES=$FILES" >> $GITHUB_ENV
 
       - name: Review code with GPT
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LANGUAGE: Korean
+          FILES: ${{ env.FILES }}
         run: |
-          FILES="${{ steps.changes.outputs.files }}"
           REVIEW=""
 
           # 각 파일의 내용을 GPT에게 전달하여 리뷰 요청
           for FILE in $FILES; do
             CONTENT=$(cat "$FILE")
-            PROMPT="Please review the following code file and provide feedback:\n\nFile: $FILE\n\nContent:\n$CONTENT"
+            PROMPT="Please review the following code file and provide feedback in Korean:\n\nFile: $FILE\n\nContent:\n$CONTENT"
             
             # GPT-4 API로 코드 리뷰 요청
             RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
