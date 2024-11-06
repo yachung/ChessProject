@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class Utils
 {
-    public static Vector3Int[] cubeDirections =
+    public static readonly Vector3Int[] cubeDirections =
         {
             new Vector3Int( 0, 1,-1),
             new Vector3Int( 1, 0,-1),

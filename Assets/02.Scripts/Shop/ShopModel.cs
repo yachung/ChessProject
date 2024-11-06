@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
@@ -7,7 +8,18 @@ public class ShopModel : NetworkBehaviour
 {
     [SerializeField] private List<ChampionData> championDatas;
     public List<ChampionData> ChampionDatas => championDatas;
-    public PlayerData PlayerData;
+    private Player localPlayer;
+    public Player LocalPlayer 
+    { 
+        get => localPlayer;  
+        set
+        {
+            localPlayer = value;
+            OnLocalPlayerChanged.Invoke();
+        }
+    }
+
+    public Action OnLocalPlayerChanged;
 
     private readonly int MaxCardCount = 5;
 
@@ -23,7 +35,7 @@ public class ShopModel : NetworkBehaviour
         for (int i = 0; i < MaxCardCount; ++i)
         {
             // 리스트에서 랜덤 인덱스 선택
-            int randomIndex = Random.Range(0, championDatas.Count);
+            int randomIndex = UnityEngine.Random.Range(0, championDatas.Count);
             result.Add(championDatas[randomIndex]);
         }
 

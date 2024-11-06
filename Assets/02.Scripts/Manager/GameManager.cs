@@ -65,7 +65,6 @@ public class GameManager : NetworkBehaviour
 
             Player player = networkObject.GetComponent<Player>();
             player.playerField = playerField;
-            container.Inject(player);
 
             stageModel.PlayerInfos.Add(playerRef, player);
             allPlayers.Add(playerRef, player);

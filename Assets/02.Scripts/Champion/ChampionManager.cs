@@ -6,17 +6,11 @@ using VContainer;
 public class ChampionManager : NetworkBehaviour
 {
     private GameManager _gameManager;
-    private List<Champion> _champions = new List<Champion>();
 
     [Inject]
     public void Construct(GameManager gameManager)
     {
         _gameManager = gameManager;
-    }
-
-    public override void Spawned()
-    {
-        //Object.AssignInputAuthority(Runner.LocalPlayer);
     }
 
     // 클라이언트가 소환 요청을 보내면 서버에서 소환을 처리
@@ -35,7 +29,7 @@ public class ChampionManager : NetworkBehaviour
         {
             ChampionData championData = Resources.Load($"Data/{name}Data") as ChampionData;
 
-            player.PlayerData.Gold -= championData.cost;
+            player.Gold -= championData.cost;
 
             NetworkPrefabRef championPrefab = championData.championPrefab;
             
@@ -57,7 +51,6 @@ public class ChampionManager : NetworkBehaviour
 
                 emptyTile.DeployChampion(champion);
                 player.playerField.Champions.Add(champion);
-                _champions.Add(champion);
             }
             else
             {

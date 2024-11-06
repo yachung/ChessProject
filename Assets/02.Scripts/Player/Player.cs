@@ -4,31 +4,27 @@ using UnityEngine;
 using VContainer;
 
     
-public class Player : NetworkBehaviour
+public class Player : NetworkBehaviour, IAfterSpawned
 {
-    private ShopPresenter shopPresenter;
+    //private PlayerData playerData;
+    //public PlayerData PlayerData => playerData;
 
-    [Inject]
-    public void Construct(ShopPresenter shopPresenter)
-    {
-        this.shopPresenter = shopPresenter;
-    }
-
-    private PlayerData playerData;
-    public PlayerData PlayerData => playerData;
-
-    public NetworkString<_32> Name => this.gameObject.name;
-
+    public NetworkString<_32> Name => Runner.name;
 
     /// <summary>
     /// 변화가 생기면 변화를 감지해서 UI를 수정해야함
     /// 
     /// </summary>
 
-    [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level     {get => playerData.Level; set {} }
-    [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp         {get => playerData.Exp;   set {} }
-    [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold       {get => playerData.Gold;  set {} }
-    [Networked, OnChangedRender(nameof(OnHpChangedRender))] public int Hp           {get => playerData.Hp;    set {} }
+    [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level { get; set; }
+    [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp { get; set; }
+    [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold { get; set; }
+    [Networked, OnChangedRender(nameof(OnHpChangedRender))] public int Hp { get; set; }
+
+    public Action<int> OnGoldChanged;
+    public Action<int> OnExperienceChanged;
+    public Action<int> OnLevelChanged;
+    public Action<int> OnHpChanged;
 
     [Networked] public PlayerField playerField { get; set; }
 
@@ -38,19 +34,26 @@ public class Player : NetworkBehaviour
 
     public void OnGoldChangedRender()
     {
-        playerData.OnGoldChanged?.Invoke(Gold);
+        if (HasInputAuthority)
+            OnGoldChanged?.Invoke(Gold);
     }
+
     public void OnLevelChangedRender()
     {
-        playerData.OnLevelChanged?.Invoke(Level);
+        if (HasInputAuthority)
+            OnLevelChanged?.Invoke(Level);
     }
+
     public void OnHpChangedRender()
     {
-        playerData.OnHpChanged?.Invoke(Hp);
+        if (HasInputAuthority)
+            OnHpChanged?.Invoke(Hp);
     }
+
     public void OnExpChangedRender()
     {
-        playerData.OnExperienceChanged?.Invoke(Exp);
+        if (HasInputAuthority)
+            OnExperienceChanged?.Invoke(Exp);
     }
 
     private void Awake()
@@ -61,7 +64,31 @@ public class Player : NetworkBehaviour
 
     public override void Spawned()
     {
-        
+        if (HasInputAuthority)
+            FindAnyObjectByType<ShopModel>().LocalPlayer = this;
+    }
+
+    [Networked] private bool isInitialized { get; set; }
+
+    public override void FixedUpdateNetwork()
+    {
+        //if (Runner.IsServer && !isInitialized)
+        //{
+        //    Level = 1;
+        //    Exp = 0;
+        //    Hp = 100;
+        //    Gold = 10;
+
+        //    isInitialized = true;
+        //}
+    }
+
+    public void AfterSpawned()
+    {
+        if (Runner.IsServer)
+        {
+
+        }
     }
 
     public void SpawnedComplete()
@@ -69,6 +96,10 @@ public class Player : NetworkBehaviour
         if (Runner.IsServer)
         {
             RPC_PlayerInitialize(this.playerField);
+
+            Level += 1;
+            Hp += 100;
+            Gold += 10;
         }
     }
 
@@ -76,8 +107,7 @@ public class Player : NetworkBehaviour
     public void RPC_PlayerInitialize(PlayerField localField)
     {
         this.playerField = localField;
-        GameManager.Instance.LocalPlayer = this;
-        shopPresenter.SubscribeToDataEvents();
+        //GameManager.Instance.LocalPlayer = this;
     }
 
     public void MoveToPlayerField(PlayerField playerField, bool isBattle = false)
@@ -112,6 +142,4 @@ public class Player : NetworkBehaviour
     {
         mainCamera.transform.SetPositionAndRotation(position, rotation);
     }
-
-
 }

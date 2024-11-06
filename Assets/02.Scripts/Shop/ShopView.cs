@@ -70,7 +70,7 @@ public class ShopView : MonoBehaviour
 
     public void UpdateLevel(int Level)
     {
-        txt_Level.text = Level.ToString();
+        txt_Level.text = Level.ToString() + " Lv";
     }
 
     public void UpdateExp(int Exp)

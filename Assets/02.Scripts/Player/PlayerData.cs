@@ -3,41 +3,47 @@ using System;
 public class PlayerData
 {
     public string Name { get; set; }
-    public int Hp 
+    private int hp;
+    public int Hp
     {
-        get => this.Hp;
+        get => hp;
         set
         {
-            this.Hp = value;
-            OnHpChanged(Hp);
+            hp = value;
+            OnHpChanged(hp);
         }
     }
 
+    private int level;
     public int Level
     {
-        get => this.Level;
+        get => level;
         set
         {
-            this.Level = value;
-            OnLevelChanged(Level);
+            level = value;
+            OnLevelChanged(level);
         }
     }
+
+    private int gold;
     public int Gold
     {
-        get => this.Gold;
+        get => gold;
         set
         {
-            this.Gold = value;
-            OnGoldChanged(Gold);
+            gold = value;
+            OnGoldChanged(gold);
         }
     }
+
+    private int exp;
     public int Exp
     {
-        get => this.Exp;
+        get => exp;
         set
         {
-            this.Exp = value;
-            OnExperienceChanged(Exp);
+            exp = value;
+            OnExperienceChanged(exp);
         }
     }
 

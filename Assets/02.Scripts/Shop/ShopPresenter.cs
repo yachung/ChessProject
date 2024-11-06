@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using WebSocketSharp;
 
 public class ShopPresenter
 {
@@ -18,21 +19,23 @@ public class ShopPresenter
         this.shopModel = model;
         this.championManager = championManager;
 
+        shopModel.OnLocalPlayerChanged += SubscribeToDataEvents;
+
         this.shopView.SetPresenter(this);
     }
 
     public void SubscribeToDataEvents()
     {
-        shopModel.PlayerData.OnGoldChanged += UpdateGoldView;
-        shopModel.PlayerData.OnExperienceChanged += UpdateExperienceView;
-        shopModel.PlayerData.OnLevelChanged += UpdateLevelView;
+        shopModel.LocalPlayer.OnGoldChanged += UpdateGoldView;
+        shopModel.LocalPlayer.OnExperienceChanged += UpdateExperienceView;
+        shopModel.LocalPlayer.OnLevelChanged += UpdateLevelView;
     }
 
     public void OnBuyChampion(ChampionData championData, Action<bool> OnCheckedGold)
     {
-        bool IsPass = shopModel.PlayerData.Gold >= championData.cost;
+        bool IsPass = shopModel.LocalPlayer.Gold >= championData.cost;
 
-        Debug.Log($"챔피언 구매 : {IsPass}, 잔돈 : {shopModel.PlayerData.Gold}");
+        Debug.Log($"챔피언 구매 : {IsPass}, 잔돈 : {shopModel.LocalPlayer.Gold}");
 
         OnCheckedGold?.Invoke(IsPass);
 
