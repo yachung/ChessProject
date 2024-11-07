@@ -1,18 +1,14 @@
+using Firebase.Auth;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoginModel : MonoBehaviour
+public class LoginModel
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public FirebaseAuth auth;
 
-    // Update is called once per frame
-    void Update()
+    public LoginModel()
     {
-        
+        auth = FirebaseAuth.DefaultInstance;
     }
 }
