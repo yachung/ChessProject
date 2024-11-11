@@ -7957,7 +7957,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
-    TypeName: 
+    TypeName: RootLifeTimeScope
   autoRun: 1
   autoInjectGameObjects: []
   stageDurationConfig: {fileID: 11400000, guid: 68c4ba18b4a45d34f905462be2356039, type: 2}

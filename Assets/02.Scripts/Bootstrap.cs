@@ -10,7 +10,7 @@ public class Bootstrap : MonoBehaviour
     /// <summary>
     /// Runtime 전에 초기화 해야될 세팅이 있을 경우 사용
     /// </summary>
-    [RuntimeInitializeOnLoadMethod]
+    //[RuntimeInitializeOnLoadMethod]
     static void InitializeApplication()
     {
         SceneManager.LoadScene("Lobby");

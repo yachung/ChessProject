@@ -1,78 +1,53 @@
-using Firebase.Auth;
-using System.Collections;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using UnityEngine;
+using VContainer;
 
-public class LoginPresenter : MonoBehaviour
+public class LoginPresenter
 {
-    private readonly ILoginView view;
-    private readonly LoginModel model;
+    private ILoginView view;
+    private LoginModel model;
 
-    private async void LoginAsync(string email, string password)
+    [Inject]
+    public void Constructor(ILoginView view, LoginModel model)
     {
-        await model.auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
-        {
-            if (task.IsCanceled)
-            {
-                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-                return;
-            }
-        });
+        this.view = view;
+        this.model = model;
+
+        view.OnLoginButtonClicked += Login;
+        view.OnRegisterButtonClicked += Register;
     }
 
-    private async void RegisterAsync(string email, string password)
-    {
-        await model.auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
-        {
-            if (task.IsCanceled)
-            {
-                Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-                return;
-            }
-        });
-    }
-
-    private async void OnLoginButtonClicked()
+    private async void Login(string email, string password)
     {
         view.ShowLoading(true);
 
-        //await LoginAsync(view.Email, view.Password).
-            
-        //    ContinueWith(result =>
-        //{
+        bool success = await model.Login(email, password);
 
-        //});
+        view.ShowLoading(false);
 
-        //if (result.User.IsValid())
-        //    view.ShowSuccess("Login Success");
-        //else
-        //    view.ShowError("Login Error");
-
-        //view.ShowLoading(false);
+        if (success)
+        {
+            view.ShowSuccess("view : 로그인 성공");
+        }
+        else
+        {
+            view.ShowSuccess("view : 로그인 실패");
+        }
     }
 
-    private async void OnRegisterButtonClicked()
+    private async void Register(string email, string password) 
     {
         view.ShowLoading(true);
 
-        //AuthResult result = await RegisterAsync(view.Email, view.Password);
+        bool success = await model.Register(email, password);
 
-        //if (result.User.IsValid())
-        //    view.ShowSuccess("Register Success");
-        //else
-        //    view.ShowError("Register Error");
+        view.ShowLoading(false);
 
-        //view.ShowLoading(false);
+        if (success)
+        {
+            view.ShowSuccess("view : 회원가입 성공");
+        }
+        else
+        {
+            view.ShowSuccess("view : 회원가입 실패");
+        }
     }
 }

@@ -1,15 +1,12 @@
 using Michsky.MUIP;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-
 
 public interface ILoginView
 {
-    string Email { get;}
-    string Password { get;}
+    event Action<string, string> OnLoginButtonClicked;
+    event Action<string, string> OnRegisterButtonClicked;
 
     void ShowLoading(bool isLoading);
     void ShowError(string message);
@@ -18,18 +15,25 @@ public interface ILoginView
 
 public class LoginView : MonoBehaviour, ILoginView
 {
-    [SerializeField] private InputField input_Email;
-    [SerializeField] private InputField input_Password;
+    [SerializeField] private TMP_InputField input_Email;
+    [SerializeField] private TMP_InputField input_Password;
     [SerializeField] private ButtonManager btn_Login;
     [SerializeField] private ButtonManager btn_Register;
 
-    public string Email => input_Email.text;
-    public string Password => input_Password.text;
+    public event Action<string, string> OnLoginButtonClicked;
+    public event Action<string, string> OnRegisterButtonClicked;
 
-    public void Initialize(Action OnLoginButtonClick, Action OnRegisterButtonClick)
+    public void Start()
     {
-        btn_Login.onClick.AddListener(() => OnLoginButtonClick?.Invoke());
-        btn_Register.onClick.AddListener(() => OnRegisterButtonClick?.Invoke());
+        btn_Login.onClick.AddListener(() =>
+        {
+            OnLoginButtonClicked?.Invoke(input_Email.text, input_Password.text);
+        });
+
+        btn_Register.onClick.AddListener(() =>
+        {
+            OnRegisterButtonClicked?.Invoke(input_Email.text, input_Password.text);
+        });
     }
 
     public void ShowError(string message)
