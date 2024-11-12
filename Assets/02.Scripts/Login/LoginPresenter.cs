@@ -1,35 +1,44 @@
 using VContainer;
+using VContainer.Unity;
 
-public class LoginPresenter
+public class LoginPresenter : IInitializable
 {
-    private ILoginView view;
-    private LoginModel model;
+    private readonly ILoginView view;
+    private readonly LoginModel model;
 
-    [Inject]
-    public void Constructor(ILoginView view, LoginModel model)
+    public LoginPresenter(ILoginView view, LoginModel model)
     {
         this.view = view;
         this.model = model;
+    }
 
+    public void Initialize()
+    {
         view.OnLoginButtonClicked += Login;
         view.OnRegisterButtonClicked += Register;
     }
 
     private async void Login(string email, string password)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            view.ShowError("email or password is NullOrEmpty");
+            return;
+        }
+
         view.ShowLoading(true);
 
-        bool success = await model.Login(email, password);
+        var (result, errorMesage) = await model.AuthenticateUser(email, password);
 
         view.ShowLoading(false);
 
-        if (success)
+        if (result)
         {
-            view.ShowSuccess("view : 로그인 성공");
+            view.ShowSuccess($"{email} : 로그인 성공");
         }
         else
         {
-            view.ShowSuccess("view : 로그인 실패");
+            view.ShowError(errorMesage);
         }
     }
 
@@ -37,17 +46,17 @@ public class LoginPresenter
     {
         view.ShowLoading(true);
 
-        bool success = await model.Register(email, password);
+        var (result, errorMesage) = await model.CreateAccount(email, password);
 
         view.ShowLoading(false);
 
-        if (success)
+        if (result)
         {
-            view.ShowSuccess("view : 회원가입 성공");
+            view.ShowSuccess($"{email} : 회원가입 성공");
         }
         else
         {
-            view.ShowSuccess("view : 회원가입 실패");
+            view.ShowError(errorMesage);
         }
     }
 }

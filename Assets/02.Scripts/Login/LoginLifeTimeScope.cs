@@ -7,9 +7,9 @@ public class LoginLifeTimeScope : LifetimeScope
     {
         // Model, Presenter 등록
         builder.Register<LoginModel>(Lifetime.Scoped);
-        builder.Register<LoginPresenter>(Lifetime.Scoped);
+        builder.Register<LoginPresenter>(Lifetime.Scoped).As<IInitializable>();
 
         // View 등록
-        builder.RegisterComponentInHierarchy<LoginView>();
+        builder.RegisterComponentInHierarchy<LoginView>().As<ILoginView>();
     }
 }

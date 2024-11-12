@@ -5,6 +5,8 @@ using Firebase.Auth;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Firebase;
+using System;
 
 public class FirebaseManager
 {
@@ -16,40 +18,44 @@ public class FirebaseManager
         auth = FirebaseAuth.DefaultInstance;
     }
 
-    public async UniTask<FirebaseUser> LoginAsync(string email, string password)
+    public async UniTask<(FirebaseUser user, string errorMessage)> LoginAsync(string email, string password)
     {
-        var task = auth.SignInWithEmailAndPasswordAsync(email, password).AsUniTask();
-
-        var UserCredential = await task;
-
-        if (UserCredential != null) 
+        try
         {
-            Debug.Log($"로그인 성공 : email : {email}");
-            return UserCredential.User;
+            var authResult = await auth.SignInWithEmailAndPasswordAsync(email, password).AsUniTask();
+
+            return (authResult.User, null);
         }
-        else
+        catch (FirebaseException ex)
         {
-            Debug.LogError($"로그인 실패 : {UserCredential}");
-            return null;
+            Debug.LogError($"FirebaseAuthException: {ex.ErrorCode} - {ex.Message}");
+            return (null, $"Firebase 오류: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
         }
     }
 
-    public async UniTask<FirebaseUser> RegisterAsync(string email, string password)
+    public async UniTask<(FirebaseUser user, string errorMessage)> RegisterAsync(string email, string password)
     {
-        // 제공되는 함수 : 이메일과 비밀번호로 회원가입 시켜 줌
-        var task = auth.CreateUserWithEmailAndPasswordAsync(email, password).AsUniTask();
-
-        var UserCredential = await task;
-
-        if (UserCredential != null)
+        try
         {
-            Debug.Log($"회원가입 성공 : email : {email}");
-            return UserCredential.User;
+            // 제공되는 함수 : 이메일과 비밀번호로 회원가입 시켜 줌
+            var authResult = await auth.CreateUserWithEmailAndPasswordAsync(email, password).AsUniTask();
+
+            return (authResult.User, null);
         }
-        else
+        catch (FirebaseException ex)
         {
-            Debug.LogError($"회원가입 실패 : {UserCredential}");
-            return null;
+            Debug.LogError($"FirebaseAuthException: {ex.ErrorCode} - {ex.Message}");
+            return (null, $"Firebase 오류: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
         }
     }
 }

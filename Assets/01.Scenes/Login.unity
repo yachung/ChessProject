@@ -1017,8 +1017,8 @@ GameObject:
   - component: {fileID: 224858257018016838}
   - component: {fileID: 222277793120912882}
   - component: {fileID: 114836191438370108}
-  - component: {fileID: 114090278672053536}
   - component: {fileID: 225463319660411934}
+  - component: {fileID: 114090278672053536}
   m_Layer: 5
   m_Name: Icon Title Mask
   m_TagString: Untagged
@@ -1695,8 +1695,8 @@ CanvasGroup:
   m_GameObject: {fileID: 1632757965939358}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &225407550118398555
 MonoBehaviour:
@@ -1796,7 +1796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224063179150774612, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 134.48001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224063179150774612, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1860,7 +1860,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224129424007472666, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 94.48
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224129424007472666, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1884,7 +1884,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224685704837367400, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 134.48001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224685704837367400, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1936,7 +1936,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2709422396402659487, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 94.48
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2709422396402659487, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1960,7 +1960,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490092051790762019, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 94.48
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3490092051790762019, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2153,7 +2153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224063179150774612, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 102.94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224063179150774612, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2217,7 +2217,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224129424007472666, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 62.94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224129424007472666, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2241,7 +2241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224685704837367400, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 102.94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224685704837367400, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2293,7 +2293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2709422396402659487, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 62.94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2709422396402659487, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2317,7 +2317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490092051790762019, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 62.94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3490092051790762019, guid: 69a688479fbdc954491fe244abdaf6fd, type: 3}
       propertyPath: m_SizeDelta.y

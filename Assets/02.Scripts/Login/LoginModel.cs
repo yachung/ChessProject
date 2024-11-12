@@ -12,27 +12,27 @@ public class LoginModel
     public string Email;
     public string Password;
 
-    public async UniTask<bool> Login(string email, string password)
+    public async UniTask<(bool result, string errorMessage)> AuthenticateUser(string email, string password)
     {
-        var user = await firebaseManager.LoginAsync(email, password);
+        var (user, errorMessage) = await firebaseManager.LoginAsync(email, password);
 
         if (user != null)
         {
-            return true;
+            return (true, null);
         }
 
-        return false;
+        return (false, errorMessage);
     }
 
-    public async UniTask<bool> Register(string email, string password)
+    public async UniTask<(bool result, string errorMessage)> CreateAccount(string email, string password)
     {
-        var user = await firebaseManager.RegisterAsync(email, password);
+        var (user, errorMessage) = await firebaseManager.RegisterAsync(email, password);
 
         if (user != null)
         {
-            return true;
+            return (true, null);
         }
 
-        return false;
+        return (false, errorMessage);
     }
 }
