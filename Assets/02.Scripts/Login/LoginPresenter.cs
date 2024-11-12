@@ -5,11 +5,13 @@ public class LoginPresenter : IInitializable
 {
     private readonly ILoginView view;
     private readonly LoginModel model;
+    private readonly SceneLoader sceneLoader;
 
-    public LoginPresenter(ILoginView view, LoginModel model)
+    public LoginPresenter(ILoginView view, LoginModel model, SceneLoader sceneLoader)
     {
         this.view = view;
         this.model = model;
+        this.sceneLoader = sceneLoader;
     }
 
     public void Initialize()

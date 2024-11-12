@@ -8,8 +8,9 @@ public class SceneLoader
 {
     public enum SceneType
     {
-        Lobby = 0,
-        InGame = 1,
+        Login = 0,
+        Lobby = 1,
+        InGame = 2,
     }
 
     [Inject] private readonly LifetimeScope parent;
