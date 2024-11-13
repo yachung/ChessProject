@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ public class Bootstrap : MonoBehaviour
     //[RuntimeInitializeOnLoadMethod]
     static void InitializeApplication()
     {
-        SceneManager.LoadScene("Lobby");
+        SceneManager.LoadScene("Login");
         GameObject gameObject = new GameObject("BootStrap", typeof(Bootstrap));
         gameObject.GetComponent<Bootstrap>().networkRunnerPrefab = Resources.Load<NetworkRunner>("Network/NetworkRunner");
         DontDestroyOnLoad(gameObject);
@@ -46,7 +47,7 @@ public class Bootstrap : MonoBehaviour
         }
     }
 
-    async Task<StartGameResult> StartRunnerAsync(NetworkRunner runner, GameMode gameMode)
+    async UniTask<StartGameResult> StartRunnerAsync(NetworkRunner runner, GameMode gameMode)
     {
         int buildIndex = SceneUtility.GetBuildIndexByScenePath("Assets/01.Scenes/Lobby.unity");
         // 이 씬을 참조할 정보를 담은 구조체

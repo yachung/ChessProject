@@ -3,15 +3,16 @@ using VContainer.Unity;
 
 public class LoginPresenter : IInitializable
 {
+    [Inject] private readonly UIManager uiManager;
+    [Inject] private readonly SceneLoader sceneLoader;
+
     private readonly ILoginView view;
     private readonly LoginModel model;
-    private readonly SceneLoader sceneLoader;
 
-    public LoginPresenter(ILoginView view, LoginModel model, SceneLoader sceneLoader)
+    public LoginPresenter(ILoginView view, LoginModel model)
     {
         this.view = view;
         this.model = model;
-        this.sceneLoader = sceneLoader;
     }
 
     public void Initialize()
@@ -24,41 +25,42 @@ public class LoginPresenter : IInitializable
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            view.ShowError("email or password is NullOrEmpty");
+            uiManager.ShowMessage("email or password is NullOrEmpty");
             return;
         }
 
-        view.ShowLoading(true);
+        uiManager.ShowLoading(true);
 
         var (result, errorMesage) = await model.AuthenticateUser(email, password);
 
-        view.ShowLoading(false);
+        uiManager.ShowLoading(false);
 
         if (result)
         {
-            view.ShowSuccess($"{email} : 로그인 성공");
+            uiManager.ShowMessage($"{email} : 로그인 성공");
+            sceneLoader.LoadScene(SceneType.Lobby);
         }
         else
         {
-            view.ShowError(errorMesage);
+            uiManager.ShowMessage(errorMesage);
         }
     }
 
     private async void Register(string email, string password) 
     {
-        view.ShowLoading(true);
+        uiManager.ShowLoading(true);
 
         var (result, errorMesage) = await model.CreateAccount(email, password);
 
-        view.ShowLoading(false);
+        uiManager.ShowLoading(false);
 
         if (result)
         {
-            view.ShowSuccess($"{email} : 회원가입 성공");
+            uiManager.ShowMessage($"{email} : 회원가입 성공");
         }
         else
         {
-            view.ShowError(errorMesage);
+            uiManager.ShowMessage(errorMesage);
         }
     }
 }

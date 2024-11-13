@@ -7,10 +7,6 @@ public interface ILoginView
 {
     event Action<string, string> OnLoginButtonClicked;
     event Action<string, string> OnRegisterButtonClicked;
-
-    void ShowLoading(bool isLoading);
-    void ShowError(string message);
-    void ShowSuccess(string message);
 }
 
 public class LoginView : MonoBehaviour, ILoginView
@@ -34,20 +30,5 @@ public class LoginView : MonoBehaviour, ILoginView
         {
             OnRegisterButtonClicked?.Invoke(input_Email.text, input_Password.text);
         });
-    }
-
-    public void ShowError(string message)
-    {
-        Debug.Log(message);
-    }
-
-    public void ShowLoading(bool isLoading)
-    {
-        Debug.Log($"isLoading : {isLoading}");
-    }
-
-    public void ShowSuccess(string message)
-    {
-        Debug.Log(message);
     }
 }
