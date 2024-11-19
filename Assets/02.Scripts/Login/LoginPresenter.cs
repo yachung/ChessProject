@@ -19,11 +19,7 @@ public class LoginPresenter : IInitializable
     {
         view.OnLoginButtonClicked += Login;
         view.OnRegisterButtonClicked += Register;
-    }
-
-    private async void Login()
-    {
-        await model.AuthenticateUser();
+        view.OnGoogleLoginButtonClicked += GoogleLoginAsync;
     }
 
     private async void Login(string email, string password)
@@ -55,7 +51,7 @@ public class LoginPresenter : IInitializable
     {
         uiManager.ShowLoading(true);
 
-        var (result, errorMesage) = await model.CreateAccount(email, password);
+        var (result, errorMessage) = await model.CreateAccount(email, password);
 
         uiManager.ShowLoading(false);
 
@@ -65,7 +61,26 @@ public class LoginPresenter : IInitializable
         }
         else
         {
-            uiManager.ShowMessage(errorMesage);
+            uiManager.ShowMessage(errorMessage);
+        }
+    }
+
+    private async void GoogleLoginAsync()
+    {
+        uiManager.ShowLoading(true);
+
+        var (result, errorMessage) = await model.AuthenticateUser();
+
+        uiManager.ShowLoading(false);
+
+        if (result)
+        {
+            uiManager.ShowMessage($"구글 로그인 성공");
+            sceneLoader.LoadScene(SceneType.Lobby);
+        }
+        else
+        {
+            uiManager.ShowMessage(errorMessage);
         }
     }
 }

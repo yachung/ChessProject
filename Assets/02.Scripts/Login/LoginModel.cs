@@ -14,7 +14,7 @@ public class LoginModel
 
     public async UniTask<(bool result, string errorMessage)> AuthenticateUser()
     {
-        var (user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
+        var(user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
 
         if (user != null)
         {

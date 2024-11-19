@@ -41,22 +41,42 @@ public class FirebaseManager
         });
     }
 
-    public void SignInWithGoogleAsync(Task<GoogleSignInUser> task)
+    public async UniTask<(FirebaseUser user, string errorMessage)> SignInWithGoogleAsync()
     {
-        PlayGam
-        // 구글 로그인
-        Credential credential = GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
-        auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+        var task = GoogleSignIn.DefaultInstance.SignIn().AsUniTask();
+
+        try
         {
-            if (task.IsCanceled || task.IsFaulted)
+            var googleSignInUser = await task;
+
+            try
             {
-                noticeText.text = "Google Sign-In Failed";
-                return;
+                Credential credential = GoogleAuthProvider.GetCredential(googleSignInUser.IdToken, null);
+                var firebaseUser = await auth.SignInWithCredentialAsync(credential).AsUniTask();
+                return (firebaseUser, null);
+            }
+            catch (FirebaseException ex)
+            {
+                Debug.LogError($"FirebaseAuthException: {ex.ErrorCode} - {ex.Message}");
+                return (null, $"Firebase 오류: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"FirebaseException: {ex.Message}");
+                return (null, $"예기치 못한 오류: {ex.Message}");
             }
 
-            noticeText.text = "Google Sign-In Successful!";
-            loginText.text = "LOGOUT";
-        });
+        }
+        catch (GoogleSignIn.SignInException ex)
+        {
+            Debug.LogError($"SignInExceptionException: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"GoogleSignIn Exception: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
+        }
     }
 
     public async UniTask<(FirebaseUser user, string errorMessage)> LoginAsync(string email, string password)

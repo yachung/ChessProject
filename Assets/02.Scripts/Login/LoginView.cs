@@ -7,6 +7,7 @@ public interface ILoginView
 {
     event Action<string, string> OnLoginButtonClicked;
     event Action<string, string> OnRegisterButtonClicked;
+    event Action OnGoogleLoginButtonClicked;
 }
 
 public class LoginView : MonoBehaviour, ILoginView
