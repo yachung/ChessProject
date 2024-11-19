@@ -7,15 +7,56 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Firebase;
 using System;
+using Firebase.Extensions;
+using Google;
+using TMPro;
+using Fusion;
 
 public class FirebaseManager
 {
     // 인증을 관리할 객체
-    private readonly FirebaseAuth auth;
+    private FirebaseAuth auth;
+
+    private readonly string googleWebAPI = "971240606653-3dualfoth8v7i2dnmgm1r9rgitk6gidp.apps.googleusercontent.com";
+    private GoogleSignInConfiguration configuration;
+    private bool isSignin = false;
 
     public FirebaseManager()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        // Firebase 초기화
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                Debug.Log("Firebase Initialize Failed");
+                return;
+            }
+
+            Debug.Log("Firebase Initialize Complete");
+            FirebaseApp app = FirebaseApp.DefaultInstance;
+            auth = FirebaseAuth.DefaultInstance;
+
+            // 구글 SDK를 활용한 로그인 기능 등록
+            configuration = new GoogleSignInConfiguration { WebClientId = googleWebAPI, RequestEmail = true, RequestIdToken = true };
+        });
+    }
+
+    public void SignInWithGoogleAsync(Task<GoogleSignInUser> task)
+    {
+        PlayGam
+        // 구글 로그인
+        Credential credential = GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
+        auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                noticeText.text = "Google Sign-In Failed";
+                return;
+            }
+
+            noticeText.text = "Google Sign-In Successful!";
+            loginText.text = "LOGOUT";
+        });
     }
 
     public async UniTask<(FirebaseUser user, string errorMessage)> LoginAsync(string email, string password)

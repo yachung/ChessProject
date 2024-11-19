@@ -15,11 +15,13 @@ public enum SceneType
 
 public class SceneLoader : INetworkSceneManager
 {
-    public bool IsBusy => default;
+    private bool _isLoading;
+
+    public bool IsBusy => false;
 
     public Scene MainRunnerScene => throw new NotImplementedException();
 
-    private NetworkRunner Runner;
+    public NetworkRunner Runner { get; private set; }
 
     //public async void Server_OnGameStarted(NetworkRunner runner, Action sceneLoadComplete = null)
     //{
@@ -50,7 +52,7 @@ public class SceneLoader : INetworkSceneManager
 
     public void Shutdown()
     {
-
+        Runner = null;
     }
 
     public async void LoadScene(SceneType sceneType, Action loadingComplete = null)
@@ -87,7 +89,7 @@ public class SceneLoader : INetworkSceneManager
 
     public bool OnSceneInfoChanged(NetworkSceneInfo sceneInfo, NetworkSceneInfoChangeSource changeSource)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
 

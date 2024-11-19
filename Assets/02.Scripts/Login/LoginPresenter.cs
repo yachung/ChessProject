@@ -21,6 +21,11 @@ public class LoginPresenter : IInitializable
         view.OnRegisterButtonClicked += Register;
     }
 
+    private async void Login()
+    {
+        await model.AuthenticateUser();
+    }
+
     private async void Login(string email, string password)
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
