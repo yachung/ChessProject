@@ -41,13 +41,31 @@ public class FirebaseManager
         });
     }
 
-    public async UniTask<(FirebaseUser user, string errorMessage)> SignInWithGoogleAsync()
+    public async UniTask<(FirebaseUser user, string errorMessage)> SignInAnonymouslyAsync()
     {
-        var task = GoogleSignIn.DefaultInstance.SignIn().AsUniTask();
-
         try
         {
-            var googleSignInUser = await task;
+            var authResult = await auth.SignInAnonymouslyAsync().AsUniTask();
+
+            return (authResult.User, null);
+        }
+        catch (FirebaseException ex)
+        {
+            Debug.LogError($"FirebaseAuthException: {ex.ErrorCode} - {ex.Message}");
+            return (null, $"Firebase 오류: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
+        }
+    }
+
+    public async UniTask<(FirebaseUser user, string errorMessage)> SignInWithGoogleAsync()
+    {
+        try
+        {
+            var googleSignInUser = await GoogleSignIn.DefaultInstance.SignIn().AsUniTask();
 
             try
             {
@@ -79,7 +97,7 @@ public class FirebaseManager
         }
     }
 
-    public async UniTask<(FirebaseUser user, string errorMessage)> LoginAsync(string email, string password)
+    public async UniTask<(FirebaseUser user, string errorMessage)> SignInWithEmailAndPasswordAsync(string email, string password)
     {
         try
         {
@@ -99,7 +117,7 @@ public class FirebaseManager
         }
     }
 
-    public async UniTask<(FirebaseUser user, string errorMessage)> RegisterAsync(string email, string password)
+    public async UniTask<(FirebaseUser user, string errorMessage)> CreateUserWithEmailAndPasswordAsync(string email, string password)
     {
         try
         {

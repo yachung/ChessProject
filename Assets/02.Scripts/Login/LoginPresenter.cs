@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using System;
 using VContainer;
 using VContainer.Unity;
 
@@ -17,70 +19,63 @@ public class LoginPresenter : IInitializable
 
     public void Initialize()
     {
-        view.OnLoginButtonClicked += Login;
+        view.OnLoginButtonClicked += Login_Email;
         view.OnRegisterButtonClicked += Register;
-        view.OnGoogleLoginButtonClicked += GoogleLoginAsync;
+        view.OnGoogleLoginButtonClicked += Login_Google;
+        view.OnGuestLoginButtonClicked += Login_Guest;
     }
 
-    private async void Login(string email, string password)
+    private async void HandleAuthenticate(Func<UniTask<(bool, string)>> loginFunc, string successMessage, SceneType sceneToLoad = SceneType.None)
+    {
+        uiManager.ShowLoading(true);
+
+        var (result, errorMessage) = await loginFunc();
+
+        uiManager.ShowLoading(false);
+
+        if (result)
+        {
+            uiManager.ShowMessage(successMessage);
+            if (sceneToLoad != SceneType.None)
+            {
+                sceneLoader.LoadScene(sceneToLoad);
+            }
+        }
+        else
+        {
+            uiManager.ShowMessage(errorMessage);
+        }
+    }
+
+    private void Login_Email(string email, string password)
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            uiManager.ShowMessage("email or password is NullOrEmpty");
+            uiManager.ShowMessage("email or password Field is NullOrEmpty");
             return;
         }
 
-        uiManager.ShowLoading(true);
-
-        var (result, errorMesage) = await model.AuthenticateUser(email, password);
-
-        uiManager.ShowLoading(false);
-
-        if (result)
-        {
-            uiManager.ShowMessage($"{email} : 로그인 성공");
-            sceneLoader.LoadScene(SceneType.Lobby);
-        }
-        else
-        {
-            uiManager.ShowMessage(errorMesage);
-        }
+        HandleAuthenticate(() => model.EmailAuthenticateResult(email, password), $"{email} : 로그인 성공", SceneType.Lobby);
     }
 
-    private async void Register(string email, string password) 
+    private void Register(string email, string password) 
     {
-        uiManager.ShowLoading(true);
-
-        var (result, errorMessage) = await model.CreateAccount(email, password);
-
-        uiManager.ShowLoading(false);
-
-        if (result)
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            uiManager.ShowMessage($"{email} : 회원가입 성공");
+            uiManager.ShowMessage("email or password Field is NullOrEmpty");
+            return;
         }
-        else
-        {
-            uiManager.ShowMessage(errorMessage);
-        }
+
+        HandleAuthenticate(() => model.CreateAccountAuthenticateResult(email, password), $"{email} : 회원가입 성공");
     }
 
-    private async void GoogleLoginAsync()
+    private void Login_Google()
     {
-        uiManager.ShowLoading(true);
+        HandleAuthenticate(() => model.GoogleAuthenticateResult(), $"구글 로그인 성공", SceneType.Lobby);
+    }
 
-        var (result, errorMessage) = await model.AuthenticateUser();
-
-        uiManager.ShowLoading(false);
-
-        if (result)
-        {
-            uiManager.ShowMessage($"구글 로그인 성공");
-            sceneLoader.LoadScene(SceneType.Lobby);
-        }
-        else
-        {
-            uiManager.ShowMessage(errorMessage);
-        }
+    private void Login_Guest()
+    {
+        HandleAuthenticate(() => model.GuestAuthenticateResult(), $"게스트 로그인 성공", SceneType.Lobby);
     }
 }

@@ -8,6 +8,8 @@ using VContainer.Unity;
 
 public enum SceneType
 {
+    None = -1,
+
     Login = 0,
     Lobby = 1,
     InGame = 2,
@@ -57,6 +59,9 @@ public class SceneLoader : INetworkSceneManager
 
     public async void LoadScene(SceneType sceneType, Action loadingComplete = null)
     {
+        if (SceneType.None == sceneType) return;
+
+
         await LoadScene(GetSceneRef(sceneType), new NetworkLoadSceneParameters());
 
         loadingComplete?.Invoke();

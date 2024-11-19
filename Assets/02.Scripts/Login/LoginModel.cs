@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Firebase.Auth;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,9 +13,9 @@ public class LoginModel
     public string Email;
     public string Password;
 
-    public async UniTask<(bool result, string errorMessage)> AuthenticateUser()
+    private async UniTask<(bool result, string errorMessage)> FirebaseAuthenticateResult(Func<UniTask<(FirebaseUser, string)>> authFunc)
     {
-        var(user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
+        var (user, errorMessage) = await authFunc();
 
         if (user != null)
         {
@@ -24,27 +25,69 @@ public class LoginModel
         return (false, errorMessage);
     }
 
-    public async UniTask<(bool result, string errorMessage)> AuthenticateUser(string email, string password)
+
+    public UniTask<(bool result, string errorMessage)> GuestAuthenticateResult()
     {
-        var (user, errorMessage) = await firebaseManager.LoginAsync(email, password);
-
-        if (user != null)
-        {
-            return (true, null);
-        }
-
-        return (false, errorMessage);
+        return FirebaseAuthenticateResult(() => firebaseManager.SignInAnonymouslyAsync());
+    }
+    public UniTask<(bool result, string errorMessage)> GoogleAuthenticateResult()
+    {
+        return FirebaseAuthenticateResult(() => firebaseManager.SignInWithGoogleAsync());
+    }
+    public UniTask<(bool result, string errorMessage)> EmailAuthenticateResult(string email, string password)
+    {
+        return FirebaseAuthenticateResult(() => firebaseManager.SignInWithEmailAndPasswordAsync(email, password));
+    }
+    public UniTask<(bool result, string errorMessage)> CreateAccountAuthenticateResult(string email, string password)
+    {
+        return FirebaseAuthenticateResult(() => firebaseManager.CreateUserWithEmailAndPasswordAsync(email, password));
     }
 
-    public async UniTask<(bool result, string errorMessage)> CreateAccount(string email, string password)
-    {
-        var (user, errorMessage) = await firebaseManager.RegisterAsync(email, password);
+    //public async UniTask<(bool result, string errorMessage)> GetGuestAuthenticate()
+    //{
+    //    var (user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
 
-        if (user != null)
-        {
-            return (true, null);
-        }
+    //    if (user != null)
+    //    {
+    //        return (true, null);
+    //    }
 
-        return (false, errorMessage);
-    }
+    //    return (false, errorMessage);
+    //}
+
+    //public async UniTask<(bool result, string errorMessage)> GetGoogleAuthenticate()
+    //{
+    //    var(user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
+
+    //    if (user != null)
+    //    {
+    //        return (true, null);
+    //    }
+
+    //    return (false, errorMessage);
+    //}
+
+    //public async UniTask<(bool result, string errorMessage)> GetEmailAuthenticate(string email, string password)
+    //{
+    //    var (user, errorMessage) = await firebaseManager.SignInWithEmailAndPasswordAsync(email, password);
+
+    //    if (user != null)
+    //    {
+    //        return (true, null);
+    //    }
+
+    //    return (false, errorMessage);
+    //}
+
+    //public async UniTask<(bool result, string errorMessage)> GetCreateAccountAuthenticate(string email, string password)
+    //{
+    //    var (user, errorMessage) = await firebaseManager.CreateUserWithEmailAndPasswordAsync(email, password);
+
+    //    if (user != null)
+    //    {
+    //        return (true, null);
+    //    }
+
+    //    return (false, errorMessage);
+    //}
 }
