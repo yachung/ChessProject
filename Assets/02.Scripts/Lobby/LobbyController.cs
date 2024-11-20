@@ -14,7 +14,7 @@ public class LobbyController : MonoBehaviour
     [SerializeField] private ButtonManager btn_FindOrCreateRoom;
 
     private NetworkRunner runner;
-
+    
     private void Awake()
     {
         btn_FindOrCreateRoom.onClick.AddListener(OnStartGameClicked);
@@ -57,14 +57,14 @@ public class LobbyController : MonoBehaviour
         var sceneInfo = new NetworkSceneInfo();
 
         if (scene.IsValid)
-            sceneInfo.AddSceneRef(scene, LoadSceneMode.Single);
+            sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
 
         return await runner.StartGame(new StartGameArgs
         {
             GameMode = gameMode,
             PlayerCount = 8,
             Scene = sceneInfo,
-            SceneManager = sceneLoader,
+            SceneManager = runner.GetComponent<NetworkSceneManagerDefault>(),
             //Address = NetAddress.Any() // IP 주소를 자동으로 할당
         });
     }

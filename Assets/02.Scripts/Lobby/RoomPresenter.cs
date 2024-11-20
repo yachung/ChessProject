@@ -102,7 +102,7 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
 
-        sceneLoader.LoadScene(SceneType.InGame);
+        //sceneLoader.LoadScene(SceneType.InGame);
     }
 
     #region NotUseCallBack
