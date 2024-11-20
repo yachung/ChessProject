@@ -105,28 +105,27 @@ public class SceneLoader : INetworkSceneManager
 
     public bool IsRunnerScene(Scene scene)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     public bool TryGetPhysicsScene2D(out PhysicsScene2D scene2D)
     {
-        throw new NotImplementedException();
+        scene2D = default;
+        return false;
     }
 
     public bool TryGetPhysicsScene3D(out PhysicsScene scene3D)
     {
-        throw new NotImplementedException();
+        scene3D = default;
+        return false;
     }
 
     public void MakeDontDestroyOnLoad(GameObject obj)
     {
-        throw new NotImplementedException();
     }
 
     public bool MoveGameObjectToScene(GameObject gameObject, SceneRef sceneRef)
     {
-        throw new NotImplementedException();
+        return false;
     }
-
-
 }

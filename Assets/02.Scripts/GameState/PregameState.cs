@@ -4,7 +4,7 @@ using VContainer;
 
 public class PregameState : StateBehaviour
 {
-    [Inject] private readonly LobbyPresenter _lobbyPresenter;
+    [Inject] private readonly RoomPresenter _lobbyPresenter;
 
     protected override bool CanEnterState()
     {

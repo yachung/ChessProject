@@ -1,12 +1,13 @@
 using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine.SceneManagement;
 using VContainer;
 using VContainer.Unity;
 
 public class LoginPresenter : IInitializable
 {
     [Inject] private readonly UIManager uiManager;
-    [Inject] private readonly SceneLoader sceneLoader;
+    [Inject] private readonly SceneLoader sceneLoader;      // Fusion2의 sceneLoad를 사용하지 않으므로 필요하지 않을 수 있음.
 
     private readonly ILoginView view;
     private readonly LoginModel model;
@@ -38,7 +39,8 @@ public class LoginPresenter : IInitializable
             uiManager.ShowMessage(successMessage);
             if (sceneToLoad != SceneType.None)
             {
-                sceneLoader.LoadScene(sceneToLoad);
+                SceneManager.LoadScene((int)sceneToLoad);
+                //sceneLoader.LoadScene(sceneToLoad);
             }
         }
         else
