@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Firebase.Auth;
 using System;
 using UnityEngine.SceneManagement;
 using VContainer;
@@ -21,27 +22,59 @@ public class LoginPresenter : IInitializable
     public void Initialize()
     {
         view.OnLoginButtonClicked += Login_Email;
-        view.OnRegisterButtonClicked += Register;
         view.OnGoogleLoginButtonClicked += Login_Google;
         view.OnGuestLoginButtonClicked += Login_Guest;
+
+        view.OnRegisterButtonClicked += Register;
     }
 
-    private async void HandleAuthenticate(Func<UniTask<(bool, string)>> loginFunc, string successMessage, SceneType sceneToLoad = SceneType.None)
+    private async void HandleLoginAuthenticate(Func<UniTask<(bool, string)>> LoginAuthenticateFunc, string successMessage)
     {
         uiManager.ShowLoading(true);
 
-        var (result, errorMessage) = await loginFunc();
+        var (result, errorMessage) = await LoginAuthenticateFunc();
+
+        uiManager.ShowLoading(false);
+
+        if (result)
+        {
+            if (string.IsNullOrEmpty(model.firebaseUser.DisplayName))
+            {
+                string displayName = null;
+
+                // view.OnInputNickName => displayName = value;
+
+                uiManager.ShowLoading(true);
+
+                (result, errorMessage) = await model.SetProfileAuthenticateResult(displayName);
+
+                uiManager.ShowLoading(false);
+            }
+        }
+
+        if (result)
+        {
+            uiManager.ShowMessage($"{model.firebaseUser.DisplayName}\n{successMessage}");
+
+            SceneManager.LoadScene((int)SceneType.Lobby);
+        }
+        else
+        {
+            uiManager.ShowMessage(errorMessage);
+        }
+    }
+
+    private async void HandleRegistration(Func<UniTask<(bool, string)>> registrationFunc, string successMessage)
+    {
+        uiManager.ShowLoading(true);
+
+        var (result, errorMessage) = await registrationFunc();
 
         uiManager.ShowLoading(false);
 
         if (result)
         {
             uiManager.ShowMessage(successMessage);
-            if (sceneToLoad != SceneType.None)
-            {
-                SceneManager.LoadScene((int)sceneToLoad);
-                //sceneLoader.LoadScene(sceneToLoad);
-            }
         }
         else
         {
@@ -57,10 +90,20 @@ public class LoginPresenter : IInitializable
             return;
         }
 
-        HandleAuthenticate(() => model.EmailAuthenticateResult(email, password), $"{email} : 로그인 성공", SceneType.Lobby);
+        HandleLoginAuthenticate(() => model.EmailAuthenticateResult(email, password), $"{email} : 로그인 성공");
     }
 
-    private void Register(string email, string password) 
+    private void Login_Google()
+    {
+        HandleLoginAuthenticate(() => model.GoogleAuthenticateResult(), $"구글 로그인 성공");
+    }
+
+    private void Login_Guest()
+    {
+        HandleLoginAuthenticate(() => model.GuestAuthenticateResult(), $"게스트 로그인 성공");
+    }
+
+    private void Register(string email, string password)
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
@@ -68,16 +111,6 @@ public class LoginPresenter : IInitializable
             return;
         }
 
-        HandleAuthenticate(() => model.CreateAccountAuthenticateResult(email, password), $"{email} : 회원가입 성공");
-    }
-
-    private void Login_Google()
-    {
-        HandleAuthenticate(() => model.GoogleAuthenticateResult(), $"구글 로그인 성공", SceneType.Lobby);
-    }
-
-    private void Login_Guest()
-    {
-        HandleAuthenticate(() => model.GuestAuthenticateResult(), $"게스트 로그인 성공", SceneType.Lobby);
+        HandleRegistration(() => model.CreateAccountAuthenticateResult(email, password), $"{email} : 회원가입 성공");
     }
 }

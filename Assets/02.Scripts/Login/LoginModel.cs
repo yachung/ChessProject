@@ -12,6 +12,8 @@ public class LoginModel
 
     public string Email;
     public string Password;
+    public FirebaseUser firebaseUser;
+
 
     private async UniTask<(bool result, string errorMessage)> FirebaseAuthenticateResult(Func<UniTask<(FirebaseUser, string)>> authFunc)
     {
@@ -19,6 +21,7 @@ public class LoginModel
 
         if (user != null)
         {
+            firebaseUser = user;
             return (true, null);
         }
 
@@ -43,51 +46,8 @@ public class LoginModel
         return FirebaseAuthenticateResult(() => firebaseManager.CreateUserWithEmailAndPasswordAsync(email, password));
     }
 
-    //public async UniTask<(bool result, string errorMessage)> GetGuestAuthenticate()
-    //{
-    //    var (user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
-
-    //    if (user != null)
-    //    {
-    //        return (true, null);
-    //    }
-
-    //    return (false, errorMessage);
-    //}
-
-    //public async UniTask<(bool result, string errorMessage)> GetGoogleAuthenticate()
-    //{
-    //    var(user, errorMessage) = await firebaseManager.SignInWithGoogleAsync();
-
-    //    if (user != null)
-    //    {
-    //        return (true, null);
-    //    }
-
-    //    return (false, errorMessage);
-    //}
-
-    //public async UniTask<(bool result, string errorMessage)> GetEmailAuthenticate(string email, string password)
-    //{
-    //    var (user, errorMessage) = await firebaseManager.SignInWithEmailAndPasswordAsync(email, password);
-
-    //    if (user != null)
-    //    {
-    //        return (true, null);
-    //    }
-
-    //    return (false, errorMessage);
-    //}
-
-    //public async UniTask<(bool result, string errorMessage)> GetCreateAccountAuthenticate(string email, string password)
-    //{
-    //    var (user, errorMessage) = await firebaseManager.CreateUserWithEmailAndPasswordAsync(email, password);
-
-    //    if (user != null)
-    //    {
-    //        return (true, null);
-    //    }
-
-    //    return (false, errorMessage);
-    //}
+    public UniTask<(bool result, string errorMessage)> SetProfileAuthenticateResult(string nickName)
+    {
+        return FirebaseAuthenticateResult(() => firebaseManager.UpdateUserProfileAsync(firebaseUser, nickName));
+    }
 }

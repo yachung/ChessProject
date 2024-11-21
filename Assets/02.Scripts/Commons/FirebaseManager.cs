@@ -11,6 +11,7 @@ using Firebase.Extensions;
 using Google;
 using TMPro;
 using Fusion;
+using System.Text.RegularExpressions;
 
 public class FirebaseManager
 {
@@ -20,6 +21,8 @@ public class FirebaseManager
     private readonly string googleWebAPI = "971240606653-3dualfoth8v7i2dnmgm1r9rgitk6gidp.apps.googleusercontent.com";
     private GoogleSignInConfiguration configuration;
     private bool isSignin = false;
+
+    public FirebaseUser currentUser;
 
     public FirebaseManager()
     {
@@ -47,6 +50,13 @@ public class FirebaseManager
         {
             var authResult = await auth.SignInAnonymouslyAsync().AsUniTask();
 
+            currentUser = authResult.User;
+
+            if (string.IsNullOrEmpty(currentUser?.DisplayName))
+            {
+                await currentUser.UpdateUserProfileAsync(new UserProfile { DisplayName = CreateRandomName()}).AsUniTask();
+            }
+
             return (authResult.User, null);
         }
         catch (FirebaseException ex)
@@ -61,6 +71,59 @@ public class FirebaseManager
         }
     }
 
+    public async UniTask<(FirebaseUser user, string errorMessage)> UpdateUserProfileAsync(FirebaseUser user, string displayName)
+    {
+        try
+        {
+            var task = user.UpdateUserProfileAsync(new UserProfile { DisplayName = displayName }).AsUniTask();
+            await task;
+
+            var authResult = await auth.SignInAnonymouslyAsync().AsUniTask();
+
+
+            if (string.IsNullOrEmpty(user?.DisplayName))
+            {
+                await user.UpdateUserProfileAsync(new UserProfile { DisplayName = CreateRandomName() }).AsUniTask();
+            }
+
+            return (authResult.User, null);
+        }
+        catch (FirebaseException ex)
+        {
+            Debug.LogError($"FirebaseAuthException: {ex.ErrorCode} - {ex.Message}");
+            return (null, $"Firebase 오류: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception: {ex.Message}");
+            return (null, $"예기치 못한 오류: {ex.Message}");
+        }
+    }
+
+    public bool IsValidNickname(string nickname)
+    {
+        if (string.IsNullOrEmpty(nickname))
+            return false;
+
+        if (nickname.Length < 3 || nickname.Length > 12)
+            return false;
+
+        // 예: 영문자와 숫자만 허용
+        if (!Regex.IsMatch(nickname, "^[a-zA-Z0-9]+$"))
+            return false;
+
+        // 금지어 필터링 (필요에 따라 구현)
+        // if (ContainsForbiddenWords(nickname))
+        //     return false;
+
+        return true;
+    }
+
+    private string CreateRandomName()
+    {
+        return $"Guest{UnityEngine.Random.Range(1000, 10000)}";
+    }
+
     public async UniTask<(FirebaseUser user, string errorMessage)> SignInWithGoogleAsync()
     {
         try
@@ -71,6 +134,9 @@ public class FirebaseManager
             {
                 Credential credential = GoogleAuthProvider.GetCredential(googleSignInUser.IdToken, null);
                 var firebaseUser = await auth.SignInWithCredentialAsync(credential).AsUniTask();
+
+                currentUser = firebaseUser;
+
                 return (firebaseUser, null);
             }
             catch (FirebaseException ex)
@@ -83,7 +149,6 @@ public class FirebaseManager
                 Debug.LogError($"FirebaseException: {ex.Message}");
                 return (null, $"예기치 못한 오류: {ex.Message}");
             }
-
         }
         catch (GoogleSignIn.SignInException ex)
         {
@@ -102,6 +167,8 @@ public class FirebaseManager
         try
         {
             var authResult = await auth.SignInWithEmailAndPasswordAsync(email, password).AsUniTask();
+            
+            currentUser = authResult.User;
 
             return (authResult.User, null);
         }

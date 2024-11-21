@@ -8,6 +8,7 @@ using VContainer;
 
 public class LobbyController : MonoBehaviour
 {
+    [Inject] private readonly FirebaseManager firebaseManager;
     [Inject] private readonly RoomModel roomModel;
     [Inject] private readonly SceneLoader sceneLoader;
     [SerializeField] private NetworkRunner networkRunnerPrefab;
@@ -51,8 +52,22 @@ public class LobbyController : MonoBehaviour
         }
     }
 
+    public static byte[] SerializePlayerInfo(PlayerInfo playerInfo)
+    {
+        string json = JsonUtility.ToJson(playerInfo);
+        return System.Text.Encoding.UTF8.GetBytes(json);
+    }
+
     private async UniTask<StartGameResult> StartRunnerAsync(NetworkRunner runner, GameMode gameMode)
     {
+        PlayerInfo playerInfo = new PlayerInfo
+        {
+            Name = firebaseManager.currentUser.DisplayName,
+            UserId = firebaseManager.currentUser.UserId
+        };
+
+        byte[] connectionToken = SerializePlayerInfo(playerInfo);
+
         var scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
         var sceneInfo = new NetworkSceneInfo();
 
@@ -65,6 +80,7 @@ public class LobbyController : MonoBehaviour
             PlayerCount = 8,
             Scene = sceneInfo,
             SceneManager = runner.GetComponent<NetworkSceneManagerDefault>(),
+            ConnectionToken = connectionToken
             //Address = NetAddress.Any() // IP 주소를 자동으로 할당
         });
     }

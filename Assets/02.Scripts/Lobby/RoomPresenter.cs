@@ -11,7 +11,6 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     private RoomModel roomModel;
     private RoomView roomView;
 
-
     [Inject]
     public void Constructor(RoomView roomView, RoomModel roomModel)
     {
@@ -21,17 +20,6 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         roomModel.Initialize(PlayerInfoChangeCallback);
 
         roomModel.OnIsFindRoomChanged += OnIsFindRoomChanged;
-
-        //this.view.SetPresenter(this);
-        //this.model.OnPlayerChanged = UpdatePlayerList;
-    }
-
-    public void Start()
-    {
-        Debug.Log("Lobby Presenter Initialize");
-
-
-        //_lobbyView.btn_Start.onClick.AddListener(() => OnGameStarted());
     }
 
     public void Initialize()
@@ -70,11 +58,20 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (runner.IsServer)
         {
-            PlayerInfo playerInfo = new PlayerInfo
+            byte[] connectionToken = runner.GetPlayerConnectionToken(player);
+
+            PlayerInfo playerInfo;
+
+            if (connectionToken != null && connectionToken.Length > 0)
             {
-                Index = runner.SessionInfo.PlayerCount,
-                Name = player.ToString()
-            };
+                string json = System.Text.Encoding.UTF8.GetString(connectionToken);
+                playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
+                string name = playerInfo.Name.ToString();
+            }
+            else
+            {
+                playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
+            }
 
             roomModel.AddPlayer(player, playerInfo);
         }
