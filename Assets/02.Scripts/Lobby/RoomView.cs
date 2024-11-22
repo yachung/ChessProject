@@ -37,7 +37,7 @@ public class RoomView : MonoBehaviour
         txt_PlayerCount.text = count.ToString();
     }
 
-    public void ShowPlayerList(Dictionary<PlayerRef, PlayerInfo> playerList)
+    public void ShowPlayerList(Dictionary<PlayerRef, NetworkPlayerInfo> playerList)
     {
         int index = 0;
 

@@ -11,7 +11,7 @@ public class PlayerInfoCell : MonoBehaviour
     [SerializeField] private GameObject objHpContainer;
 
 
-    public void Initialize(PlayerInfo player)
+    public void Initialize(NetworkPlayerInfo player)
     {
         gameObject.SetActive(true);
         playerIndex.text = player.Index.ToString();
@@ -19,7 +19,7 @@ public class PlayerInfoCell : MonoBehaviour
         objHpContainer.SetActive(false);
     }
 
-    public void Initialize(PlayerInfo player, int hp)
+    public void Initialize(NetworkPlayerInfo player, int hp)
     {
         gameObject.SetActive(true);
         playerName.text = player.Name.ToString();

@@ -14,8 +14,10 @@ public struct NetworkPlayerInfo : INetworkStruct
     public NetworkString<_16> Name;
     public NetworkString<_16> UserId;
 
-    //NetworkPlayerInfo(PlayerInfo playerInfo)
+    //public NetworkPlayerInfo(PlayerInfo playerInfo)
     //{
-    //    Index = Player
+    //    Index = playerInfo.Index;
+    //    Name = playerInfo.Name;
+    //    UserId = playerInfo.UserId;
     //}
 }

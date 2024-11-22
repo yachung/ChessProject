@@ -6,8 +6,8 @@ using UnityEngine;
 public class RoomModel : NetworkBehaviour
 {
     public int PlayerCount => PlayerDictionary.Count;
-    //[Networked, Capacity(8), OnChangedRender(nameof(PlayerInfosChanged))]
-    private Dictionary<PlayerRef, PlayerInfo> PlayerDictionary = new Dictionary<PlayerRef, PlayerInfo>(); // PlayerRef를 키로 사용하는 딕셔너리로 플레이어 정보 관리
+    [Networked, Capacity(8), OnChangedRender(nameof(PlayerInfosChanged))]
+    private Dictionary<PlayerRef, NetworkPlayerInfo> PlayerDictionary => default; // PlayerRef를 키로 사용하는 딕셔너리로 플레이어 정보 관리
 
     private Action OnPlayerInfoChangedRender;
     public Action<bool> OnIsFindRoomChanged;
@@ -32,7 +32,7 @@ public class RoomModel : NetworkBehaviour
         OnPlayerInfoChangedRender = action;
     }
 
-    public void AddPlayer(PlayerRef playerRef, PlayerInfo playerInfo)
+    public void AddPlayer(PlayerRef playerRef, NetworkPlayerInfo playerInfo)
     {
         if (!PlayerDictionary.ContainsKey(playerRef))
         {
@@ -52,7 +52,7 @@ public class RoomModel : NetworkBehaviour
         }
     }
 
-    public PlayerInfo GetPlayerInfo(PlayerRef playerRef)
+    public NetworkPlayerInfo GetPlayerInfo(PlayerRef playerRef)
     {
         return PlayerDictionary.ContainsKey(playerRef) ? PlayerDictionary[playerRef] : default;
     }
@@ -61,9 +61,9 @@ public class RoomModel : NetworkBehaviour
     /// 얕은복사로 전달?
     /// </summary>
     /// <returns></returns>
-    public Dictionary<PlayerRef, PlayerInfo> GetAllPlayers()
+    public Dictionary<PlayerRef, NetworkPlayerInfo> GetAllPlayers()
     {
-        return new Dictionary<PlayerRef, PlayerInfo>(PlayerDictionary);
+        return new Dictionary<PlayerRef, NetworkPlayerInfo>(PlayerDictionary);
     }
 
     public void PlayerInfosChanged()

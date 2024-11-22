@@ -66,14 +66,13 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 string json = System.Text.Encoding.UTF8.GetString(connectionToken);
                 playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
-                string name = playerInfo.Name.ToString();
             }
             else
             {
                 playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
             }
 
-            roomModel.AddPlayer(player, playerInfo);
+            roomModel.AddPlayer(player, new NetworkPlayerInfo(playerInfo));
         }
     }
 
