@@ -7,37 +7,16 @@ using VContainer;
 
 public class PlayerField : NetworkBehaviour
 {
+    private const int TileRows = 8;
+    private const int TileColumns = 10;
+
     private readonly Vector2 hexSize = new Vector2(13f, 15f);
 
     [Inject] private readonly GameStateManager gameStateManager;
     private BattleController battleController;
 
     [SerializeField] private Transform gridStartingPoint;
-    private Tile[,] Tiles = new Tile[8, 10];
-    private Tile this[Vector2Int coord, bool isDrag = false]
-    {
-        get
-        {
-            if (isDrag)
-            {
-                if (!IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 4))
-                    return Tiles[coord.x, coord.y];
-
-                if (IsBattle && (coord.x is >= 0 and <= 7) && (coord.y == 0))
-                    return Tiles[coord.x, coord.y];
-
-                return null;
-            }
-
-            if (IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 1 and <= 8))
-                return Tiles[coord.x, coord.y];
-
-            if (!IsBattle && (coord.x is >= 0 and <= 7) && (coord.y is >= 0 and <= 9))
-                return Tiles[coord.x, coord.y];
-
-            return null;
-        }
-    }
+    private Tile[,] Tiles = new Tile[TileRows, TileColumns];
     private Vector3 tileGridOffset;
 
     [Networked, OnChangedRender(nameof(IsBattleChanged))] public bool IsBattle { get; set; }
@@ -52,10 +31,8 @@ public class PlayerField : NetworkBehaviour
 
     private void Awake()
     {
-        cameraPose = new Pose(Camera.main.transform.position + transform.position, Camera.main.transform.rotation);
-        reverseCameraPose = new Pose(cameraPose.position + (new Vector3(0, 0, 120)), Quaternion.Euler(0, 180, 0) * cameraPose.rotation);
-
-        tileGridOffset = gridStartingPoint.position;
+        InitializeCameraPoses();
+        InitializeGridOffset();
 
         battleController = GetComponentInChildren<BattleController>();
         battleController.playerField = this;
@@ -63,10 +40,21 @@ public class PlayerField : NetworkBehaviour
 
     private void Start()
     {
-        IntializeField();
+        InitializeField();
     }
 
-    private void IntializeField()
+    private void InitializeCameraPoses()
+    {
+        cameraPose = new Pose(Camera.main.transform.position + transform.position, Camera.main.transform.rotation);
+        reverseCameraPose = new Pose(cameraPose.position + new Vector3(0, 0, 120), Quaternion.Euler(0, 180, 0) * cameraPose.rotation);
+    }
+
+    private void InitializeGridOffset()
+    {
+        tileGridOffset = gridStartingPoint.position;
+    }
+
+    private void InitializeField()
     {
         for (int y = 0; y < Tiles.GetLength(1); ++y)
         {
@@ -90,6 +78,24 @@ public class PlayerField : NetworkBehaviour
 
     #region 타일 관련 메서드
 
+    private bool IsValidDragCoordinate(Vector2Int coord) =>
+        !IsBattle && coord.x >= 0 && coord.x < TileRows && coord.y >= 0 && coord.y <= 4 ||
+        IsBattle && coord.x >= 0 && coord.x < TileRows && coord.y == 0;
+
+    private bool IsValidBattleCoordinate(Vector2Int coord) =>
+        IsBattle && coord.x >= 0 && coord.x < TileRows && coord.y >= 1 && coord.y <= 8 ||
+        !IsBattle && coord.x >= 0 && coord.x < TileRows && coord.y >= 0 && coord.y < TileColumns;
+
+    private Tile this[Vector2Int coord, bool isDrag = false]
+    {
+        get
+        {
+            return isDrag
+                ? IsValidDragCoordinate(coord) ? Tiles[coord.x, coord.y] : null
+                : IsValidBattleCoordinate(coord) ? Tiles[coord.x, coord.y] : null;
+        }
+    }
+
     /// <summary>
     /// 전투 타일 반환
     /// </summary>
@@ -101,17 +107,17 @@ public class PlayerField : NetworkBehaviour
     public Tile GetDragTile(Vector2Int coord) => this[coord, isDrag: true];
 
     /// <summary>
-    /// TestCode
+    /// 현재 필드에서 전달받은 TileType에 해당하는 모든 타일 반환
     /// </summary>
-    /// <param name="fieldType"></param>
+    /// <param name="tileType"></param>
     /// <returns></returns>
-    public List<Tile> GetTiles(TileType fieldType)
+    public List<Tile> GetTiles(TileType tileType)
     {
         List<Tile> result = new List<Tile>();
 
         foreach (var fields in Tiles)
         {
-            if (fields.tileType == fieldType)
+            if (fields.tileType == tileType)
             {
                 result.Add(fields);
             }
@@ -121,11 +127,11 @@ public class PlayerField : NetworkBehaviour
     }
 
     /// <summary>
-    /// 대기 필드에서 빈 타일 반환
+    /// WaitTile 중에 빈 타일 반환
     /// </summary>
     public Tile GetEmptyWaitField()
     {
-        for (int x = 0; x < 8; x++) // WaitField는 x 좌표가 0부터 7까지 범위에 존재
+        for (int x = 0; x < TileRows; x++)
         {
             if (Tiles[x, 0] != null && !Tiles[x, 0].IsOccupied())
             {
@@ -141,6 +147,19 @@ public class PlayerField : NetworkBehaviour
 
     #region 챔피언 배치 및 관리
 
+    private void SwapChampions(Tile sourceTile, Tile targetTile, Champion selectChampion)
+    {
+        if (targetTile.IsOccupied(out Champion placedChampion))
+        {
+            sourceTile.DeployChampion(placedChampion);
+            targetTile.DeployChampion(selectChampion);
+        }
+        else
+        {
+            targetTile.DeployChampion(selectChampion);
+            sourceTile.RemoveChampion();
+        }
+    }
 
     /// <summary>
     /// 챔피언을 타일에 배치 및 이동
@@ -155,16 +174,7 @@ public class PlayerField : NetworkBehaviour
             return;
         }
 
-        if (Tiles[target.x, target.y].IsOccupied(out Champion placedChampion))
-        {
-            Tiles[origin.x, origin.y].DeployChampion(placedChampion, deployAction);
-            Tiles[target.x, target.y].DeployChampion(selectChampion, deployAction);
-        }
-        else
-        {
-            Tiles[target.x, target.y].DeployChampion(selectChampion, deployAction);
-            Tiles[origin.x, origin.y].RemoveChampion();
-        }
+        SwapChampions(Tiles[origin.x, origin.y], Tiles[target.x, target.y], selectChampion);
     }
 
     public void SetChampion(Vector3 origin, Vector3 target, Champion selectChampion, Action<Vector2Int, Vector2Int> deployAction)
@@ -177,11 +187,11 @@ public class PlayerField : NetworkBehaviour
     /// </summary>
     public void SpawnChampion(Vector2Int Coord, Champion champion)
     {
-        this[Coord].DeployChampion(champion);
+        this[Coord]?.DeployChampion(champion);
     }
 
     /// <summary>
-    /// 내가 보유한 챔피언들 내 필드의 ReadyCoord로 재소환
+    /// 내가 보유한 있는 챔피언에서 저장하고 있는 ReadyCoord의 좌표로 재소환
     /// </summary>
     public void ChampionRespawn()
     {
@@ -218,11 +228,6 @@ public class PlayerField : NetworkBehaviour
             return false;
     }
 
-    public void UpdatePositionOnHost(Vector3 origin, Vector3 target)
-    {
-        RPC_UpdatePositionOnHost(CalculateCoordinate(origin), CalculateCoordinate(target));
-    }
-
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_UpdatePositionOnHost(Vector2Int source, Vector2Int target)
     {
@@ -234,26 +239,22 @@ public class PlayerField : NetworkBehaviour
         }
 
         this[source].IsOccupied(out Champion selectedChampion);
-        this[target].IsOccupied(out Champion deployedChampion);
 
         if (selectedChampion == null)
             return;
 
-        if (deployedChampion == null)
-        {
-            this[target].DeployChampion(selectedChampion);
-            this[source].RemoveChampion();
-        }
-        else
-        {
-            this[target].DeployChampion(selectedChampion);
-            this[source].DeployChampion(deployedChampion);
-        }
+        SwapChampions(this[source], this[target], selectedChampion);
+    }
+
+    public void UpdatePositionOnHost(Vector3 origin, Vector3 target)
+    {
+        RPC_UpdatePositionOnHost(CalculateCoordinate(origin), CalculateCoordinate(target));
     }
 
     #endregion
 
     #region 전투 시작 및 종료
+
     public void IsBattleChanged()
     {
         OnIsBattleChanged?.Invoke(IsBattle);
@@ -265,8 +266,6 @@ public class PlayerField : NetworkBehaviour
     public void StartBattle()
     {
         IsBattle = true;
-
-        // 전투 시작 시 BattleController에서 전투를 시작하도록 호출
         battleController.StartBattle();
     }
 
@@ -304,10 +303,7 @@ public class PlayerField : NetworkBehaviour
 
     #region 좌표 계산
 
-    public Vector2Int CalculateCoordinate(Vector3 inputPosition)
-    {
-        return GetHexCoordinate(inputPosition);
-    }
+    public Vector2Int CalculateCoordinate(Vector3 inputPosition) => GetHexCoordinate(inputPosition);
 
     private Vector2Int GetHexCoordinate(Vector3 worldPosition)
     {
@@ -349,13 +345,8 @@ public class PlayerField : NetworkBehaviour
     /// </summary>
     /// <param name="coordinate"></param>
     /// <returns></returns>
-    private bool IsValidCoordinate(Vector2Int coordinate)
-    {
-        if (coordinate.x >= 0 && coordinate.x <= 8 && coordinate.y >= 0 && coordinate.y <= 9)
-            return true;
-        else
-            return false;
-    }
+    private bool IsValidCoordinate(Vector2Int coordinate) =>
+        coordinate.x >= 0 && coordinate.x < TileRows && coordinate.y >= 0 && coordinate.y < TileColumns;
 
     #endregion
 }

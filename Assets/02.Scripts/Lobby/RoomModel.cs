@@ -7,7 +7,7 @@ public class RoomModel : NetworkBehaviour
 {
     public int PlayerCount => PlayerDictionary.Count;
     [Networked, Capacity(8), OnChangedRender(nameof(PlayerInfosChanged))]
-    private Dictionary<PlayerRef, NetworkPlayerInfo> PlayerDictionary => default; // PlayerRef를 키로 사용하는 딕셔너리로 플레이어 정보 관리
+    private NetworkDictionary<PlayerRef, NetworkPlayerInfo> PlayerDictionary => default; // PlayerRef를 키로 사용하는 딕셔너리로 플레이어 정보 관리
 
     private Action OnPlayerInfoChangedRender;
     public Action<bool> OnIsFindRoomChanged;

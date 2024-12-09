@@ -72,7 +72,7 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
                 playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
             }
 
-            roomModel.AddPlayer(player, new NetworkPlayerInfo(playerInfo));
+            //roomModel.AddPlayer(player, new NetworkPlayerInfo(playerInfo));
         }
     }
 
