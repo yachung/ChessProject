@@ -10,10 +10,10 @@ public class ShopPresenter
 {
     private ShopView shopView;
     private ShopModel shopModel;
-    private ChampionManager championManager;
+    private ChampionSpawner championManager;
 
     [Inject] 
-    public void Constructor(ShopView shopView, ShopModel model, ChampionManager championManager)
+    public void Constructor(ShopView shopView, ShopModel model, ChampionSpawner championManager)
     {
         this.shopView = shopView;
         this.shopModel = model;

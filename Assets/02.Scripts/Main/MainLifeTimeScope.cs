@@ -17,7 +17,7 @@ public class MainLifeTimeScope : LifetimeScope
     private void RegisterGameComponents(IContainerBuilder builder)
     {
         builder.RegisterComponentInHierarchy<GameManager>();
-        builder.RegisterComponentInHierarchy<ChampionManager>();
+        builder.RegisterComponentInHierarchy<ChampionSpawner>();
         builder.RegisterComponentInHierarchy<GameStateManager>();
     }
 

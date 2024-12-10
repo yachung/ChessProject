@@ -56,4 +56,40 @@ public static class Utils
 
         return Mathf.Max(Mathf.Abs(distance.x), Mathf.Abs(distance.y), Mathf.Abs(distance.z));
     }
+
+
+
+
+
+
+    public static Vector2Int TransformToOpponentCoordinate(Vector2Int localCoord, int rows, int columns)
+    {
+        return new Vector2Int(rows - localCoord.x - 1, columns - localCoord.y - 1);
+    }
+
+    public static Vector2Int GetHexCoordinate(Vector3 worldPosition, Vector2 gridOffset, Vector2 hexSize)
+    {
+        float width = hexSize.x;
+        float height = hexSize.y * 0.75f;
+
+        Vector3 adjustedPosition = worldPosition - (Vector3)gridOffset;
+
+        int approxY = Mathf.RoundToInt(adjustedPosition.z / height);
+        float offsetX = (approxY % 2 == 0) ? 0 : width / 2;
+        int approxX = Mathf.RoundToInt((adjustedPosition.x - offsetX) / width);
+
+        return new Vector2Int(approxX, approxY);
+    }
+
+    public static Vector3 CoordinateToWorldPosition(Vector2Int coordinate, Vector2 gridOffset, Vector2 hexSize)
+    {
+        float width = hexSize.x;
+        float height = hexSize.y * 0.75f;
+
+        float offsetX = (coordinate.y % 2 == 0) ? 0 : width / 2;
+        float posX = coordinate.x * width + offsetX + gridOffset.x;
+        float posY = coordinate.y * height + gridOffset.y;
+
+        return new Vector3(posX, 0, posY);
+    }
 }

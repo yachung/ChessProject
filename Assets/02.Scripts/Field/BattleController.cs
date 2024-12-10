@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class BattleController : NetworkBehaviour
 {
-    public PlayerField playerField;
-    private Tile Tile(Vector2Int coord) => playerField.GetBattleTile(coord);
+    public TileManager tileManager;
+    private Tile Tile(Vector2Int coord) => tileManager.GetTile(coord);
 
     private bool isBattleFinished = false;
 
