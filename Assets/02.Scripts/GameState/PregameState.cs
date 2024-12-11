@@ -21,7 +21,7 @@ public class PregameState : StateBehaviour
 
     protected override void OnEnterStateRender()
     {
-        _lobbyPresenter.Initialize();
+        //_lobbyPresenter.Initialize();
     }
 
     protected override void OnExitStateRender()

@@ -22,15 +22,15 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         roomModel.OnIsFindRoomChanged += OnIsFindRoomChanged;
     }
 
-    public void Initialize()
+    public void Start()
     {
-        roomView.Initialize(Runner.IsServer, OnGameStarted);
 
-        UpdateUI();
+        //UpdateUI();
     }
 
     public override void Spawned()
     {
+        roomView.Initialize(Runner.IsServer, OnGameStarted);
         Runner.AddCallbacks(this);
     }
 
@@ -72,7 +72,13 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
                 playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
             }
 
-            //roomModel.AddPlayer(player, new NetworkPlayerInfo(playerInfo));
+            NetworkPlayerInfo networkPlayerInfo = new NetworkPlayerInfo();
+
+            networkPlayerInfo.Index = playerInfo.Index;
+            networkPlayerInfo.Name = playerInfo.Name;
+            networkPlayerInfo.UserId = playerInfo.UserId;
+
+            roomModel.AddPlayer(player, networkPlayerInfo);
         }
     }
 
@@ -98,6 +104,7 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
 
+        Runner.LoadScene(SceneRef.FromIndex(2));
         //sceneLoader.LoadScene(SceneType.InGame);
     }
 
