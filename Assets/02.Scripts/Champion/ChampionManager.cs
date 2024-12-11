@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 
-public class ChampionSpawner : NetworkBehaviour
+public class ChampionManager : NetworkBehaviour
 {
     private GameManager _gameManager;
 

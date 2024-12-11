@@ -114,10 +114,10 @@ public class Player : NetworkBehaviour, IAfterSpawned
     {
         PlayerTeleport(playerField.transform.position);
 
-        //if (isBattle)
-        //    RPC_SetPlayerCamera(playerField.reverseCameraPose.position, playerField.reverseCameraPose.rotation);
-        //else
-        //    RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
+        if (isBattle)
+            RPC_SetPlayerCamera(playerField.reverseCameraPose.position, playerField.reverseCameraPose.rotation);
+        else
+            RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
     }
 
     public void MoveToSelectField(Vector3 position, Pose cameraData)
