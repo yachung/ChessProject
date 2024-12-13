@@ -4,7 +4,8 @@ using VContainer;
 
 public class StageStateBehaviour : StateBehaviour
 {
-    [Inject] protected readonly GameManager _gameManager;
+    protected GameManager gameManager => GameManager.Instance;
+
     [Inject] protected readonly StagePresenter _stagePresenter;
     [Inject] protected readonly ShopPresenter _shopPresenter;
     [Inject] protected readonly StageModel _stageModel;

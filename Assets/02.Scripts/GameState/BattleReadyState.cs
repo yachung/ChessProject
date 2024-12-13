@@ -42,8 +42,8 @@ public class BattleReadyState : StageStateBehaviour
 
         foreach (var pair in _stageModel.matchingPairs)
         {
-            Player Source = _gameManager.allPlayers[pair.Value];
-            Player Target = _gameManager.allPlayers[pair.Key];
+            Player Source = gameManager.allPlayers[pair.Value];
+            Player Target = gameManager.allPlayers[pair.Key];
 
             Source.MoveToPlayerField(Target.playerField, true);
             Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.BattleTile));

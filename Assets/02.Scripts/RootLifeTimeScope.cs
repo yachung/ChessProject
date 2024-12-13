@@ -15,6 +15,7 @@ public class RootLifeTimeScope : LifetimeScope
         builder.Register<SceneLoader>(Lifetime.Singleton);
         builder.Register<FirebaseManager>(Lifetime.Singleton);
         builder.RegisterComponentInHierarchy<UIManager>();
+        builder.RegisterComponentInHierarchy<GameManager>();
         //builder.Register<AudioManager>(Lifetime.Singleton);
     }
 }

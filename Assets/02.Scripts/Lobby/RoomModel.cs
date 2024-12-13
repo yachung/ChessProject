@@ -58,7 +58,7 @@ public class RoomModel : NetworkBehaviour
     }
 
     /// <summary>
-    /// 얕은복사로 전달?
+    /// 얕은복사로 전달
     /// </summary>
     /// <returns></returns>
     public Dictionary<PlayerRef, NetworkPlayerInfo> GetAllPlayers()

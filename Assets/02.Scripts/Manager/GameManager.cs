@@ -16,9 +16,7 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
-    [Inject] private readonly IObjectResolver container; // VContainer의 DI 컨테이너
-    [Inject] private readonly GameStateManager gameState;
-    [Inject] private readonly StageModel stageModel;
+    private GameStateManager gameState;
 
     public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
 
@@ -26,13 +24,15 @@ public class GameManager : NetworkBehaviour
 
     public Action OnPlayerSpawnedComplete;
 
+    private NetworkRunner runner;
+
     void Awake()
     {
         if (null == instance)
         {
             instance = this;
 
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
         }
         else
         {
@@ -40,9 +40,11 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void GamePlayStart(NetworkRunner runner)
+    public async void GamePlayStart(NetworkRunner runner)
     {
-        //this.runner = runner;
+        this.runner = runner;
+
+        await runner.LoadScene(SceneRef.FromIndex(2));
 
         PlayerSpawned(runner);
 
@@ -66,26 +68,14 @@ public class GameManager : NetworkBehaviour
             Player player = networkObject.GetComponent<Player>();
             player.playerField = playerField;
 
-            stageModel.PlayerInfos.Add(playerRef, player);
             allPlayers.Add(playerRef, player);
 
             player.SpawnedComplete();
         }
     }
 
-    //private void PlayerSpawnedComplete()
-    //{
-    //    foreach (var player in allPlayers.Values)
-    //    {
-    //        player.RPC_PlayerInitialize(player.playerField);
-    //    }
-    //}
-
-    //public void Set
-
-    //[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    //private void RPC_PlayerInitialize(PlayerRef localPlayerRef)
-    //{
-    //    LocalPlayer = allPlayers[localPlayerRef];
-    //}
+    public void SetGameStateManager(GameStateManager gameStateManager)
+    {
+        gameState = gameStateManager;
+    }
 }

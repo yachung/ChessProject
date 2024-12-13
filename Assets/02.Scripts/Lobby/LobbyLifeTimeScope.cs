@@ -5,6 +5,8 @@ public class LobbyLifeTimeScope : LifetimeScope
 {
     protected override void Configure(IContainerBuilder builder)
     {
+        builder.RegisterEntryPoint<LobbyEntryPoint>();
+
         // Model, View 등록
         builder.RegisterComponentInHierarchy<RoomModel>();
         builder.RegisterComponentInHierarchy<RoomView>();

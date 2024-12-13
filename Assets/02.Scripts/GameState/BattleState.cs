@@ -16,7 +16,7 @@ public class BattleState : StageStateBehaviour
 
         foreach (var playerRef in _stageModel.matchingPairs.Keys)
         {
-            if (_gameManager.allPlayers.TryGetValue(playerRef, out var player))
+            if (gameManager.allPlayers.TryGetValue(playerRef, out var player))
             {
                 player.playerField.StartBattle();
             }
@@ -32,7 +32,7 @@ public class BattleState : StageStateBehaviour
     {
         base.OnExitState();
 
-        foreach (var player in _gameManager.allPlayers.Values)
+        foreach (var player in gameManager.allPlayers.Values)
         {
             player.playerField.BattleEnd();
             player.MoveToPlayerField(player.playerField);

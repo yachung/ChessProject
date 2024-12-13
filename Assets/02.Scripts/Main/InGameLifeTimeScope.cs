@@ -2,12 +2,14 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-public class MainLifeTimeScope : LifetimeScope
+public class InGameLifeTimeScope : LifetimeScope
 {
     [SerializeField] private StageDurationConfig stageDurationConfig;
 
     protected override void Configure(IContainerBuilder builder)
     {
+        builder.RegisterEntryPoint<InGameEntryPoint>();
+
         RegisterGameComponents(builder);
         RegisterStateComponents(builder);
         RegisterStageComponents(builder);
@@ -16,7 +18,6 @@ public class MainLifeTimeScope : LifetimeScope
 
     private void RegisterGameComponents(IContainerBuilder builder)
     {
-        builder.RegisterComponentInHierarchy<GameManager>();
         builder.RegisterComponentInHierarchy<ChampionManager>();
         builder.RegisterComponentInHierarchy<GameStateManager>();
     }

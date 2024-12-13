@@ -16,7 +16,6 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
     public bool IsBattle => stateMachine.ActiveState is BattleState;
 
     [Header("Game States Reference")]
-    public PregameState pregameState;               // 게임 로비
     public SelectObjectState selectObjectState;     // 순차적으로 중앙에서 기물 선택
     public BattleReadyState battleReadyState;       // 전투전 기물 구매 및 진형 구성
     public BattleState battleState;                 // 전투
@@ -36,7 +35,7 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {
-        stateMachine = new StateMachine<StateBehaviour>("Game State", pregameState, selectObjectState, battleReadyState, battleState, winState);
+        stateMachine = new StateMachine<StateBehaviour>("Game State", selectObjectState, battleReadyState, battleState, winState);
         
         stateMachines.Add(stateMachine);
 
@@ -52,13 +51,10 @@ public class GameStateManager : NetworkBehaviour, IStateMachineOwner
         }
 
         // Host가 Start버튼 누르면
-        pregameState.AddTransition(selectObjectState,       () => IsGameStarted);
-
         selectObjectState.AddTransition(battleReadyState,   () => true);
         battleReadyState.AddTransition(battleState,         () => true);
         battleState.AddTransition(battleReadyState,         () => true);
         battleState.AddTransition(selectObjectState,        () => true);
-        winState.AddTransition(pregameState,                () => !IsGameStarted);
 
         //Timer 체크, 스테이지 마지막 전투
         //battleState.AddTransition(selectObjectState, () => TransitionTimer.Expired(Runner) && );

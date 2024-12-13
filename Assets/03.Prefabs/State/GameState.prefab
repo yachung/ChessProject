@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _priority: 0
   _checkPriorityOnExit: 1
-  stateDuration: 5
+  isWin: 0
 --- !u!1 &6724422466428728508
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,7 +79,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4812473408430959215}
   - {fileID: 7982786661206171278}
   - {fileID: 2987416116837732211}
   - {fileID: 5198901614411097141}
@@ -98,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2615d364a70f4817830b874e07a6cc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enableLogging: 0
+  _enableLogging: 1
 --- !u!114 &1719912077483100863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,7 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57424f9fe26d228478bc837d961a8bc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pregameState: {fileID: 5053769458404963006}
   selectObjectState: {fileID: 3817810496957333227}
   battleReadyState: {fileID: 7809167953930163758}
   battleState: {fileID: 4115973630270223041}
@@ -135,7 +133,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 7099061045317968982}
   - {fileID: 1719912077483100863}
-  - {fileID: 5053769458404963006}
   - {fileID: 3817810496957333227}
   - {fileID: 7809167953930163758}
   - {fileID: 4115973630270223041}
@@ -186,7 +183,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _priority: 1
   _checkPriorityOnExit: 1
-  stateDuration: 5
 --- !u!1 &7533256015857407490
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +229,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _priority: 0
   _checkPriorityOnExit: 1
-  stateDuration: 5
 --- !u!1 &8139520159796464907
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,51 +274,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _priority: 2
-  _checkPriorityOnExit: 1
-  stateDuration: 0
---- !u!1 &8705418642135968949
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4812473408430959215}
-  - component: {fileID: 5053769458404963006}
-  m_Layer: 0
-  m_Name: LobbyState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4812473408430959215
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8705418642135968949}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3303355167097335268}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5053769458404963006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8705418642135968949}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f327c8c379fd874ba56c8b87b972b91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _priority: 0
   _checkPriorityOnExit: 1

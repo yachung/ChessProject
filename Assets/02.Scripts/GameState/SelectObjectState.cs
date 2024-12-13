@@ -15,9 +15,9 @@ public class SelectObjectState : StageStateBehaviour
 
         switch (Machine.ActiveState)
         {
-            case PregameState:
-                result &= true;
-                break;
+            //case PregameState:
+            //    result &= true;
+            //    break;
             case BattleState:
                 result &= _stagePresenter.IsLastRound();
                 break;
@@ -33,7 +33,7 @@ public class SelectObjectState : StageStateBehaviour
         Debug.Log($"{gameObject.name} is Enter State");
 
         _shopPresenter.HideView();
-        _selectField.SetPlayerPosition(_gameManager.allPlayers.Values.ToArray());
+        _selectField.SetPlayerPosition(gameManager.allPlayers.Values.ToArray());
     }
 
     protected override void OnEnterStateRender()
@@ -44,7 +44,7 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
-        foreach (var player in _gameManager.allPlayers.Values)
+        foreach (var player in gameManager.allPlayers.Values)
         {
             player.MoveToPlayerField(player.playerField);
         }

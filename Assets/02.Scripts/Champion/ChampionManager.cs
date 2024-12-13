@@ -5,14 +5,6 @@ using VContainer;
 
 public class ChampionManager : NetworkBehaviour
 {
-    private GameManager _gameManager;
-
-    [Inject]
-    public void Construct(GameManager gameManager)
-    {
-        _gameManager = gameManager;
-    }
-
     // 클라이언트가 소환 요청을 보내면 서버에서 소환을 처리
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_SummonChampion(NetworkString<_32> name, PlayerRef player)
@@ -25,7 +17,7 @@ public class ChampionManager : NetworkBehaviour
 
     private void SummonChampion(string name, PlayerRef playerRef)
     {
-        if (_gameManager.allPlayers.TryGetValue(playerRef, out Player player))
+        if (GameManager.Instance.allPlayers.TryGetValue(playerRef, out Player player))
         {
             ChampionData championData = Resources.Load($"Data/{name}Data") as ChampionData;
 

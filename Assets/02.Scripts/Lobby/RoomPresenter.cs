@@ -104,7 +104,7 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
 
-        Runner.LoadScene(SceneRef.FromIndex(2));
+        GameManager.Instance.GamePlayStart(Runner);
         //sceneLoader.LoadScene(SceneType.InGame);
     }
 
