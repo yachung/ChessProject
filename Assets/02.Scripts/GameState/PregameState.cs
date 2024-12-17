@@ -2,10 +2,8 @@ using UnityEngine;
 using Fusion.Addons.FSM;
 using VContainer;
 
-public class PregameState : StateBehaviour
+public class PregameState : StageStateBehaviour
 {
-    [Inject] private readonly RoomPresenter _lobbyPresenter;
-
     protected override bool CanEnterState()
     {
         return base.CanEnterState();
@@ -26,6 +24,5 @@ public class PregameState : StateBehaviour
 
     protected override void OnExitStateRender()
     {
-        _lobbyPresenter.DeInitialize();
     }
 }

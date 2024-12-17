@@ -32,6 +32,12 @@ public class RoomModel : NetworkBehaviour
         OnPlayerInfoChangedRender = action;
     }
 
+    public override void Spawned()
+    {
+        PlayerInfosChanged();
+        //PlayerDictionary.
+    }
+
     public void AddPlayer(PlayerRef playerRef, NetworkPlayerInfo playerInfo)
     {
         if (!PlayerDictionary.ContainsKey(playerRef))

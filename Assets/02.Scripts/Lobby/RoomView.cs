@@ -12,11 +12,14 @@ public class RoomView : MonoBehaviour
     [SerializeField] private Button btn_Start;
     [SerializeField] private PlayerInfoCell[] playerInfoCells;
 
-    public void Initialize(bool isHost, Action gameStart)
+    private void Awake()
     {
         foreach (var cell in playerInfoCells)
             cell.gameObject.SetActive(false);
+    }
 
+    public void Initialize(bool isHost, Action gameStart)
+    {
         gameObject.SetActive(true);
         btn_Start.gameObject.SetActive(isHost);
         btn_Start.onClick.AddListener(() => gameStart());

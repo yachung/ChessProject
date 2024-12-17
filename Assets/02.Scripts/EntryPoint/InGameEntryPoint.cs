@@ -6,12 +6,12 @@ using VContainer;
 public class InGameEntryPoint : BaseEntryPoint
 {
     /// <summary>
-    /// Root
+    /// Root Scope
     /// </summary>
     [Inject] private readonly GameManager _gameManager;
 
     /// <summary>
-    /// InGame
+    /// InGame Scope
     /// </summary>
     [Inject] private readonly GameStateManager _gameStateManager;
 

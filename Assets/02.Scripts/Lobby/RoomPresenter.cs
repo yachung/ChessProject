@@ -30,8 +30,8 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
-        roomView.Initialize(Runner.IsServer, OnGameStarted);
         Runner.AddCallbacks(this);
+        roomView.Initialize(Runner.IsServer, OnGameStarted);
     }
 
     public void UpdateUI()
