@@ -7,17 +7,17 @@ public class StagePresenter : NetworkBehaviour
 {
     private StageView view;
     private StageModel model;
-
+    private PlayerManager playerManager;
     private StageStateBehaviour ActiveStageState;
 
     [Inject]
-    public void Constructor(StageView stageView, StageModel stageModel)
+    public void Constructor(StageView stageView, StageModel stageModel, PlayerManager playerManager)
     {
         this.view = stageView;
         this.model = stageModel;
+        this.playerManager = playerManager;
 
         this.view.SetPresenter(this);
-        this.model.OnPlayerChanged = UpdatePlayerList;
     }
 
     public void StageViewInitialize(StageStateBehaviour stageState)
@@ -28,11 +28,11 @@ public class StagePresenter : NetworkBehaviour
             view.HideUI();
     }
 
-    public override void Spawned()
-    {
-        //Object.AssignInputAuthority(Runner.LocalPlayer);
-        Runner.SetIsSimulated(Object, true);
-    }
+    //public override void Spawned()
+    //{
+    //    //Object.AssignInputAuthority(Runner.LocalPlayer);
+    //    Runner.SetIsSimulated(Object, true);
+    //}
 
     public override void FixedUpdateNetwork()
     {
@@ -99,7 +99,8 @@ public class StagePresenter : NetworkBehaviour
 
     public void UpdatePlayerList()
     {
-        view.UpdatePlayerList(model.PlayerList);
+        var players = playerManager?.PlayerList;
+        view.UpdatePlayerList(players);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -109,17 +110,12 @@ public class StagePresenter : NetworkBehaviour
             return;
 
         int Damage = 0;
+        Player winner = playerManager.GetPlayer(winnerRef);
+        Player loser = playerManager.GetPlayer(loserRef);
 
-        if (model.PlayerInfos.TryGet(winnerRef, out Player winner))
-        {
-            //Damage = winner.Level + winner.playerField.ChampionTiles.Count;
-            Damage = winner.Level + 1;
-        }
 
-        if (model.PlayerInfos.TryGet(loserRef, out Player loser))
-        {
-            loser.Hp -= Damage;
-        }
+        Damage = winner.Level + 1;
+        loser.Hp -= Damage;
     }
 
     public PlayerRef GetMatchingPlayer(PlayerRef playerRef)
@@ -129,7 +125,7 @@ public class StagePresenter : NetworkBehaviour
 
     public void MatchingPlayer()
     {
-        List<PlayerRef> remainPlayers = new List<PlayerRef>(model.PlayerRefList);
+        List<PlayerRef> remainPlayers = new List<PlayerRef>(playerManager.PlayerRefList);
         model.matchingPairs.Clear();
 
         if (remainPlayers.Count % 2 != 0)

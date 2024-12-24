@@ -4,7 +4,7 @@ using UnityEngine;
 using VContainer;
 
     
-public class Player : NetworkBehaviour, IAfterSpawned
+public class Player : NetworkBehaviour
 {
     //private PlayerData playerData;
     //public PlayerData PlayerData => playerData;
@@ -69,27 +69,6 @@ public class Player : NetworkBehaviour, IAfterSpawned
     }
 
     [Networked] private bool isInitialized { get; set; }
-
-    public override void FixedUpdateNetwork()
-    {
-        //if (Runner.IsServer && !isInitialized)
-        //{
-        //    Level = 1;
-        //    Exp = 0;
-        //    Hp = 100;
-        //    Gold = 10;
-
-        //    isInitialized = true;
-        //}
-    }
-
-    public void AfterSpawned()
-    {
-        if (Runner.IsServer)
-        {
-
-        }
-    }
 
     public void SpawnedComplete()
     {
