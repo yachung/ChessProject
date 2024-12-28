@@ -6,7 +6,6 @@ public class StageStateBehaviour : StateBehaviour
 {
     protected GameManager gameManager => GameManager.Instance;
 
-    [Inject] protected readonly StagePresenter _stagePresenter;
     [Inject] protected readonly ShopPresenter _shopPresenter;
     [Inject] protected readonly StageModel _stageModel;
 
@@ -16,7 +15,7 @@ public class StageStateBehaviour : StateBehaviour
     {
         bool result = true;
 
-        result &= _stagePresenter.IsTransitionTimerCheck();
+        result &= _stageModel.StageProgress.IsTransitionTimerCheck();
 
         return result;
     }
@@ -30,7 +29,7 @@ public class StageStateBehaviour : StateBehaviour
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
-        _stagePresenter.StageViewInitialize(this);
+        _stagePresenter.InitializeView(this);
         _stagePresenter.OnStageEnter(this);
     }
 }

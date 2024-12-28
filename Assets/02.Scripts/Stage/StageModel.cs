@@ -8,38 +8,43 @@ using VContainer;
 
 public class StageModel : NetworkBehaviour
 {
-    [Inject] private readonly StageDurationConfig stageDurationConfig;
+    [Inject] private readonly ProgressTimer progressTimer;
     [Inject] private readonly PlayerManager playerManager;
 
     public int StageIndex { get; set; } = 0;
     public int RoundIndex { get; set; } = 0;
     public string StageName => $"{StageIndex}-{RoundIndex}";
 
+    public float StageProgress { get; private set; }
+
+    private StageStateBehaviour ActiveStageState;
+
+
     public Dictionary<PlayerRef, PlayerRef> matchingPairs = new Dictionary<PlayerRef, PlayerRef>();
     [Networked] public PlayerRef matchingPlayer { get; set; }
 
-    [Networked] public TickTimer TransitionTimer { get; set; }
-
-    public float GetStageDuration(StageStateBehaviour state)
+    public void OnStageEnter(StageStateBehaviour stageState)
     {
-        float result = 0f;
+        ActiveStageState = stageState;
 
-        switch (state)
+        switch (stageState)
         {
-            case SelectObjectState:
-                result = stageDurationConfig.selectObjectDuration;
-                break;
             case BattleReadyState:
-                result = stageDurationConfig.battleReadyDuration;
-                break;
-            case BattleState:
-                result = stageDurationConfig.battleDuration;
-                break;
-            case WinState:
-                result = stageDurationConfig.winDuration;
+                if (IsLastRound())
+                {
+                    StageIndex++;
+                    RoundIndex = 1;
+                }
+                else
+                {
+                    RoundIndex++;
+                }
                 break;
         }
+    }
 
-        return result;
+    public bool IsLastRound()
+    {
+        return RoundIndex > 1;
     }
 }

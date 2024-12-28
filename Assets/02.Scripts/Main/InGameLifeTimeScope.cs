@@ -20,6 +20,7 @@ public class InGameLifeTimeScope : LifetimeScope
     {
         builder.RegisterComponentInHierarchy<ChampionManager>();
         builder.RegisterComponentInHierarchy<GameStateManager>();
+        builder.RegisterComponentInHierarchy<ProgressTimer>();
     }
 
     private void RegisterStateComponents(IContainerBuilder builder)
