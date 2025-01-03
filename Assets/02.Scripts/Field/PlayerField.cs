@@ -12,7 +12,7 @@ public class PlayerField : NetworkBehaviour
 
     private readonly Vector2 hexSize = new Vector2(13f, 15f);
 
-    [Inject] private readonly GameStateManager gameStateManager;
+    [Inject] private readonly StageStateManager gameStateManager;
     private BattleController battleController;
 
     [SerializeField] private Transform gridStartingPoint;

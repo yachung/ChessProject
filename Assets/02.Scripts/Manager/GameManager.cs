@@ -16,7 +16,7 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private NetworkPrefabRef NetworkPlayerPref;
 
-    private GameStateManager gameState;
+    private StageStateManager gameState;
 
     public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
 
@@ -74,7 +74,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void SetGameStateManager(GameStateManager gameStateManager)
+    public void SetGameStateManager(StageStateManager gameStateManager)
     {
         gameState = gameStateManager;
     }

@@ -30,6 +30,6 @@ public class StageStateBehaviour : StateBehaviour
     {
         base.OnEnterStateRender();
         _stagePresenter.InitializeView(this);
-        _stagePresenter.OnStageEnter(this);
+        _stageModel.OnStageEnter(this);
     }
 }

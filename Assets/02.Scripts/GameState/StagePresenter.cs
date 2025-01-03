@@ -6,14 +6,15 @@ using System.Collections.Generic;
 public class StagePresenter : NetworkBehaviour
 {
     private StageView view;
-    private StageModel model;
+    private StageModel stageModel;
     private PlayerManager playerManager;
+    private ProgressTimer timer;
 
     [Inject]
     public void Constructor(StageView stageView, StageModel stageModel, PlayerManager playerManager)
     {
         this.view = stageView;
-        this.model = stageModel;
+        this.stageModel = stageModel;
         this.playerManager = playerManager;
 
         this.view.SetPresenter(this);
@@ -21,12 +22,21 @@ public class StagePresenter : NetworkBehaviour
 
     public void InitializeView()
     {
-        view.DisplayStageName(model.StageName);
-        view.UpdateProgressBar(model.StageProgress);
+        view.DisplayStageName(stageModel.StageName);
+        view.UpdateProgressBar(stageModel.StageProgress);
         view.ShowUI();
     }
 
 
+    private void Update()
+    {
+        float ratio = timer.GetRemainingTimeRatio();
+        if (ratio < 0f)
+            return;
+
+        // 0~1 비율을 뷰에 표시
+        view.UpdateProgressBar(ratio);
+    }
 
     //public override void Spawned()
     //{
@@ -34,31 +44,19 @@ public class StagePresenter : NetworkBehaviour
     //    Runner.SetIsSimulated(Object, true);
     //}
 
-    public override void FixedUpdateNetwork()
-    {
-        float progress = model.Get;
+    //public override void FixedUpdateNetwork()
+    //{
+    //    float progress = model.Get;
 
-        if (model.TransitionTimer.IsRunning)
-        {
-            UpdateProgressBar(ActiveStageState);
-        }
-    }
-
-
-
-    public void UpdateProgressBar(StageStateBehaviour stageState)
-    {
-        if (!model.TransitionTimer.IsRunning)
-            return;
-
-        float RemainTime = model.TransitionTimer.RemainingTime(Runner).GetValueOrDefault() / model.GetStageDuration(stageState);
-
-        view.UpdateProgressBar(RemainTime);
-    }
+    //    if (model.TransitionTimer.IsRunning)
+    //    {
+    //        UpdateProgressBar(ActiveStageState);
+    //    }
+    //}
 
     public void OnClickPlayerList(Player player)
     {
-        player.MoveToPlayerField(player.playerField);
+        stageModel.MovePlayerToField(player);
     }
 
     public void UpdatePlayerList()
@@ -84,47 +82,13 @@ public class StagePresenter : NetworkBehaviour
 
     public PlayerRef GetMatchingPlayer(PlayerRef playerRef)
     {
-        return model.matchingPairs[playerRef];
+        return stageModel.matchingPairs[playerRef];
     }
 
     public void MatchingPlayer()
     {
-        List<PlayerRef> remainPlayers = new List<PlayerRef>(playerManager.PlayerRefList);
-        model.matchingPairs.Clear();
-
-        if (remainPlayers.Count % 2 != 0)
-        {
-            int index1 = Random.Range(0, remainPlayers.Count);
-            PlayerRef player1 = remainPlayers[index1];
-            remainPlayers.RemoveAt(index1);
-
-            // ToDo: 원래 여기서 remainPlayers.Count는 1이 올 수 없음.
-            // 하지만 싱글테스트시 오류나서 임시 수정
-            PlayerRef player2;
-
-            if (remainPlayers.Count == 0)
-                player2 = player1;
-            else
-            {
-                int index2 = Random.Range(0, remainPlayers.Count);
-                player2 = remainPlayers[index2];
-            }
-
-            model.matchingPairs.Add(player1, player2);
-        }
-
-        while (remainPlayers.Count > 1)
-        {
-            int index1 = Random.Range(0, remainPlayers.Count);
-            PlayerRef player1 = remainPlayers[index1];
-            remainPlayers.RemoveAt(index1);
-
-            int index2 = Random.Range(0, remainPlayers.Count);
-            PlayerRef player2 = remainPlayers[index2];
-            remainPlayers.RemoveAt(index2);
-
-            model.matchingPairs.Add(player1, player2);
-            //model.matchingPairs.Add(player2, player1);
-        }
+        var allPlayers = playerManager.PlayerRefList;
+        stageModel.DoMatching(allPlayers);
+        // View 갱신 필요하다면 → view.UpdateMatchingResult() 등
     }
 }

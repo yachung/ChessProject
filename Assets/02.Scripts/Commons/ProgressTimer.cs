@@ -54,11 +54,11 @@ public class ProgressTimer : NetworkBehaviour
         if (!TransitionTimer.IsRunning)
             return -1f;
 
-        float duration = GetStageDuration(stageState);
+        float totalTime = GetStageDuration(stageState);
         float remainTime = TransitionTimer.RemainingTime(Runner).GetValueOrDefault();
 
         // 전체 중에서 남은 비율
-        float ratio = remainTime / duration;
+        float ratio = remainTime / totalTime;
         return ratio;
     }
 }

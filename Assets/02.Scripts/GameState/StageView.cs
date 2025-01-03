@@ -27,10 +27,15 @@ public class StageView : MonoBehaviour
         txt_CurrentStage.text = stageName;
     }
 
-    public void UpdateProgressBar(float duration)
+    public void UpdateProgressBar(float ratio)
     {
-        progressBar.SetValue(duration * 100);
+        // 0~1 사이로 Clamp
+        ratio = Mathf.Clamp01(ratio);
+
+        if (progressBar != null)
+            progressBar.SetValue(ratio * 100);
     }
+
 
     public void UpdatePlayerList(List<Player> players)
     {

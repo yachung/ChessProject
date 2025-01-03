@@ -13,7 +13,7 @@ public class InGameEntryPoint : BaseEntryPoint
     /// <summary>
     /// InGame Scope
     /// </summary>
-    [Inject] private readonly GameStateManager _gameStateManager;
+    [Inject] private readonly StageStateManager _gameStateManager;
 
     public override void Start()
     {

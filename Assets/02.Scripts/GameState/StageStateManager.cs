@@ -8,7 +8,7 @@ using VContainer;
 /// <summary>
 /// Handles the main state of the game and contains the networked FSM.
 /// </summary>
-public class GameStateManager : NetworkBehaviour, IStateMachineOwner
+public class StageStateManager : NetworkBehaviour, IStateMachineOwner
 {
     public StateBehaviour ActiveState => stateMachine.ActiveState;
     //public bool AllowInput => stateMachine.ActiveStateId == playState.StateId || stateMachine.ActiveStateId == pregameState.StateId;
