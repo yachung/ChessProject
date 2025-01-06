@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 
-public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
+public class RoomPresenter : INetworkRunnerCallbacks
 {
     [Inject] private readonly SceneLoader sceneLoader;
     private RoomModel roomModel;
@@ -20,12 +20,6 @@ public class RoomPresenter : NetworkBehaviour, INetworkRunnerCallbacks
         roomModel.Initialize(PlayerInfoChangeCallback);
 
         roomModel.OnIsFindRoomChanged += OnIsFindRoomChanged;
-    }
-
-    public void Start()
-    {
-
-        //UpdateUI();
     }
 
     public override void Spawned()

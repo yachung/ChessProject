@@ -7,7 +7,8 @@ public class StageStateBehaviour : StateBehaviour
     protected GameManager gameManager => GameManager.Instance;
 
     [Inject] protected readonly ShopPresenter _shopPresenter;
-    [Inject] protected readonly StageModel _stageModel;
+    [Inject] protected readonly ProgressTimer progressTimer;
+    [Inject] protected readonly StageModel stageModel;
 
     private PlayerRef matchedPlayer;
 
@@ -15,7 +16,7 @@ public class StageStateBehaviour : StateBehaviour
     {
         bool result = true;
 
-        result &= _stageModel.StageProgress.IsTransitionTimerCheck();
+        result &= progressTimer.IsTransitionTimerCheck();
 
         return result;
     }
@@ -23,13 +24,13 @@ public class StageStateBehaviour : StateBehaviour
     protected override void OnEnterState()
     {
         base.OnEnterState();
-        _stagePresenter.Server_SetTransitionTimer(this);
+        progressTimer.SetTransitionTimer(this);
     }
 
     protected override void OnEnterStateRender()
     {
         base.OnEnterStateRender();
-        _stagePresenter.InitializeView(this);
-        _stageModel.OnStageEnter(this);
+        //_stagePresenter.InitializeView(this);
+        //_stageModel.OnStageEnter(this);
     }
 }

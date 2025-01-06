@@ -14,7 +14,7 @@ public class BattleState : StageStateBehaviour
     {
         base.OnEnterState();
 
-        foreach (var playerRef in _stageModel.matchingPairs.Keys)
+        foreach (var playerRef in stageModel.matchingPairs.Keys)
         {
             if (gameManager.allPlayers.TryGetValue(playerRef, out var player))
             {
@@ -46,7 +46,7 @@ public class BattleState : StageStateBehaviour
 
         if (isWin)
         {
-            _stagePresenter.RPC_BattleResult(Runner.LocalPlayer, matchingPlayer);
+            stageModel.RPC_BattleResult(Runner.LocalPlayer, matchingPlayer);
         }
     }
 }

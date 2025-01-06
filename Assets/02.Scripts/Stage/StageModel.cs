@@ -91,6 +91,33 @@ public class StageModel : NetworkBehaviour
         // matchingPairs에 결과 저장
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_BattleResult(PlayerRef winnerRef, PlayerRef loserRef)
+    {
+        if (!Runner.IsServer)
+            return;
+
+        int Damage = 0;
+        Player winner = playerManager.GetPlayer(winnerRef);
+        Player loser = playerManager.GetPlayer(loserRef);
+
+
+        Damage = winner.Level + 1;
+        loser.Hp -= Damage;
+    }
+
+    public PlayerRef GetMatchingPlayer(PlayerRef playerRef)
+    {
+        return matchingPairs[playerRef];
+    }
+
+    public void MatchingPlayer()
+    {
+        var allPlayers = playerManager.PlayerRefList;
+        DoMatching(allPlayers);
+        // View 갱신 필요하다면 → view.UpdateMatchingResult() 등
+    }
+
     public void MovePlayerToField(Player player)
     {
         if (player == null) return;

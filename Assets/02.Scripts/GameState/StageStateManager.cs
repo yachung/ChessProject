@@ -10,7 +10,11 @@ using VContainer;
 /// </summary>
 public class StageStateManager : NetworkBehaviour, IStateMachineOwner
 {
+    [Inject] private readonly StagePresenter stagePresenter;
+
     public StateBehaviour ActiveState => stateMachine.ActiveState;
+    public StageStateBehaviour ActiveStageState => stateMachine.ActiveState as StageStateBehaviour;
+
     //public bool AllowInput => stateMachine.ActiveStateId == playState.StateId || stateMachine.ActiveStateId == pregameState.StateId;
     public bool IsInGame => stateMachine.ActiveState is StageStateBehaviour;
     public bool IsBattle => stateMachine.ActiveState is BattleState;
@@ -33,6 +37,11 @@ public class StageStateManager : NetworkBehaviour, IStateMachineOwner
     //{
     //    RemainingTimePercentage = (float)TransitionTimer.RemainingTime(Runner) / stateDuration * 100;
     //}
+
+    public void Update()
+    {
+        stagePresenter.UpdateTimer(ActiveStageState);
+    }
 
     public void CollectStateMachines(List<IStateMachine> stateMachines)
     {

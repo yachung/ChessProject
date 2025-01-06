@@ -4,7 +4,17 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
-public class StageView : MonoBehaviour
+public interface IStageView
+{
+    void SetPresenter(StagePresenter presenter);
+    void DisplayStageName(string stageName);
+    void UpdateProgressBar(float ratio);
+    public void UpdatePlayerList(List<Player> players);
+    public void ShowUI();
+    public void HideUI();
+}
+
+public class StageView : MonoBehaviour, IStageView
 {
     [SerializeField] private ProgressBar progressBar;
     [SerializeField] private TMP_Text txt_CurrentStage;
