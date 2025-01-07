@@ -5,9 +5,19 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using System.Linq;
+using VContainer;
 
-public class RoomView : MonoBehaviour
+public interface IRoomView : IView
 {
+    void Initialize(bool isServer, Action gameStart);
+    void DisplayPlayerCount(int count);
+    void ShowPlayerList(Dictionary<PlayerRef, NetworkPlayerInfo> playerList);
+}
+
+public class RoomView : MonoBehaviour, IRoomView
+{
+    [Inject] private readonly UIManager uiManager;
+
     [SerializeField] private TMP_Text txt_PlayerCount;
     [SerializeField] private Button btn_Start;
     [SerializeField] private PlayerInfoCell[] playerInfoCells;
@@ -59,5 +69,20 @@ public class RoomView : MonoBehaviour
                 cell.gameObject.SetActive(false);
             }
         }
+    }
+
+    public void RefreshUI()
+    {
+
+    }
+
+    public void ShowLoading(bool result)
+    {
+        uiManager.ShowLoading(result);
+    }
+
+    public void ShowMessage(string message)
+    {
+        uiManager.ShowMessage(message);
     }
 }

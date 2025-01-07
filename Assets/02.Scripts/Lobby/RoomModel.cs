@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 사용하지 않음. PlayerManager가 RoomModel의 역할을 대체
+/// </summary>
+/// 
 public class RoomModel : NetworkBehaviour
 {
     public int PlayerCount => PlayerDictionary.Count;
@@ -34,8 +38,57 @@ public class RoomModel : NetworkBehaviour
 
     public override void Spawned()
     {
+        if (Runner.LocalPlayer == Object.InputAuthority)
+        {
+            var events = Runner.GetComponent<NetworkEvents>();
+
+            events.PlayerJoined.RemoveListener(OnPlayerJoined);
+            events.PlayerJoined.AddListener(OnPlayerJoined);
+
+            events.PlayerLeft.RemoveListener(OnPlayerLeft);
+            events.PlayerLeft.AddListener(OnPlayerLeft);
+
+        }
+
         PlayerInfosChanged();
-        //PlayerDictionary.
+    }
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log("OnPlayerJoined");
+
+        if (runner.IsServer)
+        {
+            byte[] connectionToken = runner.GetPlayerConnectionToken(player);
+
+            PlayerInfo playerInfo;
+
+            if (connectionToken != null && connectionToken.Length > 0)
+            {
+                string json = System.Text.Encoding.UTF8.GetString(connectionToken);
+                playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
+            }
+            else
+            {
+                playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
+            }
+
+            NetworkPlayerInfo networkPlayerInfo = new NetworkPlayerInfo();
+
+            networkPlayerInfo.Index = playerInfo.Index;
+            networkPlayerInfo.Name = playerInfo.Name;
+            networkPlayerInfo.UserId = playerInfo.UserId;
+
+            AddPlayer(player, networkPlayerInfo);
+        }
+    }
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        if (runner.IsServer)
+        {
+            RemovePlayer(player);
+        }
     }
 
     public void AddPlayer(PlayerRef playerRef, NetworkPlayerInfo playerInfo)

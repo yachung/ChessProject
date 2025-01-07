@@ -13,7 +13,6 @@ public class Player : NetworkBehaviour
 
     /// <summary>
     /// 변화가 생기면 변화를 감지해서 UI를 수정해야함
-    /// 
     /// </summary>
 
     [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level { get; set; }

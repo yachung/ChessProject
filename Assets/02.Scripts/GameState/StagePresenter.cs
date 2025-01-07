@@ -45,7 +45,7 @@ public class StagePresenter
 
     public void UpdatePlayerList()
     {
-        var players = playerManager?.PlayerList;
+        var players = playerManager.PlayerList;
         view.UpdatePlayerList(players);
     }
 }

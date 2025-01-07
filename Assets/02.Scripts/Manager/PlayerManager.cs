@@ -8,6 +8,58 @@ public class PlayerManager : NetworkBehaviour
 {
     [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, Player> Players => default;
 
+    public override void Spawned()
+    {
+        if (Runner.IsServer)
+        {
+            var events = Runner.GetComponent<NetworkEvents>();
+
+            events.PlayerJoined.RemoveListener(OnPlayerJoined);
+            events.PlayerJoined.AddListener(OnPlayerJoined);
+
+            events.PlayerLeft.RemoveListener(OnPlayerLeft);
+            events.PlayerLeft.AddListener(OnPlayerLeft);
+        }
+    }
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        Debug.Log("OnPlayerJoined");
+
+        if (runner.IsServer)
+        {
+            byte[] connectionToken = runner.GetPlayerConnectionToken(player);
+
+            PlayerInfo playerInfo;
+
+            if (connectionToken != null && connectionToken.Length > 0)
+            {
+                string json = System.Text.Encoding.UTF8.GetString(connectionToken);
+                playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
+            }
+            else
+            {
+                playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
+            }
+
+            NetworkPlayerInfo networkPlayerInfo = new NetworkPlayerInfo();
+
+            networkPlayerInfo.Index = playerInfo.Index;
+            networkPlayerInfo.Name = playerInfo.Name;
+            networkPlayerInfo.UserId = playerInfo.UserId;
+
+            AddPlayer(player, networkPlayerInfo);
+        }
+    }
+
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        if (runner.IsServer)
+        {
+            RemovePlayer(player);
+        }
+    }
+
     // 로컬 플레이어 가져오기
     public Player GetLocalPlayer()
     {

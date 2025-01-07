@@ -5,17 +5,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 
-public class RoomPresenter : INetworkRunnerCallbacks
+public class RoomPresenter
 {
-    [Inject] private readonly SceneLoader sceneLoader;
-    private RoomModel roomModel;
-    private RoomView roomView;
+    private IRoomView roomView;
+    private PlayerManager playerManager;
 
     [Inject]
-    public void Constructor(RoomView roomView, RoomModel roomModel)
+    public void Constructor(IRoomView roomView, PlayerManager playerManager)
     {
         this.roomView = roomView;
-        this.roomModel = roomModel;
+        this.playerManager = playerManager;
 
         roomModel.Initialize(PlayerInfoChangeCallback);
 
@@ -24,7 +23,6 @@ public class RoomPresenter : INetworkRunnerCallbacks
 
     public override void Spawned()
     {
-        Runner.AddCallbacks(this);
         roomView.Initialize(Runner.IsServer, OnGameStarted);
     }
 
@@ -46,44 +44,6 @@ public class RoomPresenter : INetworkRunnerCallbacks
         }
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-        Debug.Log("OnPlayerJoined");
-
-        if (runner.IsServer)
-        {
-            byte[] connectionToken = runner.GetPlayerConnectionToken(player);
-
-            PlayerInfo playerInfo;
-
-            if (connectionToken != null && connectionToken.Length > 0)
-            {
-                string json = System.Text.Encoding.UTF8.GetString(connectionToken);
-                playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
-            }
-            else
-            {
-                playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
-            }
-
-            NetworkPlayerInfo networkPlayerInfo = new NetworkPlayerInfo();
-
-            networkPlayerInfo.Index = playerInfo.Index;
-            networkPlayerInfo.Name = playerInfo.Name;
-            networkPlayerInfo.UserId = playerInfo.UserId;
-
-            roomModel.AddPlayer(player, networkPlayerInfo);
-        }
-    }
-
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-        if (runner.IsServer)
-        {
-            roomModel.RemovePlayer(player);
-        }
-    }
-
     public void PlayerInfoChangeCallback()
     {
         UpdateUI();
@@ -98,77 +58,6 @@ public class RoomPresenter : INetworkRunnerCallbacks
     {
         Debug.Log("GameStart");
 
-        GameManager.Instance.GamePlayStart(Runner);
-        //sceneLoader.LoadScene(SceneType.InGame);
+        GameManager.Instance.GamePlayStart(roomModel.Runner); 
     }
-
-    #region NotUseCallBack
-    public void OnConnectedToServer(NetworkRunner runner)
-    {
-    }
-
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
-    {
-    }
-
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
-    {
-    }
-
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-    {
-    }
-
-    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-    {
-    }
-
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-    }
-
-    public void OnInput(NetworkRunner runner, NetworkInput input)
-    {
-    }
-
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
-    {
-    }
-
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-    }
-
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
-    {
-    }
-
-    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
-    {
-    }
-
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
-    {
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
-    {
-    }
-
-    public void OnSceneLoadStart(NetworkRunner runner)
-    {
-    }
-
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-    {
-    }
-
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-    {
-    }
-
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-    {
-    }
-    #endregion
 }
