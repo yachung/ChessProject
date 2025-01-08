@@ -2,18 +2,20 @@ using Fusion;
 using UnityEngine;
 using VContainer;
 
+[RequireComponent(typeof(NetworkTransform))]
 public class PlayerController : NetworkBehaviour
 {
+    [Networked] public NetworkButtons ButtonsPrevious { get; set; }
+
     public NetworkTransform networkTransform { get; private set; }
     public Animator Animator { get; private set; }
-    [Networked] public NetworkButtons ButtonsPrevious { get; set; }
 
     public Vector3 Destination { get; private set; }
 
     private void Awake()
     {
         Animator = GetComponent<Animator>();
-        networkTransform = GetComponentInParent<NetworkTransform>();
+        networkTransform = GetComponent<NetworkTransform>();
     }
 
     public override void FixedUpdateNetwork()
@@ -82,10 +84,5 @@ public class PlayerController : NetworkBehaviour
         {
             networkTransform.Teleport(position);
         }
-    }
-
-    public override void Render()
-    {
-
     }
 }

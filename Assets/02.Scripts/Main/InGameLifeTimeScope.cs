@@ -18,6 +18,7 @@ public class InGameLifeTimeScope : LifetimeScope
 
     private void RegisterGameComponents(IContainerBuilder builder)
     {
+        builder.RegisterComponentInHierarchy<FieldManager>();
         builder.RegisterComponentInHierarchy<ChampionManager>();
         builder.RegisterComponentInHierarchy<StageStateManager>();
         builder.RegisterComponentInHierarchy<ProgressTimer>();

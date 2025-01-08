@@ -3,18 +3,19 @@ using System;
 using UnityEngine;
 using VContainer;
 
-    
+/// <summary>
+/// 실제 플레이어 캐릭터(오브젝트)
+/// </summary>
 public class Player : NetworkBehaviour
 {
-    //private PlayerData playerData;
-    //public PlayerData PlayerData => playerData;
-
-    public NetworkString<_32> Name => Runner.name;
+    [HideInInspector] public PlayerRef OwnerRef;
+    
+    // 플레이어 정보
+    public PlayerInfo Info { get; private set; }
 
     /// <summary>
     /// 변화가 생기면 변화를 감지해서 UI를 수정해야함
     /// </summary>
-
     [Networked, OnChangedRender(nameof(OnLevelChangedRender))] public int Level { get; set; }
     [Networked, OnChangedRender(nameof(OnExpChangedRender))] public int Exp { get; set; }
     [Networked, OnChangedRender(nameof(OnGoldChangedRender))] public int Gold { get; set; }
@@ -27,10 +28,49 @@ public class Player : NetworkBehaviour
 
     [Networked] public PlayerField playerField { get; set; }
 
-    private PlayerController playerController;
+    public PlayerController controller;
     private Camera mainCamera;
 
+    // -------------------------------------------------------------
+    // 라이프사이클
+    // -------------------------------------------------------------
+    public override void Spawned()
+    {
+        controller = GetComponent<PlayerController>();
+        if (Object.HasInputAuthority)
+        {
+            // 플레이어 초기화 로직
+            FindAnyObjectByType<ShopModel>().LocalPlayer = this;
 
+            Level = 1;
+            Hp = 100;
+            Gold = 10;
+            Exp = 0;
+        }
+
+        Debug.Log($"Player Spawned. OwnerRef={OwnerRef}, HP={Hp}");
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        Debug.Log($"Player Despawned. OwnerRef={OwnerRef}");
+    }
+
+    // -------------------------------------------------------------
+    // 설정/초기화 메서드
+    // -------------------------------------------------------------
+    /// <summary>
+    /// Host(서버 권위)가 Spawn 직후 PlayerInfo를 세팅해줄 수 있음
+    /// </summary>
+    public void Initialize(PlayerInfo info)
+    {
+        Info = info;
+        // 필요하면 Info의 닉네임 등을 UI에 표시할 수도
+    }
+
+    // -------------------------------------------------------------
+    // OnChangedRender 콜백들 -> UI 업데이트 (InputAuthority만)
+    // -------------------------------------------------------------
     public void OnGoldChangedRender()
     {
         if (HasInputAuthority)
@@ -55,39 +95,6 @@ public class Player : NetworkBehaviour
             OnExperienceChanged?.Invoke(Exp);
     }
 
-    private void Awake()
-    {
-        mainCamera = Camera.main;
-        playerController = GetComponentInChildren<PlayerController>();
-    }
-
-    public override void Spawned()
-    {
-        if (HasInputAuthority)
-            FindAnyObjectByType<ShopModel>().LocalPlayer = this;
-    }
-
-    [Networked] private bool isInitialized { get; set; }
-
-    public void SpawnedComplete()
-    {
-        if (Runner.IsServer)
-        {
-            RPC_PlayerInitialize(this.playerField);
-
-            Level += 1;
-            Hp += 100;
-            Gold += 10;
-        }
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
-    public void RPC_PlayerInitialize(PlayerField localField)
-    {
-        this.playerField = localField;
-        //GameManager.Instance.LocalPlayer = this;
-    }
-
     public void MoveToPlayerField(PlayerField playerField, bool isBattle = false)
     {
         PlayerTeleport(playerField.transform.position);
@@ -107,7 +114,7 @@ public class Player : NetworkBehaviour
 
     public void PlayerTeleport(Vector3 position)
     {
-        playerController.PlayerTeleport(position);
+        controller.PlayerTeleport(position);
     }
 
     public void SetPlayerCamera(Pose transformData)

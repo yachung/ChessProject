@@ -69,8 +69,6 @@ public class GameManager : NetworkBehaviour
             player.playerField = playerField;
 
             allPlayers.Add(playerRef, player);
-
-            player.SpawnedComplete();
         }
     }
 

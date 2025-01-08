@@ -15,21 +15,12 @@ public class RoomPresenter
     {
         this.roomView = roomView;
         this.playerManager = playerManager;
-
-        roomModel.Initialize(PlayerInfoChangeCallback);
-
-        roomModel.OnIsFindRoomChanged += OnIsFindRoomChanged;
-    }
-
-    public override void Spawned()
-    {
-        roomView.Initialize(Runner.IsServer, OnGameStarted);
     }
 
     public void UpdateUI()
     {
-        roomView.DisplayPlayerCount(roomModel.PlayerCount);
-        roomView.ShowPlayerList(roomModel.GetAllPlayers());
+        roomView.DisplayPlayerCount(playerManager.Players.Count);
+        roomView.ShowPlayerList(playerManager.Players);
     }
 
     private void OnIsFindRoomChanged(bool isFindRoom)
@@ -47,11 +38,6 @@ public class RoomPresenter
     public void PlayerInfoChangeCallback()
     {
         UpdateUI();
-    }
-
-    public void DeInitialize()
-    {
-        roomView.gameObject.SetActive(false);
     }
 
     public void OnGameStarted()

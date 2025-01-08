@@ -4,12 +4,14 @@ using Fusion;
 [CreateAssetMenu(fileName = "NewChampionData", menuName = "Game/Champion Data")]
 public class ChampionData : ScriptableObject
 {
+    public PlayerRef ownerRef;  // 소유 플레이어
+
     // 기본 챔피언 정보
-    public string championID; // 고유 ID
+    public int championID; // 고유 ID
     public NetworkPrefabRef championPrefab; // 챔피언 프리팹
     public string championName; // 챔피언 이름
     public ChampionType championType; // 챔피언 타입 (예: 전사, 마법사)
-    public int championLevel; // 챔피언 등급 또는 레벨 (1성, 2성, 3성)
+    public int starLevel; // 챔피언 등급 또는 레벨 (1성, 2성, 3성)
 
     // 챔피언 능력치
     public float health;
