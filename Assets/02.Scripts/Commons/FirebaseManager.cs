@@ -26,6 +26,7 @@ public class FirebaseManager
 
     public FirebaseManager()
     {
+        auth.CurrentUser.TokenAsync(true);
         // Firebase 초기화
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {

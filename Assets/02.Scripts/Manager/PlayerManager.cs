@@ -3,10 +3,17 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
 
 public class PlayerManager : NetworkBehaviour
 {
-    [Networked, Capacity(8)] public NetworkDictionary<PlayerRef, Player> Players => default;
+    [Inject] private readonly FirebaseManager firebaseManager;
+
+    // 플레이어 참조 -> PlayerInfo 매핑
+    private Dictionary<PlayerRef, PlayerInfo> playerInfoDict = new Dictionary<PlayerRef, PlayerInfo>();
+
+    // 플레이어 참조 -> Player 객체 매핑
+    private Dictionary<PlayerRef, Player> playerObjectDict = new Dictionary<PlayerRef, Player>();
 
     public override void Spawned()
     {
@@ -42,34 +49,39 @@ public class PlayerManager : NetworkBehaviour
                 playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
             }
 
-            NetworkPlayerInfo networkPlayerInfo = new NetworkPlayerInfo();
-
-            networkPlayerInfo.Index = playerInfo.Index;
-            networkPlayerInfo.Name = playerInfo.Name;
-            networkPlayerInfo.UserId = playerInfo.UserId;
-
-            AddPlayer(player, networkPlayerInfo);
+            if (!playerInfoDict.ContainsKey(player))
+                playerInfoDict.Add(player, playerInfo);
+            else
+                Debug.Log($"{player}, {playerInfo.Name} 가 이미 목록에 있음.");
         }
     }
 
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    private void OnPlayerLeft(NetworkRunner runner, PlayerRef playerRef)
     {
-        if (runner.IsServer)
+        // Player 객체 제거
+        if (playerObjectDict.TryGetValue(playerRef, out Player player))
         {
-            RemovePlayer(player);
+            Runner.Despawn(player.Object);
+            playerObjectDict.Remove(playerRef);
+        }
+
+        // PlayerInfo 제거
+        if (playerInfoDict.ContainsKey(playerRef))
+        {
+            playerInfoDict.Remove(playerRef);
         }
     }
 
     // 로컬 플레이어 가져오기
     public Player GetLocalPlayer()
     {
-        return Players.TryGet(Runner.LocalPlayer, out var player) ? player : null;
+        return playerObjectDict.TryGetValue(Runner.LocalPlayer, out var player) ? player : null;
     }
 
     // 특정 플레이어 가져오기
     public Player GetPlayer(PlayerRef playerRef)
     {
-        return Players.TryGet(playerRef, out var player) ? player : null;
+        return playerObjectDict.TryGetValue(playerRef, out var player) ? player : null;
     }
 
     // 플레이어 추가

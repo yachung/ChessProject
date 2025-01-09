@@ -10,7 +10,7 @@ public class Player : NetworkBehaviour
 {
     [HideInInspector] public PlayerRef OwnerRef;
     
-    // 플레이어 정보
+    // 플레이어 프로필 정보
     public PlayerInfo Info { get; private set; }
 
     /// <summary>
@@ -26,9 +26,7 @@ public class Player : NetworkBehaviour
     public Action<int> OnLevelChanged;
     public Action<int> OnHpChanged;
 
-    [Networked] public PlayerField playerField { get; set; }
-
-    public PlayerController controller;
+    private PlayerController controller;
     private Camera mainCamera;
 
     // -------------------------------------------------------------
@@ -93,23 +91,6 @@ public class Player : NetworkBehaviour
     {
         if (HasInputAuthority)
             OnExperienceChanged?.Invoke(Exp);
-    }
-
-    public void MoveToPlayerField(PlayerField playerField, bool isBattle = false)
-    {
-        PlayerTeleport(playerField.transform.position);
-
-        if (isBattle)
-            RPC_SetPlayerCamera(playerField.reverseCameraPose.position, playerField.reverseCameraPose.rotation);
-        else
-            RPC_SetPlayerCamera(playerField.cameraPose.position, playerField.cameraPose.rotation);
-    }
-
-    public void MoveToSelectField(Vector3 position, Pose cameraData)
-    {
-        PlayerTeleport(position);
-
-        RPC_SetPlayerCamera(cameraData.position, cameraData.rotation);
     }
 
     public void PlayerTeleport(Vector3 position)

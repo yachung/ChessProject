@@ -76,7 +76,7 @@ public class FieldManager : NetworkBehaviour
             return;
         }
 
-        player.controller.MoveToField(fieldObj, isBattle);
+        player.PlayerTeleport(fieldObj.transform.position);
     }
 
     /// <summary>
