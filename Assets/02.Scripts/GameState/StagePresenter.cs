@@ -10,6 +10,7 @@ public class StagePresenter
 
     private StageModel stageModel;
     private PlayerManager playerManager;
+    private FieldManager fieldManager;
 
     [Inject]
     public void Constructor(IStageView view, StageModel stageModel, PlayerManager playerManager)

@@ -24,8 +24,6 @@ public class GameManager : NetworkBehaviour
 
     public Action OnPlayerSpawnedComplete;
 
-    private NetworkRunner runner;
-
     void Awake()
     {
         if (null == instance)
@@ -40,13 +38,11 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public async void GamePlayStart(NetworkRunner runner)
+    public async void GamePlayStart()
     {
-        this.runner = runner;
+        await Runner.LoadScene(SceneRef.FromIndex(2));
 
-        await runner.LoadScene(SceneRef.FromIndex(2));
-
-        PlayerSpawned(runner);
+        PlayerSpawned(Runner);
 
         gameState.IsGameStarted = true;
     }

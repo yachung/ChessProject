@@ -15,6 +15,8 @@ public class PlayerManager : NetworkBehaviour
     // 플레이어 참조 -> Player 객체 매핑
     private Dictionary<PlayerRef, Player> playerObjectDict = new Dictionary<PlayerRef, Player>();
 
+    public int Count => playerInfoDict.Count;
+
     public override void Spawned()
     {
         if (Runner.IsServer)
@@ -84,30 +86,33 @@ public class PlayerManager : NetworkBehaviour
         return playerObjectDict.TryGetValue(playerRef, out var player) ? player : null;
     }
 
-    // 플레이어 추가
-    public void AddPlayer(PlayerRef playerRef, Player player)
-    {
-        if (!Players.ContainsKey(playerRef))
-        {
-            Players.Add(playerRef, player);
-        }
-    }
+    /// <summary>
+    /// OnPlayerJoined와 OnPlayerLeft가 같은 역할을 해주고 있음.
+    /// </summary>
+    //// 플레이어 추가
+    //public void AddPlayer(PlayerRef playerRef, Player player)
+    //{
+    //    if (!Players.ContainsKey(playerRef))
+    //    {
+    //        Players.Add(playerRef, player);
+    //    }
+    //}
 
-    // 플레이어 삭제
-    public void RemovePlayer(PlayerRef playerRef)
-    {
-        if (Players.ContainsKey(playerRef))
-        {
-            Players.Remove(playerRef);
-        }
-    }
+    //// 플레이어 삭제
+    //public void RemovePlayer(PlayerRef playerRef)
+    //{
+    //    if (Players.ContainsKey(playerRef))
+    //    {
+    //        Players.Remove(playerRef);
+    //    }
+    //}
 
     public List<PlayerRef> PlayerRefList
     {
         get
         {
             List<PlayerRef> list = new List<PlayerRef>();
-            foreach (var player in Players)
+            foreach (var player in playerInfoDict)
                 list.Add(player.Key);
 
             return list;
@@ -119,20 +124,8 @@ public class PlayerManager : NetworkBehaviour
         get
         {
             List<Player> list = new List<Player>();
-            foreach (var player in Players)
+            foreach (var player in playerObjectDict)
                 list.Add(player.Value);
-
-            return list;
-        }
-    }
-
-    public List<PlayerField> PlayerFieldList
-    {
-        get
-        {
-            List<PlayerField> list = new List<PlayerField>();
-            foreach (var player in Players)
-                list.Add(player.Value.playerField);
 
             return list;
         }

@@ -6,6 +6,8 @@ public class StageStateBehaviour : StateBehaviour
 {
     protected GameManager gameManager => GameManager.Instance;
 
+    [Inject] protected readonly FieldManager fieldManager;
+
     [Inject] protected readonly ShopPresenter _shopPresenter;
     [Inject] protected readonly ProgressTimer progressTimer;
     [Inject] protected readonly StageModel stageModel;

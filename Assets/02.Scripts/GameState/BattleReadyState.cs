@@ -14,7 +14,7 @@ public class BattleReadyState : StageStateBehaviour
                 result &= true;
                 break;
             case BattleState:
-                result &= _stagePresenter.IsLastRound() ? false : true;
+                result &= stageModel.IsLastRound() ? false : true;
                 break;
         }
 
@@ -25,7 +25,7 @@ public class BattleReadyState : StageStateBehaviour
     {
         base.OnEnterState();
 
-        _stagePresenter.MatchingPlayer();
+        stageModel.MatchingPlayer();
     }
 
     protected override void OnEnterStateRender()
@@ -40,14 +40,15 @@ public class BattleReadyState : StageStateBehaviour
     {
         base.OnExitState();
 
-        foreach (var pair in _stageModel.matchingPairs)
+        foreach (var pair in stageModel.matchingPairs)
         {
-            Player Source = gameManager.allPlayers[pair.Value];
-            Player Target = gameManager.allPlayers[pair.Key];
+            fieldManager.MovePlayerToField(pair.Value, pair.Key);
+            
+            PlayerField targetField = fieldManager.GetFieldByPlayerRef(pair.Key);
+            PlayerField sourceField = fieldManager.GetFieldByPlayerRef(pair.Value);
 
-            Source.MoveToPlayerField(Target.playerField, true);
-            Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.BattleTile));
-            Target.playerField.BattleInitializeForEnemy(Source.playerField.GetTiles(TileType.WaitTile));
+            targetField.BattleInitializeForEnemy(sourceField.GetTiles(TileType.BattleTile));
+            targetField.BattleInitializeForEnemy(sourceField.GetTiles(TileType.WaitTile));
         }
     }
 

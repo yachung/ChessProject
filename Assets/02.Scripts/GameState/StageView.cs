@@ -53,7 +53,7 @@ public class StageView : MonoBehaviour, IStageView
 
         for (int i = 0; i < players.Count; ++i)
         {
-            playerList[i].row0.textObject.text = players[i].Name.ToString();
+            playerList[i].row0.textObject.text = players[i].Info.Name.ToString();
             playerList[i].row1.textObject.text = players[i].Hp.ToString();
             playerList[i].button.onClick.AddListener(() => stagePresenter.OnClickPlayerList(players[i]));
         }

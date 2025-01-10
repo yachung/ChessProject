@@ -7,8 +7,6 @@ using Fusion;
 
 public class SelectObjectState : StageStateBehaviour
 {
-    [Inject] private readonly SelectField _selectField;
-
     protected override bool CanEnterState()
     {
         bool result = base.CanEnterState();
@@ -19,7 +17,7 @@ public class SelectObjectState : StageStateBehaviour
             //    result &= true;
             //    break;
             case BattleState:
-                result &= _stagePresenter.IsLastRound();
+                result &= stageModel.IsLastRound();
                 break;
         }
 
@@ -33,7 +31,8 @@ public class SelectObjectState : StageStateBehaviour
         Debug.Log($"{gameObject.name} is Enter State");
 
         _shopPresenter.HideView();
-        _selectField.SetPlayerPosition(gameManager.allPlayers.Values.ToArray());
+
+        fieldManager.MoveAllPlayersToSelectField();
     }
 
     protected override void OnEnterStateRender()
@@ -44,9 +43,10 @@ public class SelectObjectState : StageStateBehaviour
     protected override void OnExitState()
     {
         base.OnExitState();
-        foreach (var player in gameManager.allPlayers.Values)
+
+        foreach (var playerRef in Runner.ActivePlayers)
         {
-            player.MoveToPlayerField(player.playerField);
+            fieldManager.MovePlayerToField(playerRef, playerRef);
         }
     }
 

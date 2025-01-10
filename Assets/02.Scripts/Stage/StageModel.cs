@@ -117,13 +117,4 @@ public class StageModel : NetworkBehaviour
         DoMatching(allPlayers);
         // View 갱신 필요하다면 → view.UpdateMatchingResult() 등
     }
-
-    public void MovePlayerToField(Player player)
-    {
-        if (player == null) return;
-
-        // 예시로 "PlayerField"로 이동하는 로직
-        // (실제 구현은 Player 내부 로직에 따라 달라집니다)
-        player.MoveToPlayerField(player.playerField);
-    }
 }

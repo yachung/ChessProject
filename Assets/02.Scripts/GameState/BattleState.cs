@@ -16,10 +16,7 @@ public class BattleState : StageStateBehaviour
 
         foreach (var playerRef in stageModel.matchingPairs.Keys)
         {
-            if (gameManager.allPlayers.TryGetValue(playerRef, out var player))
-            {
-                player.playerField.StartBattle();
-            }
+            fieldManager.GetFieldByPlayerRef(playerRef).StartBattle();
         }
     }
 
@@ -32,11 +29,11 @@ public class BattleState : StageStateBehaviour
     {
         base.OnExitState();
 
-        foreach (var player in gameManager.allPlayers.Values)
+        foreach (var player in Runner.ActivePlayers)
         {
-            player.playerField.BattleEnd();
-            player.MoveToPlayerField(player.playerField);
-            player.playerField.ChampionRespawn();
+            fieldManager.GetFieldByPlayerRef(player).BattleEnd();
+            fieldManager.MovePlayerToField(player, player);
+            fieldManager.GetFieldByPlayerRef(player).ChampionRespawn();
         }
     }
 

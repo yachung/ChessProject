@@ -1,12 +1,16 @@
 using Fusion;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
+using VContainer;
 
 /// <summary>
 /// Host 모드에서, 플레이어와 필드 간의 "소유 관계" 및 "이동/매칭"을 일괄 관리
 /// </summary>
 public class FieldManager : NetworkBehaviour
 {
+    [Inject] private readonly PlayerManager playerManager;
+    
     // 예: 최대 8명 지원
     // PlayerRef -> 필드 ID
     // (필드를 int ID로 구분; 실제 필드 객체는 로컬 배열 or lookup 통해 참조)
@@ -14,6 +18,7 @@ public class FieldManager : NetworkBehaviour
     public NetworkDictionary<PlayerRef, int> AssignedFieldDict { get; set; }
 
     private PlayerField[] allFields;
+    private SelectField selectField;
     // 예: 0번 필드, 1번 필드, 2번 필드 ... (필드가 씬에 배치되어 있다고 가정)
 
     // PlayerManager, GameManager 등 다른 Manager 참조 (선택)
@@ -50,34 +55,47 @@ public class FieldManager : NetworkBehaviour
         Debug.Log($"Assigned PlayerRef={playerRef} to FieldId={fieldId}");
     }
 
+    #region MoveToField
+    // 모든 플레이어를 선택 필드로 이동시키는 메서드
+    public void MoveAllPlayersToSelectField()
+    {
+        if (!Runner.IsServer) return;
+
+        for (int i = 0; i < playerManager.PlayerList.Count; i++)
+        {
+            playerManager.PlayerList[i].PlayerTeleport(selectField.spawnPositions[i].position);
+        }
+    }
+
     /// <summary>
     /// 호스트(서버)가 "플레이어를 특정 필드로 이동" 명령
     /// </summary>
-    public void MovePlayerToField(PlayerRef playerRef, bool isBattle)
+    public void MovePlayerToField(PlayerRef source, PlayerRef target)
     {
-        if (!AssignedFieldDict.TryGet(playerRef, out int fieldId))
+        if (!AssignedFieldDict.TryGet(target, out int fieldId))
         {
-            Debug.LogWarning($"{playerRef} has no assigned field.");
+            Debug.LogWarning($"{target} has no assigned field.");
             return;
         }
 
-        PlayerField fieldObj = GetFieldById(fieldId);
-        if (!fieldObj)
+        PlayerField targetField = GetFieldById(fieldId);
+        if (!targetField)
         {
             Debug.LogWarning($"FieldId={fieldId} not found or not assigned in allFields.");
             return;
         }
 
         // Player 오브젝트 찾아서, PlayerController 이용해 이동
-        Player player = FindPlayerObject(playerRef);
+        Player player = playerManager.GetPlayer(source);
         if (!player)
         {
-            Debug.LogWarning($"No Player object for {playerRef} found.");
+            Debug.LogWarning($"No Player object for {source} found.");
             return;
         }
 
-        player.PlayerTeleport(fieldObj.transform.position);
+        player.PlayerTeleport(targetField.transform.position);
     }
+    #endregion
 
     /// <summary>
     /// 로컬 배열(allFields)에서 fieldId에 해당하는 PlayerField 참조 반환
@@ -86,6 +104,15 @@ public class FieldManager : NetworkBehaviour
     {
         if (fieldId >= 0 && fieldId < allFields.Length)
             return allFields[fieldId];
+        return null;
+    }
+
+    public PlayerField GetFieldByPlayerRef(PlayerRef playerRef)
+    {
+        if (playerRef == null) return null;
+
+        if (AssignedFieldDict.TryGet(playerRef, out int fieldID))
+            return GetFieldById(fieldID);
         return null;
     }
 

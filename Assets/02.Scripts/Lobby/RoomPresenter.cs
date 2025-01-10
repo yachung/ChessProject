@@ -19,7 +19,7 @@ public class RoomPresenter
 
     public void UpdateUI()
     {
-        roomView.DisplayPlayerCount(playerManager.Players.Count);
+        roomView.DisplayPlayerCount(playerManager.Count);
         roomView.ShowPlayerList(playerManager.Players);
     }
 
@@ -44,6 +44,6 @@ public class RoomPresenter
     {
         Debug.Log("GameStart");
 
-        GameManager.Instance.GamePlayStart(roomModel.Runner); 
+        GameManager.Instance.GamePlayStart(); 
     }
 }
