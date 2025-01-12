@@ -11,7 +11,7 @@ public interface IRoomView : IView
 {
     void Initialize(bool isServer, Action gameStart);
     void DisplayPlayerCount(int count);
-    void ShowPlayerList(Dictionary<PlayerRef, NetworkPlayerInfo> playerList);
+    void ShowPlayerList(List<NetworkPlayerInfo> playerList);
 }
 
 public class RoomView : MonoBehaviour, IRoomView
@@ -50,7 +50,7 @@ public class RoomView : MonoBehaviour, IRoomView
         txt_PlayerCount.text = count.ToString();
     }
 
-    public void ShowPlayerList(Dictionary<PlayerRef, NetworkPlayerInfo> playerList)
+    public void ShowPlayerList(List<NetworkPlayerInfo> playerList)
     {
         int index = 0;
 
@@ -60,7 +60,7 @@ public class RoomView : MonoBehaviour, IRoomView
             {
                 // playerList.Values에서 플레이어 정보를 가져와 초기화
                 cell.gameObject.SetActive(true);  // 셀 활성화
-                cell.Initialize(playerList.Values.ElementAt(index));  // 해당 인덱스의 플레이어 정보로 초기화
+                cell.Initialize(playerList[index]);  // 해당 인덱스의 플레이어 정보로 초기화
                 index++;
             }
             else

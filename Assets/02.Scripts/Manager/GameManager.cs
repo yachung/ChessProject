@@ -18,10 +18,6 @@ public class GameManager : NetworkBehaviour
 
     private StageStateManager gameState;
 
-    public Dictionary<PlayerRef, Player> allPlayers { get; private set; } = new Dictionary<PlayerRef, Player>();
-
-    public Player LocalPlayer;
-
     public Action OnPlayerSpawnedComplete;
 
     void Awake()

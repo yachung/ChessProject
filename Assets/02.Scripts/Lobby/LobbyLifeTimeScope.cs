@@ -12,7 +12,7 @@ public class LobbyLifeTimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<RoomView>();
 
         // Presenter 등록
-        builder.RegisterComponentInHierarchy<RoomPresenter>();
+        builder.Register<RoomPresenter>(Lifetime.Scoped);
 
         builder.RegisterComponentInHierarchy<LobbyController>();
 

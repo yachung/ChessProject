@@ -43,16 +43,18 @@ public class FieldManager : NetworkBehaviour
     /// <summary>
     /// 호스트(서버)가 플레이어에게 필드를 할당
     /// </summary>
-    public void AssignFieldToPlayer(PlayerRef playerRef, int fieldId)
+    public void AssignFieldToPlayer(PlayerRef playerRef, int fieldIdx)
     {
         if (!Runner.IsServer) return;
 
         if (!AssignedFieldDict.ContainsKey(playerRef))
-            AssignedFieldDict.Add(playerRef, fieldId);
+            AssignedFieldDict.Add(playerRef, fieldIdx);
         else
-            AssignedFieldDict.Set(playerRef, fieldId);
+            AssignedFieldDict.Set(playerRef, fieldIdx);
 
-        Debug.Log($"Assigned PlayerRef={playerRef} to FieldId={fieldId}");
+        allFields[fieldIdx].Object.AssignInputAuthority(playerRef);
+
+        Debug.Log($"Assigned PlayerRef={playerRef} to FieldIdx={fieldIdx}");
     }
 
     #region MoveToField

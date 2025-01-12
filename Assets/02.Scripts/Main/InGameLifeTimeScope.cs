@@ -20,6 +20,7 @@ public class InGameLifeTimeScope : LifetimeScope
     {
         builder.RegisterComponentInHierarchy<FieldManager>();
         builder.RegisterComponentInHierarchy<ChampionManager>();
+        builder.RegisterComponentInHierarchy<SpawnManager>();
         builder.RegisterComponentInHierarchy<StageStateManager>();
         builder.RegisterComponentInHierarchy<ProgressTimer>();
     }
@@ -37,14 +38,14 @@ public class InGameLifeTimeScope : LifetimeScope
 
     private void RegisterStageComponents(IContainerBuilder builder)
     {
-        builder.RegisterComponentInHierarchy<StagePresenter>();
+        builder.Register<StagePresenter>(Lifetime.Scoped);
         builder.RegisterComponentInHierarchy<StageView>();
         builder.RegisterComponentInHierarchy<StageModel>();
     }
 
     private void RegisterShopComponents(IContainerBuilder builder)
     {
-        builder.Register<ShopPresenter>(Lifetime.Singleton);
+        builder.Register<ShopPresenter>(Lifetime.Scoped);
         builder.RegisterComponentInHierarchy<ShopModel>();
         builder.RegisterComponentInHierarchy<ShopView>();
     }

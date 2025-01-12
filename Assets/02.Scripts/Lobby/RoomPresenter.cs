@@ -20,7 +20,7 @@ public class RoomPresenter
     public void UpdateUI()
     {
         roomView.DisplayPlayerCount(playerManager.Count);
-        roomView.ShowPlayerList(playerManager.Players);
+        roomView.ShowPlayerList(playerManager.PlayerList);
     }
 
     private void OnIsFindRoomChanged(bool isFindRoom)

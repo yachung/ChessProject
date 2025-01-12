@@ -39,9 +39,9 @@ public class StagePresenter
         view.UpdateProgressBar(ratio);
     }
 
-    public void OnClickPlayerList(Player player)
+    public void OnClickPlayerList(PlayerRef player)
     {
-        stageModel.MovePlayerToField(player);
+        fieldManager.MovePlayerToField(playerManager.LocalPlayer, player);
     }
 
     public void UpdatePlayerList()

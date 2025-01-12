@@ -55,7 +55,7 @@ public class StageView : MonoBehaviour, IStageView
         {
             playerList[i].row0.textObject.text = players[i].Info.Name.ToString();
             playerList[i].row1.textObject.text = players[i].Hp.ToString();
-            playerList[i].button.onClick.AddListener(() => stagePresenter.OnClickPlayerList(players[i]));
+            playerList[i].button.onClick.AddListener(() => stagePresenter.OnClickPlayerList(players[i].OwnerRef));
         }
     }
 
