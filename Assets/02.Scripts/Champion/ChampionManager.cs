@@ -12,7 +12,7 @@ public class ChampionManager : NetworkBehaviour
     [Inject] private readonly PlayerManager playerManager;
 
     // 모든 챔피언을 관리하는 네트워크 딕셔너리
-    [Networked, Capacity(200)] private NetworkDictionary<int, ChampionData> championDataDict => default;
+    //[Networked, Capacity(200)] private NetworkDictionary<int, ChampionData> championDataDict => default;
 
     // 서버 측에서만 관리하는 플레이어별 챔피언 목록
     private Dictionary<PlayerRef, List<int>> playerChampions = new Dictionary<PlayerRef, List<int>>();

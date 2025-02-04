@@ -5,23 +5,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 using System.Linq;
+using System;
 
 public class PlayerManager : NetworkBehaviour
 {
     [Inject] private readonly FirebaseManager firebaseManager;
 
     // 플레이어 참조 -> PlayerInfo 매핑
-    private Dictionary<PlayerRef, PlayerInfo> playerInfoDict = new Dictionary<PlayerRef, PlayerInfo>();
+    [Networked, Capacity(8), OnChangedRender(nameof(OnPlayerInfoDictChanged))]
+    public NetworkDictionary<PlayerRef, NetworkPlayerInfo> playerInfoDict => default;
 
     // 플레이어 참조 -> Player 객체 매핑
     private Dictionary<PlayerRef, Player> playerObjectDict = new Dictionary<PlayerRef, Player>();
 
     public List<Player> PlayerList => playerObjectDict.Values.ToList();
-    public List<PlayerInfo> PlayerInfoList => playerInfoDict.Values.ToList();
+    public List<NetworkPlayerInfo> PlayerInfoList
+    {
+        get
+        {
+            List<NetworkPlayerInfo> list = new List<NetworkPlayerInfo>();
+            foreach (var player in playerInfoDict)
+                list.Add(player.Value);
+
+            return list;
+        }
+    }
+
     public List<PlayerRef> PlayerRefList => Runner.ActivePlayers.ToList();
 
     public PlayerRef LocalPlayer => Runner.LocalPlayer;
     public int Count => playerInfoDict.Count;
+
+    public Action OnPlayerInfoDictChanged;
 
     public override void Spawned()
     {
@@ -32,37 +47,64 @@ public class PlayerManager : NetworkBehaviour
             events.PlayerJoined.RemoveListener(OnPlayerJoined);
             events.PlayerJoined.AddListener(OnPlayerJoined);
 
+            events.OnConnectedToServer.RemoveListener(OnConnectedToServer);
+            events.OnConnectedToServer.AddListener(OnConnectedToServer);
+
             events.PlayerLeft.RemoveListener(OnPlayerLeft);
             events.PlayerLeft.AddListener(OnPlayerLeft);
         }
     }
 
+    public void OnConnectedToServer(NetworkRunner runner)
+    {
+        var PlayerInfo = new NetworkPlayerInfo
+        {
+            Name = firebaseManager.currentUser.DisplayName,
+            UserId = firebaseManager.currentUser.UserId
+        };
+
+        RPC_SendPlayerData(PlayerInfo, runner.LocalPlayer);
+    }
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log("OnPlayerJoined");
-
-        if (runner.IsServer)
+        var PlayerInfo = new NetworkPlayerInfo
         {
-            byte[] connectionToken = runner.GetPlayerConnectionToken(player);
+            Name = firebaseManager.currentUser.DisplayName,
+            UserId = firebaseManager.currentUser.UserId
+        };
 
-            PlayerInfo playerInfo;
-
-            if (connectionToken != null && connectionToken.Length > 0)
-            {
-                string json = System.Text.Encoding.UTF8.GetString(connectionToken);
-                playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
-            }
-            else
-            {
-                playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
-            }
-
-            if (!playerInfoDict.ContainsKey(player))
-                playerInfoDict.Add(player, playerInfo);
-            else
-                Debug.Log($"{player}, {playerInfo.Name} 가 이미 목록에 있음.");
-        }
+        RPC_SendPlayerData(PlayerInfo, runner.LocalPlayer);
     }
+
+
+
+    //public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    //{
+    //    Debug.Log("OnPlayerJoined");
+
+    //    if (runner.IsServer)
+    //    {
+    //        byte[] connectionToken = runner.GetPlayerConnectionToken(player);
+
+    //        PlayerInfo playerInfo;
+
+    //        if (connectionToken != null && connectionToken.Length > 0)
+    //        {
+    //            string json = System.Text.Encoding.UTF8.GetString(connectionToken);
+    //            playerInfo = JsonUtility.FromJson<PlayerInfo>(json);
+    //        }
+    //        else
+    //        {
+    //            playerInfo = new PlayerInfo { Name = "Unknown", UserId = "Unknown" };
+    //        }
+
+    //        if (!playerInfoDict.ContainsKey(player))
+    //            playerInfoDict.Add(player, playerInfo);
+    //        else
+    //            Debug.Log($"{player}, {playerInfo.Name} 가 이미 목록에 있음.");
+    //    }
+    //}
 
     private void OnPlayerLeft(NetworkRunner runner, PlayerRef playerRef)
     {
@@ -111,6 +153,18 @@ public class PlayerManager : NetworkBehaviour
         if (playerObjectDict.ContainsKey(playerRef))
         {
             playerObjectDict.Remove(playerRef);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SendPlayerData(NetworkPlayerInfo data, PlayerRef playerRef)
+    {
+        if (HasStateAuthority)
+        {
+            if (!playerInfoDict.ContainsKey(playerRef))
+                playerInfoDict.Add(playerRef, data);
+            else
+                Debug.Log($"{playerRef}, {data.Name} 가 이미 목록에 있음.");
         }
     }
 }

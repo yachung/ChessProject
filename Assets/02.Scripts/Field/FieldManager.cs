@@ -1,6 +1,5 @@
 using Fusion;
 using System.Collections.Generic;
-using UnityEditor.UIElements;
 using UnityEngine;
 using VContainer;
 
@@ -10,12 +9,12 @@ using VContainer;
 public class FieldManager : NetworkBehaviour
 {
     [Inject] private readonly PlayerManager playerManager;
-    
+
     // 예: 최대 8명 지원
     // PlayerRef -> 필드 ID
     // (필드를 int ID로 구분; 실제 필드 객체는 로컬 배열 or lookup 통해 참조)
     [Networked, Capacity(8)]
-    public NetworkDictionary<PlayerRef, int> AssignedFieldDict { get; set; }
+    public NetworkDictionary<PlayerRef, int> AssignedFieldDict => default;
 
     private PlayerField[] allFields;
     private SelectField selectField;

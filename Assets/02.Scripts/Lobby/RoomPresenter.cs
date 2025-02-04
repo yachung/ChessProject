@@ -15,12 +15,14 @@ public class RoomPresenter
     {
         this.roomView = roomView;
         this.playerManager = playerManager;
+
+        playerManager.OnPlayerInfoDictChanged += UpdateUI;
     }
 
     public void UpdateUI()
     {
         roomView.DisplayPlayerCount(playerManager.Count);
-        roomView.ShowPlayerList(playerManager.PlayerList);
+        roomView.ShowPlayerList(playerManager.PlayerInfoList);
     }
 
     private void OnIsFindRoomChanged(bool isFindRoom)

@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3303355167097335268}
   - component: {fileID: 7099061045317968982}
-  - component: {fileID: 1719912077483100863}
+  - component: {fileID: 4560746918287274988}
   - component: {fileID: 1517103511679265875}
   m_Layer: 0
   m_Name: GameState
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enableLogging: 1
---- !u!114 &1719912077483100863
+--- !u!114 &4560746918287274988
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6724422466428728508}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57424f9fe26d228478bc837d961a8bc1, type: 3}
+  m_Script: {fileID: 11500000, guid: 58ef9181b489db843aba8cbfedb3321a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pregameState: {fileID: 5363607896435847171}
@@ -180,7 +180,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7099061045317968982}
-  - {fileID: 1719912077483100863}
+  - {fileID: 4560746918287274988}
   - {fileID: 5363607896435847171}
   - {fileID: 3817810496957333227}
   - {fileID: 7809167953930163758}

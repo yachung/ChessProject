@@ -11,6 +11,7 @@ public class LobbyController : MonoBehaviour
     [Inject] private readonly FirebaseManager firebaseManager;
     [Inject] private readonly RoomModel roomModel;
     [Inject] private readonly SceneLoader sceneLoader;
+    [Inject] private readonly PlayerManager playerManager;
     [SerializeField] private NetworkRunner networkRunnerPrefab;
     [SerializeField] private ButtonManager btn_FindOrCreateRoom;
 
@@ -34,6 +35,10 @@ public class LobbyController : MonoBehaviour
                 // 없으면 새로운 NetworkRunner 인스턴스 생성
                 runner = Instantiate(networkRunnerPrefab);
         }
+
+        // var events = runner.GetComponent<NetworkEvents>();
+        // events.OnConnectedToServer.AddListener(OnConnected);
+
 
         runner.ProvideInput = true;
 
@@ -84,4 +89,17 @@ public class LobbyController : MonoBehaviour
             //Address = NetAddress.Any() // IP 주소를 자동으로 할당
         });
     }
+
+    private void OnConnected(NetworkRunner runner)
+    {
+        var PlayerInfo = new NetworkPlayerInfo
+        {
+            Name = firebaseManager.currentUser.DisplayName,
+            UserId = firebaseManager.currentUser.UserId
+        };
+
+        playerManager.RPC_SendPlayerData(PlayerInfo, runner.LocalPlayer);
+    }
+
+
 }

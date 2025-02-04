@@ -34,6 +34,11 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public override void Spawned()
+    {
+        Debug.Log("tets");
+    }
+
     public async void GamePlayStart()
     {
         await Runner.LoadScene(SceneRef.FromIndex(2));
@@ -58,9 +63,9 @@ public class GameManager : NetworkBehaviour
             playerField.Object.AssignInputAuthority(playerRef);
 
             Player player = networkObject.GetComponent<Player>();
-            player.playerField = playerField;
-
-            allPlayers.Add(playerRef, player);
+            //player.playerField = playerField;
+            //
+            //allPlayers.Add(playerRef, player);
         }
     }
 
